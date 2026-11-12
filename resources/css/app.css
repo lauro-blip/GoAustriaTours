@@ -1,12 +1,55 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/cormorant';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
 @source "../**/*.js";
-@source "../**/*.vue";
 
+/*
+ * DESIGN TOKENS: re-skin a brand by editing only this block (see docs/reference/DESIGN_SYSTEM.md).
+ * Tailwind generates utilities from these, e.g. bg-brand, text-ink, font-display.
+ */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Cormorant Variable', Georgia, 'Times New Roman', serif;
+
+    --color-brand: #1f3d34;        /* deep alpine green: header, buttons, dark sections */
+    --color-brand-dark: #142a23;
+    --color-brand-soft: #e7efe9;
+    --color-accent: #b08d4a;       /* muted gold: decorative / on dark. Not for small text on light */
+    --color-accent-text: #7a5f2a;  /* gold dark enough for text on ivory (AA) */
+    --color-cta: #b85c0a;          /* conversion orange (AA with white text) */
+    --color-cta-dark: #94490a;
+    --color-quiz: #f08a24;         /* quiz card border */
+    --color-ivory: #faf7f0;
+    --color-sand: #f1ebdd;
+    --color-ink: #1c2421;
+    --color-muted: #55605b;
+    --color-line: #ddd6c5;
+
+    --radius-card: 1rem;
+    --shadow-card: 0 10px 30px -12px rgb(20 42 35 / 0.25);
+}
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body { @apply bg-ivory text-ink font-sans antialiased; }
+    h1, h2, h3 { @apply font-display text-brand leading-tight; }
+    :focus-visible { outline: 3px solid var(--color-quiz); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    [x-cloak] { display: none !important; }
+}
+
+@layer components {
+    .container-page { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+    .section { @apply py-16 sm:py-20; }
+    .prose-content h2 { @apply mt-8 mb-3 text-3xl; }
+    .prose-content p, .prose-content li { @apply text-muted leading-relaxed; }
+    .prose-content p { @apply mb-4; }
+    .prose-content ul { @apply list-disc pl-6 mb-4; }
+    .prose-content a { @apply text-brand underline; }
 }

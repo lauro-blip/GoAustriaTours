@@ -8,7 +8,7 @@
       extended  show time of year / group size / nights
       slot      extra hidden inputs (the quiz puts its answers here)
 --}}
-@props(['formName', 'package' => null, 'extended' => false, 'button' => 'Get My Free Quote', 'uid' => null, 'dark' => false])
+@props(['formName', 'package' => null, 'extended' => false, 'button' => 'Get My Free Quote', 'uid' => null, 'dark' => false, 'nojs' => false])
 @php
     $uid ??= $formName;
     $active = old('form_name') === $formName;
@@ -95,10 +95,16 @@
     {{-- reCAPTCHA v2 checkbox, rendered explicitly by Alpine so several can share a page. --}}
     <div>
         <div x-ref="captcha" class="min-h-[78px]"></div>
-        <noscript>
+        {{-- No-JS reCAPTCHA fallback. Must not be nested inside another <noscript> (HTML cannot nest them), hence $nojs. --}}
+        @if($nojs)
             <iframe src="https://www.google.com/recaptcha/api/fallback?k={{ $siteKey }}" title="reCAPTCHA" class="w-full max-w-[302px] h-[422px] border-0"></iframe>
             <textarea name="g-recaptcha-response" class="w-full max-w-[302px] h-20" aria-label="reCAPTCHA response"></textarea>
-        </noscript>
+        @else
+            <noscript>
+                <iframe src="https://www.google.com/recaptcha/api/fallback?k={{ $siteKey }}" title="reCAPTCHA" class="w-full max-w-[302px] h-[422px] border-0"></iframe>
+                <textarea name="g-recaptcha-response" class="w-full max-w-[302px] h-20" aria-label="reCAPTCHA response"></textarea>
+            </noscript>
+        @endif
         <p x-show="captchaError" x-cloak class="mt-1 text-sm text-red-700" role="alert">Please tick "I'm not a robot".</p>
         @if($captchaError)<p class="mt-1 text-sm text-red-700" role="alert">{{ $captchaError }}</p>@endif
     </div>

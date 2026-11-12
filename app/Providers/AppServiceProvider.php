@@ -26,8 +26,8 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         // Share site settings and nav data with every public view.
-        // Components read settings via Setting::get() directly; only layout + partials get $site.
-        View::composer(['layouts.app', 'partials.*'], function ($view) {
+        // Every public view gets $site (settings are cached) and $navTourTypes (one query per request).
+        View::composer(['layouts.*', 'partials.*', 'pages.*', 'packages.*', 'tours.*', 'errors.*'], function ($view) {
             static $nav = null;
             $nav ??= TourType::active()->get(['name', 'slug']);
             $view->with(['site' => Setting::all_(), 'navTourTypes' => $nav]);

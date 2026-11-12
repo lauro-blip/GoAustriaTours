@@ -17,7 +17,7 @@
     --color-brand: #1f3d34;        /* deep alpine green: header, buttons, dark sections */
     --color-brand-dark: #142a23;
     --color-brand-soft: #e7efe9;
-    --color-accent: #b08d4a;       /* muted gold: decorative / on dark. Not for small text on light */
+    --color-accent: #d4b36d;       /* soft gold: for text/icons on dark green (AA). Not for small text on light */
     --color-accent-text: #7a5f2a;  /* gold dark enough for text on ivory (AA) */
     --color-cta: #b85c0a;          /* conversion orange (AA with white text) */
     --color-cta-dark: #94490a;

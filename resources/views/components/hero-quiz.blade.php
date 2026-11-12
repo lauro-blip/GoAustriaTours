@@ -63,7 +63,7 @@
     {{-- No JavaScript: plain contact form so no lead is lost. --}}
     <noscript>
         <p class="mt-3 text-center text-sm text-muted">Tell us about your trip and we will send a free quote.</p>
-        <div class="mt-4"><x-enquiry-form form-name="hero-quiz" uid="quiz-nojs" /></div>
+        <div class="mt-4"><x-enquiry-form form-name="hero-quiz" uid="quiz-nojs" :nojs="true" /></div>
     </noscript>
 
     <p class="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted"><x-icon name="lock" class="size-4" /> Takes less than 30 seconds</p>

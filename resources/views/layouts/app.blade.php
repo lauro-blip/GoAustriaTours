@@ -33,12 +33,16 @@
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ $site['gtm_id'] }}');</script>
     @endif
 
+    {{-- Preload the two above-the-fold font files (latin subset) so text renders without a swap flash. --}}
+    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource-variable/cormorant/files/cormorant-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+    @stack('preload')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script type="application/ld+json">{!! json_encode(\App\Support\Schema::organization($site), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
     @stack('jsonld')
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col" x-data>
     @if(! empty($site['gtm_id']))
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $site['gtm_id'] }}" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
     @endif

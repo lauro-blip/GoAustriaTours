@@ -16,7 +16,7 @@
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,#2f5a4c_0%,#1f3d34_45%,#142a23_100%)]"></div>
     <div class="container-page grid gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-20">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Refined. Timeless. Extraordinary.</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Tailor-made tours of Austria</p>
             <h1 class="mt-3 text-5xl sm:text-6xl lg:text-7xl !text-white">{{ $page->section('hero_title', 'Austria, Planned Beautifully Around You') }}</h1>
             <p class="mt-5 max-w-xl text-lg text-white/85">{{ $page->section('hero_subtitle') }}</p>
             <ul class="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Why book with us">

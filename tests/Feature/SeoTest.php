@@ -65,6 +65,17 @@ class SeoTest extends TestCase
         $this->get('/')->assertSee('"@type":"FAQPage"', false)->assertSee('"@type":"TravelAgency"', false);
     }
 
+    public function test_site_settings_reach_page_views_not_just_the_layout(): void
+    {
+        \App\Models\Setting::put('phone', '+1 800 555 0199');
+        \App\Models\Setting::put('legal_company_name', 'Acme Alpine Ltd');
+
+        $this->get('/contact')->assertSee('+1 800 555 0199', false);
+        $this->get('/')->assertSee('Call +1 800 555 0199', false);
+        // The consent text uses the legal company name from settings.
+        $this->get('/contact')->assertSee('provided by Acme Alpine Ltd.', false);
+    }
+
     public function test_unpublished_package_is_404(): void
     {
         Package::where('slug', 'tyrol-private-escorted')->update(['is_published' => false]);

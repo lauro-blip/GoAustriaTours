@@ -34,8 +34,8 @@
     @endif
 
     {{-- Preload the two above-the-fold font files (latin subset) so text renders without a swap flash. --}}
-    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource-variable/cormorant/files/cormorant-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-700-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
     @stack('preload')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -49,8 +49,18 @@
 
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:px-4 focus:py-2 focus:rounded">Skip to content</a>
 
-    @include('partials.topbar')
-    @include('partials.header')
+    @if($transparentHeader ?? false)
+        {{-- Home: both bars pinned over the hero; topbar folds away and header turns solid after scrolling --}}
+        <div class="fixed inset-x-0 top-0 z-40" x-data="{ scrolled: window.scrollY > 40 }" @scroll.window.passive="scrolled = window.scrollY > 40">
+            <div class="grid transition-[grid-template-rows,opacity] duration-500 ease-in-out motion-reduce:transition-none" :class="scrolled ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'" :inert="scrolled">
+                <div class="overflow-hidden">@include('partials.topbar')</div>
+            </div>
+            @include('partials.header')
+        </div>
+    @else
+        @include('partials.topbar')
+        @include('partials.header')
+    @endif
 
     <main id="main" class="flex-1">
         @yield('content')

@@ -23,6 +23,10 @@ class SeoController extends Controller
         foreach (TourType::active()->get() as $t) {
             $urls[] = [route('tours.show', $t), $t->updated_at];
         }
+        $urls[] = [route('journal.index'), now()];
+        foreach (\App\Models\Post::published()->get() as $post) {
+            $urls[] = [route('journal.show', $post), $post->updated_at];
+        }
         foreach (Package::published()->where('noindex', false)->get() as $p) {
             $urls[] = [route('packages.show', $p), $p->updated_at];
         }

@@ -12,7 +12,7 @@
     $links = [
         ['admin.dashboard', 'Dashboard'], ['admin.enquiries.index', 'Enquiries'], ['admin.packages.index', 'Packages'],
         ['admin.tour-types.index', 'Tour types'], ['admin.destinations.index', 'Destinations'], ['admin.quiz.index', 'Quiz'],
-        ['admin.pages.index', 'Pages'], ['admin.testimonials.index', 'Testimonials'], ['admin.faqs.index', 'FAQs'],
+        ['admin.pages.index', 'Pages'], ['admin.testimonials.index', 'Testimonials'], ['admin.faqs.index', 'FAQs'], ['admin.posts.index', 'Journal'],
         ['admin.media.index', 'Media'], ['admin.settings.edit', 'Settings'], ['admin.users.index', 'Admin users'],
     ];
 @endphp

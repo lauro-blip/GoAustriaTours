@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\JournalController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\TourTypeController;
@@ -14,6 +15,9 @@ Route::get('/terms-and-conditions', [PageController::class, 'legal'])->defaults(
 Route::get('/privacy-policy', [PageController::class, 'legal'])->defaults('slug', 'privacy')->name('privacy');
 Route::get('/thank-you', [PageController::class, 'thankYou'])->name('thank-you');
 
+Route::get('/journal', [JournalController::class, 'index'])->name('journal.index');
+Route::get('/journal/{post:slug}', [JournalController::class, 'show'])->name('journal.show');
+Route::get('/packages/featured', [PageController::class, 'featured'])->name('packages.featured');
 Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/packages/{package:slug}', [PackageController::class, 'show'])->name('packages.show');
 Route::get('/tours/{tourType:slug}', [TourTypeController::class, 'show'])->name('tours.show');

@@ -5,7 +5,7 @@ Server-rendered Laravel 12 app. Keep this file a map, not a manual. **Update it 
 
 ## Stack
 Laravel 12 (PHP 8.2+), Blade (no SPA), Tailwind CSS v4 + Vite, Alpine.js (+ focus plugin), MySQL (SQLite only in tests), Trix editor in admin.
-Custom admin at `/admin` (no Filament). Fonts self-hosted via Fontsource (Inter, Cormorant).
+Custom admin at `/admin` (no Filament). Fonts self-hosted via Fontsource (DM Sans body, Cormorant Garamond bold headings).
 
 ## Run on XAMPP (Windows)
 ```
@@ -24,6 +24,9 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - `app/Jobs/SyncEnquiryToGhl.php` queued CRM sync; `app/Console/Commands/Ghl*.php` `ghl:setup`, `ghl:test`
 - `app/Support/` `Consent` (legal wording), `Tracking` (first/last touch), `GhlFields` (CRM field names), `Schema` (JSON-LD), `Countries`
 - `resources/views/components/` button, section-heading, card, form-field, faq-item, icon, enquiry-form, enquiry-modal, hero-quiz, package-card
+- `public/images/logo-white.png` (footer, dark bg) and `logo-navy.png` (header, light bg): same logo, two colourings; header uses the Admin > Settings `logo` if set
+- Home order: hero, journey intro, Ways to travel (tour type cards; image = uploaded one or `public/images/tours/{slug}.webp`), Why, ... The journey intro (image + 3 numbered points + quote button) (image + 3 numbered points + quote button). Hero background = CSS crossfade of `public/images/hero/*.webp` (Wikimedia Commons, attribution required: see `docs/reference/IMAGE_CREDITS.md`). Home (`transparentHeader => true`): topbar+header are `fixed`, header transparent with white logo/text until scrolled 40px, then solid ivory + green logo and the topbar folds away (Alpine `scrolled` in `layouts/app.blade.php`); other pages keep the solid ivory header. Logo is 250px wide.
+- Home sections after the gallery: Seamless Payments, "Discover Austria" package carousel (CSS scroll-snap + Alpine arrows, all published packages), Journal (latest 3 posts). Journal = `posts` table, `Post` model, `JournalController` (`/journal`, `/journal/{slug}`), admin CRUD at Admin > Journal (`Admin\PostController`), starter articles in `database/seeders/SamplePostData.php`, fallback image `public/images/journal/{slug}.webp`. Home "Seamless Payments" section follows the gallery. Home "Gallery" (after testimonials): 6 destination photos in `public/images/gallery/`, Alpine.js lightbox inline in `pages/home.blade.php` (focus trap, Esc, arrows, swipe). Home "Top destinations" (6 trip cards, static array in `pages/home.blade.php`, reuses images from `public/images/{hero,packages}`) sits after Featured packages. Featured packages (home, 3 per page): `partials/featured-packages.blade.php` is the grid + prev/next/numbered pagination, rendered inline and returned alone by `GET /packages/featured` (`PageController@featured`); `resources/js/featured.js` swaps it via ajax, plain links `/?featured_page=N` work without JS. Card image = uploaded `hero_image` or `public/images/packages/{slug}.webp`. Sample package content (prices etc.) = `database/seeders/SamplePackageData.php`; refresh a local DB with `(new ContentSeeder)->syncSamplePackages(true)` in tinker.
 - `resources/css/app.css` design tokens (`@theme`); `resources/js/forms.js` quiz + form Alpine logic
 - `database/seeders/` all starter content (placeholders)
 - `docs/reference/` the rest of the documentation

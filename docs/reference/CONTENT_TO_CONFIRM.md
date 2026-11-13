@@ -21,10 +21,10 @@ Nothing below was invented as fact; each is a placeholder in the site. Search th
 - Terms and Conditions and Privacy Policy: **starter templates only, not legal advice**. Needs professional review (booking, payment, cancellation, liability, data processors, user rights, SMS terms)
 
 ## Reviews
-- 3 placeholder testimonials: replace with real, permitted reviews and untick "placeholder"
+- Testimonials: the 3 reviews (Michael R., Sarah & James, The Nguyen Family) were supplied by the owner: confirm they are genuine and permitted, and that they are Google reviews if the Google "G" icon stays on the cards.
 
 ## Brand and assets
-- Logo, favicon, final colours/fonts if different from the proposed alpine green and gold
+- Logo, favicon, final fonts (colours now follow the supplied navy/gold palette)
 - All photography (see IMAGE_CREDITS.md)
 
 ## Accounts and keys
@@ -32,3 +32,9 @@ Nothing below was invented as fact; each is a placeholder in the site. Search th
 - Production reCAPTCHA v2 keys
 - GoHighLevel PIT and location ID (then `php artisan ghl:setup`)
 - SMTP mail settings for production
+- Hero photo credits (CC BY / BY-SA) must be shown publicly before launch.
+- Journey intro section photo (`public/images/hero/why-alps.webp`) is a low-res crop from a design mock-up: replace with the original/licensed image.
+- Sample package data in `database/seeders/SamplePackageData.php`: all 6 "from" prices (USD), nights, summaries, highlights, itineraries, inclusions/exclusions are ILLUSTRATIVE. Replace with real packages in Admin > Packages before launch. The home section subtitle still says "Sample packages shown".
+- Seamless Payments section (home, after gallery): payment wording supplied by the owner. Confirm per-traveller online payment, secure payments, instant confirmation emails and flexible options are real before launch; the site itself does not process payments.
+- Journal: the 4 starter articles (database/seeders/SamplePostData.php) are general-guidance DRAFTS written as placeholders: review/replace in Admin > Journal. Check the seasonal claims (e.g. Grossglockner opening times) before launch. Their images reuse the gallery photos.
+- Package card: shown price now has a 'pp' (per person) suffix, copied from the design reference. Confirm that is how prices are quoted.

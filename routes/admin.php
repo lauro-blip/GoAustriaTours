@@ -34,6 +34,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         $crud('destinations', Admin\DestinationController::class);
         $crud('testimonials', Admin\TestimonialController::class);
         $crud('faqs', Admin\FaqController::class);
+        $crud('posts', Admin\PostController::class);
         $crud('users', Admin\UserController::class);
         $crud('quiz', Admin\QuizController::class);
 

@@ -26,7 +26,7 @@
         </form>
 
         @forelse($packages as $p)
-            @if($loop->first)<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">@endif
+            @if($loop->first)<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">@endif
             <x-package-card :package="$p" />
             @if($loop->last)</div>@endif
         @empty

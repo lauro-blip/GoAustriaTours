@@ -21,6 +21,7 @@ class ContentSeeder extends Seeder
         $this->destinations();
         $this->tourTypes();
         $this->packages();
+        $this->posts();
         $this->pages();
         $this->testimonials();
         $this->faqs();
@@ -51,39 +52,54 @@ class ContentSeeder extends Seeder
         }
     }
 
+    private function posts(): void
+    {
+        foreach (SamplePostData::all() as $p) {
+            \App\Models\Post::firstOrCreate(['slug' => $p['slug']], [
+                'title' => $p['title'], 'category' => $p['category'], 'excerpt' => $p['excerpt'], 'body' => $p['body'],
+                'image_alt' => $p['image_alt'], 'is_published' => true, 'published_at' => now()->subDays($p['days_ago']),
+            ]);
+        }
+    }
+
     private function packages(): void
     {
+        $this->syncSamplePackages(false);
+    }
+
+    /** Seeds the 6 sample packages. $overwrite = true refreshes existing rows (local dev only: it replaces admin edits). */
+    public function syncSamplePackages(bool $overwrite): void
+    {
         $samples = [
-            ['self-drive', 'vienna-salzburg', 'Sample: Imperial Austria Self Drive', 'imperial-austria-self-drive', 8],
-            ['self-drive', 'tyrol', 'Sample: Alpine Lakes Self Drive', 'alpine-lakes-self-drive', 10],
-            ['escorted', 'vienna-salzburg', 'Sample: Vienna & Salzburg Private Escorted', 'vienna-salzburg-private-escorted', 7],
-            ['escorted', 'tyrol', 'Sample: Tyrol Private Escorted', 'tyrol-private-escorted', 9],
-            ['coach', 'vienna-salzburg', 'Sample: Classic Austria by Coach', 'classic-austria-by-coach', 8],
-            ['coach', 'tyrol', 'Sample: Alpine Highlights by Coach', 'alpine-highlights-by-coach', 7],
+            ['self-drive', 'vienna-salzburg', 'imperial-austria-self-drive'],
+            ['self-drive', 'tyrol', 'alpine-lakes-self-drive'],
+            ['escorted', 'vienna-salzburg', 'vienna-salzburg-private-escorted'],
+            ['escorted', 'tyrol', 'tyrol-private-escorted'],
+            ['coach', 'vienna-salzburg', 'classic-austria-by-coach'],
+            ['coach', 'tyrol', 'alpine-highlights-by-coach'],
         ];
 
-        foreach ($samples as $i => [$type, $dest, $title, $slug, $nights]) {
-            Package::firstOrCreate(['slug' => $slug], [
-                'title' => $title,
+        foreach ($samples as $i => [$type, $dest, $slug]) {
+            $d = SamplePackageData::all()[$slug];
+            $row = [
+                'title' => $d['title'],
                 'tour_type_id' => TourType::where('slug', $type)->value('id'),
                 'destination_id' => Destination::where('slug', $dest)->value('id'),
-                'nights' => $nights,
-                'price_from' => null, // [CONFIRM: from price]
+                'nights' => $d['nights'],
+                'price_from' => $d['price_from'], // SAMPLE price [CONFIRM]
                 'currency' => 'USD',
-                'summary' => 'SAMPLE DATA. [CONFIRM: short summary for this package.]',
-                'description' => '<p>SAMPLE DATA. [CONFIRM: full description.]</p>',
-                'highlights' => ['[CONFIRM: highlight one]', '[CONFIRM: highlight two]', '[CONFIRM: highlight three]'],
-                'itinerary' => [
-                    ['title' => 'Day 1: Arrival', 'body' => '[CONFIRM: itinerary]'],
-                    ['title' => 'Day 2: Sightseeing', 'body' => '[CONFIRM: itinerary]'],
-                ],
-                'inclusions' => ['[CONFIRM: inclusion]'],
-                'exclusions' => ['[CONFIRM: exclusion]'],
+                'summary' => $d['summary'],
+                'description' => '<p>'.e($d['summary']).' SAMPLE CONTENT. [CONFIRM: full description.]</p>',
+                'highlights' => $d['highlights'],
+                'itinerary' => $d['itinerary'],
+                'inclusions' => $d['inclusions'],
+                'exclusions' => SamplePackageData::exclusions(),
                 'faqs' => [],
                 'is_published' => true,
                 'is_featured' => true,
                 'sort_order' => $i + 1,
-            ]);
+            ];
+            $overwrite ? Package::updateOrCreate(['slug' => $slug], $row) : Package::firstOrCreate(['slug' => $slug], $row);
         }
     }
 
@@ -93,8 +109,8 @@ class ContentSeeder extends Seeder
         $pages = [
             'home' => ['Austria Tours | Self Drive, Escorted & Coach | GoAustriaTours', 'Home',
                 'Self drive, escorted and coach tours of Austria planned by local experts. Get a free quote.', null, [
-                    'hero_title' => 'Austria, Planned Beautifully Around You',
-                    'hero_subtitle' => 'Self drive, escorted and coach tours of Vienna, Salzburg and the Tyrolean Alps. Tell us what you love and get a free, personal quote.',
+                    'hero_title' => 'Your Dream Austria, Planned Around You',
+                    'hero_subtitle' => 'Self drive, escorted or coach. Get a free, personal quote.',
                     'why_title' => 'Why travellers choose us',
                     'cta_title' => 'Ready to see Austria?',
                     'cta_text' => 'Answer a few quick questions and a local expert will send you a tailored quote.',
@@ -123,11 +139,15 @@ class ContentSeeder extends Seeder
         if (Testimonial::count()) {
             return;
         }
-        foreach ([1, 2, 3] as $i) {
+        // Supplied by the business owner.
+        foreach ([
+            ['Michael R.', 'New York', 'The Alpine Railway journey was the trip of a lifetime. Seamless from start to finish.'],
+            ['Sarah & James', 'London', 'Every detail was perfect — from our Vienna opera night to the quiet morning in Hallstatt.'],
+            ['The Nguyen Family', 'Sydney', "Our guide in Salzburg made history come alive. We're already planning our return."],
+        ] as $i => [$name, $location, $quote]) {
             Testimonial::create([
-                'name' => '[PLACEHOLDER: guest name]', 'location' => '[PLACEHOLDER: city, state]',
-                'quote' => 'PLACEHOLDER REVIEW. Replace with a real, permitted guest review before launch.',
-                'is_placeholder' => true, 'sort_order' => $i,
+                'name' => $name, 'location' => $location, 'quote' => $quote,
+                'is_placeholder' => false, 'is_active' => true, 'sort_order' => $i + 1,
             ]);
         }
     }

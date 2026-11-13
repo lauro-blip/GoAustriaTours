@@ -6,7 +6,7 @@
         </div>
         <div class="flex items-center gap-4">
             <a href="{{ route('contact') }}" class="hidden sm:inline hover:underline">Get Instant Quote</a>
-            <button type="button" @click="$store.modal.show({ form_name: 'header-modal' })" class="bg-cta hover:bg-cta-dark text-white font-semibold rounded-full px-4 py-1.5">Start Your Adventure</button>
+            <button type="button" @click="$store.modal.show({ form_name: 'header-modal' })" class="bg-cta hover:bg-cta-dark text-brand font-semibold rounded-full px-4 py-1.5">Start Your Adventure</button>
         </div>
     </div>
 </div>

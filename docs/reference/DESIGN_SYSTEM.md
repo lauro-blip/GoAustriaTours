@@ -5,15 +5,16 @@ Hand-built with Tailwind CSS v4. Every brand value lives in **one place**: the `
 ## Tokens
 | Token | Default | Use |
 |---|---|---|
-| `--color-brand` / `brand-dark` / `brand-soft` | #1f3d34 / #142a23 / #e7efe9 | header, buttons, dark sections, tints |
-| `--color-accent` | #d4b36d | gold for text/icons on dark green (AA) |
-| `--color-accent-text` | #7a5f2a | gold text on light backgrounds (AA) |
-| `--color-cta` / `cta-dark` | #b85c0a / #94490a | primary conversion buttons (AA with white text) |
-| `--color-quiz` | #f08a24 | quiz card border and focus ring |
-| `--color-ivory` / `sand` | #faf7f0 / #f1ebdd | page and alternate section backgrounds |
-| `--color-ink` / `muted` / `line` | #1c2421 / #55605b / #ddd6c5 | text, secondary text, borders |
-| `--font-display` | Cormorant (variable) | headings |
-| `--font-sans` | Inter (variable) | body |
+| `--color-brand` / `brand-dark` / `brand-soft` | #0F3B59 / #0A2A40 (derived) / #EAF0F2 | primary navy, darker navy (footer, topbar, gallery), Light Blue tints |
+| `--color-secondary` | #7D929E | decorative lines/icons only (too light for small text) |
+| `--color-accent` | #DBA12C | gold: icons/text on navy, hover underlines, CTA fill |
+| `--color-accent-text` | #7A5505 (derived) | bronze for small gold text on light backgrounds (AA) |
+| `--color-cta` / `cta-dark` | #DBA12C / #C48C1A | conversion buttons: gold with NAVY text (white on this gold fails contrast) |
+| `--color-quiz` | #DBA12C | quiz card border and focus ring |
+| `--color-ivory` / `soft-white` / `sand` | #F8F7F3 / #FFFEFA / #DBD4CC | page background, header surface, alternate section background |
+| `--color-ink` / `muted` / `line` | #0F3B59 / #3E251E / #E5E1DA | text and headings, paragraph (Alt Text) colour, borders |
+| `--font-display` | Cormorant Garamond 600/700 (+ italics) | headings (bold by default) |
+| `--font-sans` | DM Sans (variable) | body |
 | `--radius-card`, `--shadow-card` | 1rem, soft shadow | cards |
 
 Tailwind generates utilities from them: `bg-brand`, `text-muted`, `font-display`, `border-quiz`.

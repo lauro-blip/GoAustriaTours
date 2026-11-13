@@ -1,6 +1,9 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/cormorant';
+@import '@fontsource-variable/dm-sans';
+@import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/cormorant-garamond/700.css';
+@import '@fontsource/cormorant-garamond/600-italic.css';
+@import '@fontsource/cormorant-garamond/700-italic.css';
 
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
@@ -11,31 +14,33 @@
  * Tailwind generates utilities from these, e.g. bg-brand, text-ink, font-display.
  */
 @theme {
-    --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Cormorant Variable', Georgia, 'Times New Roman', serif;
+    --font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
 
-    --color-brand: #1f3d34;        /* deep alpine green: header, buttons, dark sections */
-    --color-brand-dark: #142a23;
-    --color-brand-soft: #e7efe9;
-    --color-accent: #d4b36d;       /* soft gold: for text/icons on dark green (AA). Not for small text on light */
-    --color-accent-text: #7a5f2a;  /* gold dark enough for text on ivory (AA) */
-    --color-cta: #b85c0a;          /* conversion orange (AA with white text) */
-    --color-cta-dark: #94490a;
-    --color-quiz: #f08a24;         /* quiz card border */
-    --color-ivory: #faf7f0;
-    --color-sand: #f1ebdd;
-    --color-ink: #1c2421;
-    --color-muted: #55605b;
-    --color-line: #ddd6c5;
-
+    /* Palette: Primary #0F3B59, Secondary #7D929E, Text #0F3B59, Accent #DBA12C */
+    --color-brand: #0F3B59;        /* primary navy: buttons, dark sections */
+    --color-brand-dark: #0A2A40;   /* darker navy (derived): footer, topbar, gallery */
+    --color-brand-soft: #EAF0F2;   /* Light Blue: tints, placeholders, hovers */
+    --color-secondary: #7D929E;    /* secondary slate: decorative lines/icons (not for small text) */
+    --color-accent: #DBA12C;       /* gold accent: icons/text on navy, hover underlines */
+    --color-accent-text: #7A5505;  /* bronze (derived from the gold) so small gold text passes AA on light backgrounds */
+    --color-cta: #DBA12C;          /* conversion buttons: gold with NAVY text (white on this gold fails contrast) */
+    --color-cta-dark: #C48C1A;     /* button hover (derived) */
+    --color-quiz: #DBA12C;         /* quiz card border */
+    --color-ivory: #F8F7F3;        /* Background */
+    --color-soft-white: #FFFEFA;   /* Soft White: header */
+    --color-sand: #DBD4CC;         /* Soft Background: alternate sections */
+    --color-ink: #0F3B59;          /* body/heading text */
+    --color-muted: #3E251E;        /* Alt Text Color: paragraphs */
+    --color-line: #E5E1DA;         /* Border */
     --radius-card: 1rem;
-    --shadow-card: 0 10px 30px -12px rgb(20 42 35 / 0.25);
+    --shadow-card: 0 10px 30px -12px rgb(15 59 89 / 0.25);
 }
 
 @layer base {
     html { scroll-behavior: smooth; }
     body { @apply bg-ivory text-ink font-sans antialiased; }
-    h1, h2, h3 { @apply font-display text-brand leading-tight; }
+    h1, h2, h3 { @apply font-display font-bold capitalize text-brand leading-tight; }
     :focus-visible { outline: 3px solid var(--color-quiz); outline-offset: 2px; }
     @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
@@ -52,4 +57,31 @@
     .prose-content p { @apply mb-4; }
     .prose-content ul { @apply list-disc pl-6 mb-4; }
     .prose-content a { @apply text-brand underline; }
+}
+
+/* Home hero background: 3 slides x 8s on a 24s loop. Each fades in/out with overlap (smooth crossfade) while slowly zooming in (Ken Burns).
+   Slide 1 starts 2s into its cycle so it is fully visible on first paint. */
+@keyframes hero-fade {
+    0%   { opacity: 0; }
+    8%   { opacity: 1; }
+    33%  { opacity: 1; }
+    41%  { opacity: 0; }
+    100% { opacity: 0; }
+}
+@keyframes hero-zoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.14); }
+}
+.hero-slide {
+    opacity: 0;
+    will-change: opacity, transform;
+    animation: hero-fade 24s ease-in-out infinite, hero-zoom 24s linear infinite;
+}
+.hero-slide:nth-child(1) { animation-delay: -2s; }
+.hero-slide:nth-child(2) { animation-delay: 6s; }
+.hero-slide:nth-child(3) { animation-delay: 14s; }
+@media (prefers-reduced-motion: reduce) {
+    .hero-slide { animation: none; }
+    .hero-slide:nth-child(1) { opacity: 1; }
+    .hero-slide:nth-child(n+2) { display: none; }
 }

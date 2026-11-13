@@ -39,7 +39,7 @@
                             <option value="">Select…</option>
                             <template x-for="o in current.options" :key="o.value"><option :value="o.value" x-text="o.label"></option></template>
                         </select>
-                        <button type="button" @click="next()" :disabled="!answers[current.key]" class="mt-4 w-full rounded-full bg-cta px-6 py-3 text-sm font-semibold text-white hover:bg-cta-dark disabled:opacity-50">Next</button>
+                        <button type="button" @click="next()" :disabled="!answers[current.key]" class="mt-4 w-full rounded-full bg-cta px-6 py-3 text-sm font-semibold text-brand hover:bg-cta-dark disabled:opacity-50">Next</button>
                     </div>
                 </template>
             </div>

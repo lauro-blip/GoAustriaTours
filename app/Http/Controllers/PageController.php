@@ -16,6 +16,7 @@ class PageController extends Controller
         return view('pages.home', [
             'page' => Page::slug('home'),
             'tourTypes' => TourType::active()->get(),
+            'destinations' => \App\Models\Destination::active()->get(['name', 'slug']),   // hero "Where to next?" selector
             'packages' => static::featuredPackages(),
             'carouselPackages' => Package::published()->with(['tourType', 'destination'])->get(),
             'posts' => \App\Models\Post::published()->take(3)->get(),

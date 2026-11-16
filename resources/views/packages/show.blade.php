@@ -53,7 +53,7 @@
     </div>
 </section>
 
-<section class="section pb-28 lg:pb-20">
+<section class="section pb-28 lg:pb-[90px]">
     <div class="container-page grid gap-12 lg:grid-cols-[1.5fr_1fr] lg:gap-14">
         <div class="min-w-0">
             @if(trim(strip_tags((string) $package->description)) !== '' && ! str_contains((string) $package->description, '[CONFIRM'))

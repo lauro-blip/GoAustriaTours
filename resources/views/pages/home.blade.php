@@ -12,7 +12,7 @@
 
 @section('content')
 {{-- 3. HERO --}}
-<section class="relative isolate overflow-hidden bg-brand text-white">
+<section class="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-brand text-white">
     {{-- Hero background: Austrian landmarks, CSS crossfade (credits in docs/reference/IMAGE_CREDITS.md) --}}
     <div class="absolute inset-0 -z-10 bg-brand-dark" aria-hidden="true">
         @foreach([['hallstatt', 'center'], ['salzburg', 'center'], ['schonbrunn', 'center 70%']] as $i => [$img, $pos])
@@ -20,21 +20,42 @@
         @endforeach
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-brand-dark/55 to-brand-dark/80"></div>
     </div>
-    <div class="container-page grid gap-10 pb-12 pt-44 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-20 lg:pt-48">
+    <div class="container-page flex flex-1 items-center pb-10 pt-36 lg:pt-40">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Bespoke Austria journeys</p>
-            <h1 class="mt-3 text-4xl sm:text-5xl lg:text-6xl !text-white">{{ $page->section('hero_title', 'Your Dream Austria, Planned Around You') }}</h1>
-            <p class="mt-4 max-w-md text-lg text-white/90">{{ $page->section('hero_subtitle') }}</p>
-            <ul class="mt-6 flex max-w-xs flex-col gap-2.5" aria-label="Why book with us">
-                @foreach([['calendar', 'Tailor-Made', 'Planned around you'], ['guide', 'Local Experts', 'Austria specialists'], ['mail', 'Free Quote', 'Personal and detailed']] as [$ic, $t, $s])
-                    <li class="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-sm">
-                        <x-icon :name="$ic" class="size-7 text-accent" />
-                        <span class="text-sm"><strong class="block text-white">{{ $t }}</strong><span class="text-white/75">{{ $s }}</span></span>
-                    </li>
+            <h1 class="!font-semibold normal-case leading-[0.9] tracking-tight !text-white text-[5.5rem] sm:text-[8rem] lg:text-[10rem]">Austria.<span class="sr-only"> Bespoke tours, planned around you</span></h1>
+            <p class="mt-5 font-display text-2xl font-semibold italic text-white/90 sm:text-4xl">Refined. Timeless. Extraordinary.</p>
+            <ul class="mt-8 flex flex-col gap-2 text-sm text-white/85 sm:flex-row sm:flex-wrap sm:gap-x-7" aria-label="Why book with us">
+                @foreach([['calendar', 'Tailor-made, planned around you'], ['guide', 'Local Austria experts'], ['mail', 'Free personal quote']] as [$ic, $t])
+                    <li class="flex items-center gap-2.5"><x-icon :name="$ic" :stroke="1.3" class="size-5 text-accent" />{{ $t }}</li>
                 @endforeach
             </ul>
+            <x-button :href="route('contact')" @click.prevent="$store.modal.show({})" class="mt-9 !px-8 !py-3.5 uppercase tracking-wider">Plan My Journey</x-button>
         </div>
-        <div id="quote"><x-hero-quiz :steps="$quizSteps" /></div>
+    </div>
+
+    {{-- Bottom bar: destination selector (plain GET form, works without JS) + scrolling place names --}}
+    <div class="border-t border-white/15 bg-black/30 backdrop-blur-sm">
+        <div class="container-page flex flex-col gap-5 py-5 lg:flex-row lg:items-center lg:gap-10">
+            <form action="{{ route('packages.index') }}" method="get" class="shrink-0 border-l-2 border-accent pl-4">
+                <p class="text-[10px] font-semibold uppercase tracking-[0.25em] text-accent">The Austrian collection</p>
+                <div class="mt-1.5 flex flex-wrap items-center gap-3">
+                    <label for="hero-destination" class="text-base font-bold uppercase tracking-wide text-white">Where to next?</label>
+                    <select id="hero-destination" name="destination" class="h-10 min-w-40 rounded-sm border border-white/40 bg-transparent px-3 text-sm text-white [&>option]:text-ink">
+                        <option value="">All destinations</option>
+                        @foreach($destinations as $d)<option value="{{ $d->slug }}">{{ $d->name }}</option>@endforeach
+                    </select>
+                    <button type="submit" class="inline-flex h-10 items-center gap-2 rounded-sm bg-cta px-4 text-[11px] font-semibold uppercase tracking-wider text-brand transition hover:bg-cta-dark">Explore <span aria-hidden="true">&rarr;</span></button>
+                </div>
+            </form>
+            @php $places = ['Vienna', 'Salzburg', 'Hallstatt', 'Innsbruck', 'Zell am See', 'Wachau', 'Gosau', 'Grossglockner']; @endphp
+            <div class="marquee mt-5 min-w-0 flex-1 overflow-hidden" aria-hidden="true">
+                <div class="marquee-track flex w-max items-center">
+                    @foreach([0, 1] as $copy)
+                        @foreach($places as $p)<span class="flex items-center whitespace-nowrap text-sm font-medium text-white/90"><span class="px-6">{{ $p }}</span><span class="text-[10px] text-accent">&#9670;</span></span>@endforeach
+                    @endforeach
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -85,9 +106,16 @@
 
 {{-- 5. FEATURED PACKAGES (3 per page, ajax pagination: resources/js/featured.js) --}}
 @if($packages->isNotEmpty())
-<section id="featured" class="section scroll-mt-24" aria-labelledby="featured-title">
+<section id="featured" class="section scroll-mt-24 bg-soft-white" aria-labelledby="featured-title">
     <div class="container-page">
-        <x-section-heading eyebrow="Featured packages" title="Popular Austria tours" subtitle="Handpicked itineraries, each shaped around you once you enquire." />
+        <div class="mb-10 flex flex-col gap-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-muted"><span class="h-px w-8 bg-secondary"></span>Featured destinations</p>
+                <h2 id="featured-title" class="mt-4 text-4xl sm:text-5xl lg:text-6xl !font-semibold">Your Journey, <em>Beautifully Considered.</em></h2>
+                <p class="mt-5 max-w-xl text-brand">Discover Austria’s breathtaking landscapes, charming villages, and historic cities, each revealing a different side of its timeless beauty.</p>
+            </div>
+            <a href="{{ route('packages.index') }}" class="inline-flex h-11 shrink-0 items-center justify-center self-start bg-cta px-9 text-xs font-medium uppercase tracking-[0.12em] text-brand transition hover:bg-cta-dark lg:self-auto">Explore Trips</a>
+        </div>
         <div id="featured-list" data-endpoint="{{ route('packages.featured') }}" aria-live="polite">
             @include('partials.featured-packages')
         </div>
@@ -95,10 +123,17 @@
 </section>
 @endif
 {{-- 5b. TOP DESTINATIONS (trip cards: text overlaid on the photo, places in 2 columns) --}}
-<section class="section bg-sand" aria-labelledby="destinations-title">
+<section class="section" aria-labelledby="destinations-title">
     <div class="container-page">
-        <x-section-heading eyebrow="Top destinations" title="From Alpine peaks to imperial streets." subtitle="Discover Austria’s breathtaking landscapes, charming villages, and historic cities, each revealing a different side of its timeless beauty." />
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mb-10 flex flex-col gap-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+                <p class="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-muted"><span class="h-px w-8 bg-secondary"></span>Top destinations</p>
+                <h2 id="destinations-title" class="mt-4 text-4xl sm:text-5xl lg:text-6xl !font-semibold">From Alpine Peaks <em>To Imperial Streets.</em></h2>
+                <p class="mt-5 max-w-xl text-brand">Discover Austria’s breathtaking landscapes, charming villages, and historic cities, each revealing a different side of its timeless beauty.</p>
+            </div>
+            <a href="{{ route('packages.index') }}" class="inline-flex h-11 shrink-0 items-center justify-center self-start bg-cta px-9 text-xs font-medium uppercase tracking-[0.12em] text-brand transition hover:bg-cta-dark lg:self-auto">Explore Trips</a>
+        </div>
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             @foreach([
                 ['The Grand Austrian Journey', 'hero/schonbrunn.webp', ['Vienna', 'Wachau', 'Salzburg', 'Hallstatt', 'Gosau', 'Innsbruck']],
                 ['Imperial & Alpine', 'packages/tyrol-private-escorted.webp', ['Vienna', 'Melk', 'Linz', 'Salzburg', 'Zell am See', 'Innsbruck']],
@@ -107,27 +142,26 @@
                 ['The Alpine Discovery', 'packages/alpine-highlights-by-coach.webp', ['Innsbruck', 'Seefeld', 'Ötztal', 'Zell am See', 'Kaprun', 'Salzburg']],
                 ['Castles & Countryside', 'hero/salzburg.webp', ['Vienna', 'Graz', 'Klagenfurt', 'Villach', 'Innsbruck', 'Salzburg']],
             ] as [$title, $img, $places])
-                <article class="group relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-[var(--radius-card)] text-white shadow-card">
+                <article class="group relative isolate flex min-h-[20rem] flex-col justify-end overflow-hidden text-white sm:min-h-[22rem]">
                     <img src="{{ asset('images/'.$img) }}" alt="" width="800" height="600" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover transition duration-700 group-hover:scale-105">
-                    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/45 to-black/5" aria-hidden="true"></div>
-                    <div class="p-6">
-                        <h3 class="text-3xl !text-white">{{ $title }}</h3>
-                        <ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-white/90" aria-label="Places on {{ $title }}">
+                    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/90 via-brand-dark/50 to-brand-dark/15" aria-hidden="true"></div>
+                    <div class="flex flex-1 flex-col justify-end px-6 pb-6 pt-24">
+                        <h3 class="text-[1.65rem] !font-bold !text-white">{{ $title }}</h3>
+                        <ul class="mt-3.5 grid grid-cols-3 gap-x-3 gap-y-2.5 text-[13px] text-white/95" aria-label="Places on {{ $title }}">
                             @foreach($places as $place)
-                                <li class="flex items-center gap-2"><span class="size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>{{ $place }}</li>
+                                <li class="flex min-w-0 items-center gap-1.5"><x-icon name="pin" :stroke="1.4" class="size-4 shrink-0 text-accent" /><span class="truncate">{{ $place }}</span></li>
                             @endforeach
                         </ul>
-                        <x-button variant="light" :href="route('packages.index')" class="mt-5 !px-5 !py-2.5" aria-label="Discover {{ $title }}">Discover</x-button>
+                        <a href="{{ route('packages.index') }}" class="mt-6 flex items-center gap-1.5 self-end border-b border-accent pb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white" aria-label="Explore {{ $title }}">Explore now <svg class="size-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M3 9l6-6M4 3h5v5"/></svg></a>
                     </div>
                 </article>
             @endforeach
         </div>
-        <div class="mt-10 text-center"><x-button variant="secondary" :href="route('packages.index')">View All Journeys</x-button></div>
     </div>
 </section>
 
 {{-- 6. WHY --}}
-<section class="section" aria-labelledby="why-title">
+<section class="section bg-sand" aria-labelledby="why-title">
     <div class="container-page">
         <x-section-heading eyebrow="Why GoAustriaTours" :title="$page->section('why_title', 'Why travellers choose us')" />
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -219,17 +253,18 @@
 
 {{-- 8b. GALLERY (6 destinations + Alpine.js lightbox: Esc closes, arrows/swipe navigate, focus is trapped) --}}
 @php
+    // [file slug, title, photo description (alt + lightbox caption), short tagline shown on the tile]
     $gallery = [
-        ['vienna', 'Vienna', 'Schönbrunn Palace and its imperial gardens'],
-        ['salzburg', 'Salzburg', 'The old town beneath Hohensalzburg Fortress'],
-        ['hallstatt', 'Hallstatt', 'A lakeside village in the Salzkammergut'],
-        ['innsbruck', 'Innsbruck', 'The Inn river and the Nordkette Alps'],
-        ['wachau', 'Wachau & Melk', 'Melk Abbey above the Danube'],
-        ['grossglockner', 'Grossglockner', 'Hairpin bends on the High Alpine Road'],
+        ['hallstatt', 'Hallstatt', 'A lakeside village in the Salzkammergut', 'Lakeside serenity'],
+        ['innsbruck', 'Innsbruck', 'The Inn river and the Nordkette Alps', 'Alpine beauty'],
+        ['salzburg', 'Salzburg', 'The old town beneath Hohensalzburg Fortress', 'Baroque charm'],
+        ['wachau', 'Wachau', 'Melk Abbey above the Danube', 'Vineyard escapes'],
+        ['vienna', 'Vienna', 'Schönbrunn Palace and its imperial gardens', 'Imperial elegance'],
+        ['grossglockner', 'Grossglockner', 'Hairpin bends on the High Alpine Road', 'Mountain drives'],
     ];
     $galleryItems = array_map(fn ($g) => ['src' => asset('images/gallery/'.$g[0].'.webp'), 'title' => $g[1], 'caption' => $g[2]], $gallery);
 @endphp
-<section id="gallery" class="section scroll-mt-24 bg-brand-dark" aria-labelledby="gallery-title"
+<section id="gallery" class="section scroll-mt-24 bg-brand-soft" aria-labelledby="gallery-title"
     x-data="{ open: false, i: 0, items: @js($galleryItems), tx: 0,
         show(n) { this.i = n; this.open = true },
         close() { this.open = false },
@@ -237,15 +272,21 @@
         prev() { this.i = (this.i - 1 + this.items.length) % this.items.length } }"
     @keydown.escape.window="close()" @keydown.arrow-right.window="open && next()" @keydown.arrow-left.window="open && prev()">
     <div class="container-page">
-        <x-section-heading :light="true" eyebrow="Gallery" title="Austria in pictures" subtitle="Six places travellers ask us about most. Tap a photo to see it larger." />
-        <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-6">
-            @foreach($gallery as $n => [$slug, $title, $caption])
-                <button type="button" @click="show({{ $n }})" aria-label="Open photo: {{ $title }}" class="group relative aspect-[4/3] overflow-hidden rounded-[var(--radius-card)] bg-brand-soft shadow-card {{ $n === 0 ? 'col-span-2 lg:col-span-1' : '' }}">
-                    <img src="{{ asset('images/gallery/'.$slug.'-thumb.webp') }}" alt="{{ $caption }}" width="800" height="600" loading="lazy" class="photo-grade h-full w-full object-cover transition duration-700 group-hover:scale-105">
-                    <span class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90 transition group-hover:opacity-100" aria-hidden="true"></span>
-                    <span class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 text-left text-white sm:p-5">
-                        <span class="font-display text-xl leading-tight sm:text-2xl">{{ $title }}</span>
-                        <svg class="size-5 shrink-0 opacity-0 transition group-hover:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>
+        <div class="mx-auto max-w-3xl text-center">
+            <p class="flex items-center justify-center gap-3 text-xs font-medium uppercase tracking-[0.2em] text-muted"><span class="h-px w-8 bg-secondary"></span>The gallery</p>
+            <h2 id="gallery-title" class="mt-4 text-4xl sm:text-5xl lg:text-6xl !font-semibold">Austria, <em>Frame By Frame.</em></h2>
+            <p class="mx-auto mt-5 max-w-2xl text-sm text-brand sm:text-base">From majestic Alpine landscapes to charming historic towns, discover Austria’s most captivating destinations, unforgettable experiences, and hidden gems. Tap a photo to see it larger.</p>
+        </div>
+        {{-- Mosaic: one tall photo, four standard tiles and a wide panorama strip (stacks in 2 columns on mobile) --}}
+        <div class="mx-auto mt-12 grid max-w-[70rem] grid-cols-2 gap-2 lg:auto-rows-[12.5rem] lg:grid-cols-3">
+            @foreach($gallery as $n => [$slug, $title, $caption, $tagline])
+                @php $span = match ($n) { 0 => 'col-span-2 aspect-[4/3] lg:col-span-1 lg:row-span-2 lg:aspect-auto', 5 => 'col-span-2 aspect-[16/9] lg:col-span-3 lg:aspect-auto', default => 'aspect-[4/3] lg:aspect-auto' }; @endphp
+                <button type="button" @click="show({{ $n }})" aria-label="Open photo: {{ $title }}" class="group relative isolate overflow-hidden bg-brand-dark text-left {{ $span }}">
+                    <img src="{{ asset('images/gallery/'.$slug.($n === 0 || $n === 5 ? '' : '-thumb').'.webp') }}" alt="{{ $caption }}" width="800" height="600" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover transition duration-700 group-hover:scale-105">
+                    <span class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/85 via-brand-dark/20 to-transparent" aria-hidden="true"></span>
+                    <span class="absolute inset-x-0 bottom-0 block p-4 text-white sm:p-6">
+                        <span class="flex items-center gap-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-accent sm:text-[11px]"><span class="h-px w-6 bg-accent" aria-hidden="true"></span>{{ $tagline }}</span>
+                        <span class="mt-1.5 block font-display text-2xl font-bold leading-tight sm:text-[1.7rem]">{{ $title }}</span>
                     </span>
                 </button>
             @endforeach
@@ -359,8 +400,10 @@
         <h2 class="text-4xl sm:text-5xl !text-white">{{ $page->section('cta_title', 'Ready to see Austria?') }}</h2>
         <p class="mt-4 text-white/80">{{ $page->section('cta_text') }}</p>
         <div class="mt-8 flex flex-wrap justify-center gap-4">
-            <x-button href="#quote">Start the quiz</x-button>
-            <x-button variant="light" :href="'tel:'.($site['phone_tel'] ?? '')">Call {{ $site['phone'] ?? '' }}</x-button>
+            <x-button :href="route('contact')" @click.prevent="$store.modal.show({})">Plan My Journey</x-button>
+            @if(! empty($site['phone']))
+                <x-button variant="light" :href="'tel:'.preg_replace('/[^\d+]/', '', $site['phone_tel'] ?: $site['phone'])">Call {{ $site['phone'] }}</x-button>
+            @endif
         </div>
     </div>
 </section>

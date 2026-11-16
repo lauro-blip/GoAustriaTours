@@ -30,6 +30,7 @@ class SettingsSeeder extends Seeder
             'logo' => '',
             'favicon' => '',
             'modal_discount' => '[CONFIRM: discount %]',
+            'planner_name' => '', 'planner_role' => '', 'planner_bio' => '', 'planner_photo' => '',
         ];
 
         foreach ($defaults as $key => $value) {

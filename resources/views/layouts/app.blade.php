@@ -25,7 +25,15 @@
     <meta name="twitter:card" content="{{ $ogImage ? 'summary_large_image' : 'summary' }}">
     <meta name="twitter:title" content="{{ $title }}">
     <meta name="twitter:description" content="{{ $desc }}">
-    @if(! empty($site['favicon']))<link rel="icon" href="{{ asset('storage/'.$site['favicon']) }}">@endif
+    {{-- Favicon: the Admin > Settings upload wins; otherwise the bundled "G" monogram in public/ --}}
+    @if(! empty($site['favicon']))
+        <link rel="icon" href="{{ asset('storage/'.$site['favicon']) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192.png') }}">
+    @endif
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 
     @stack('head')
 

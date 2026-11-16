@@ -59,6 +59,13 @@
     .prose-content a { @apply text-brand underline; }
 }
 
+/* One gentle colour grade for every photograph (not the hero: it is animating) so mixed sources feel like one set. */
+.photo-grade { filter: saturate(0.94) contrast(1.04) brightness(1.01); }
+
+/* Scroll reveal (resources/js/reveal.js). Only hidden once JS has marked the page .reveal-ready, so no-JS visitors see everything. */
+.reveal-ready [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.reveal-ready [data-reveal].is-in { opacity: 1; transform: none; }
+
 /* Home hero background: 3 slides x 8s on a 24s loop. Each fades in/out with overlap (smooth crossfade) while slowly zooming in (Ken Burns).
    Slide 1 starts 2s into its cycle so it is fully visible on first paint. */
 @keyframes hero-fade {

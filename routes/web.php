@@ -13,6 +13,7 @@ Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::get('/terms-and-conditions', [PageController::class, 'legal'])->defaults('slug', 'terms')->name('terms');
 Route::get('/privacy-policy', [PageController::class, 'legal'])->defaults('slug', 'privacy')->name('privacy');
+Route::get('/photo-credits', [PageController::class, 'photoCredits'])->name('photo-credits');
 Route::get('/thank-you', [PageController::class, 'thankYou'])->name('thank-you');
 
 Route::get('/journal', [JournalController::class, 'index'])->name('journal.index');

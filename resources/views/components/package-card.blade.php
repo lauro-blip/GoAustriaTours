@@ -10,7 +10,7 @@
 <x-card class="flex h-full flex-col !rounded-sm !border-accent/25">
     <div class="relative">
         <a href="{{ route('packages.show', $package) }}" tabindex="-1" aria-hidden="true" class="block aspect-[437/201] overflow-hidden bg-brand-soft">
-            <img src="{{ $img }}" alt="{{ $alt }}" width="800" height="368" loading="lazy" class="h-full w-full object-cover transition duration-700 hover:scale-105">
+            <img src="{{ $img }}" alt="{{ $alt }}" width="800" height="368" loading="lazy" class="photo-grade h-full w-full object-cover transition duration-700 hover:scale-105">
         </a>
         {{-- Save-for-later heart: remembered in this browser only --}}
         <button type="button" class="absolute right-3.5 top-3.5 flex size-[30px] items-center justify-center rounded-full bg-white text-brand shadow transition hover:text-cta-dark"
@@ -38,10 +38,15 @@
 
         <div class="mt-auto pt-6"><div class="flex items-end justify-between gap-3 border-t border-accent/30 pt-7">
             <div>
-                <p class="text-[10px] uppercase tracking-wider">Starting from</p>
-                <p class="mt-1 leading-none"><strong class="text-xl font-semibold text-brand">{{ $package->price_from ? '$'.number_format($package->price_from) : '[CONFIRM: price]' }}</strong>@if($package->price_from)<span class="text-xs">pp</span>@endif</p>
+                @if($package->price_from)
+                    <p class="text-[10px] uppercase tracking-wider">Starting from</p>
+                    <p class="mt-1 leading-none"><strong class="text-xl font-semibold text-brand">${{ number_format($package->price_from) }}</strong><span class="ml-1 text-xs">per person</span></p>
+                @else
+                    <p class="text-[10px] uppercase tracking-wider">Price</p>
+                    <p class="mt-1 leading-none"><strong class="text-xl font-semibold text-brand">On request</strong></p>
+                @endif
             </div>
-            <x-button @click="$store.modal.show({ package_id: {{ $package->id }} })" class="!h-10 !rounded-sm !px-[14px] !py-0 !text-[11px] uppercase tracking-wide" aria-label="Get a quote for {{ $package->title }}">Get a Quote</x-button>
+            <x-button @click="$store.modal.show({ package_id: {{ $package->id }} })" class="!h-10 !rounded-sm !px-[14px] !py-0 !text-[11px] uppercase tracking-wide" aria-label="Enquire about {{ $package->title }}">Enquire</x-button>
         </div></div>
     </div>
 </x-card>

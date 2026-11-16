@@ -43,7 +43,7 @@ Companion docs: `CONTENT_TO_CONFIRM.md` (full list), `IMAGE_CREDITS.md`, `FORMS_
 | [ ] | Confirm the Seamless Payments claims are how you really work: each traveller pays their share online, secure transactions, instant confirmation email, flexible payment options | Home > Seamless Payments | **Code** | |
 | [ ] | Years in business, number of travellers planned, awards, memberships, review count (only if real) | Not shown yet: recommended near the hero | Tell the developer | |
 | [ ] | Confirm the 3 testimonials are genuine and permitted; confirm they are Google reviews (the Google "G" shows on each card), or ask to remove the "G" | Home > Guest stories | Admin > Testimonials | |
-| [ ] | A name and photo of a real planner or founder ("Meet your planner"), optional but strongly recommended | Not built yet | Tell the developer | |
+| [ ] | A name, role, short true bio and portrait photo of a real planner or founder ("Meet your planner"). The home section stays hidden until name and bio are filled in | Home, after "How it works" | Admin > Settings > Meet your planner | |
 
 ## 4. Offer and policies
 
@@ -83,7 +83,7 @@ Companion docs: `CONTENT_TO_CONFIRM.md` (full list), `IMAGE_CREDITS.md`, `FORMS_
 
 | Done | Item | Where | Your answer |
 |---|---|---|---|
-| [ ] | Show a public photo credit for the CC BY / CC BY-SA images (author, licence, link). Details are in `IMAGE_CREDITS.md` | Footer, About page, or a Photo credits page | Where to put it? |
+| [x] | Public photo credits page `/photo-credits`, linked in the footer, covers the Commons photos listed in `IMAGE_CREDITS.md`. Still to check: source and licence of the Journal article photos (`public/images/journal/`) and the journey-section photo, which are not in that list | Footer link | Tell the developer the sources |
 
 ## 8. Before ads go live
 

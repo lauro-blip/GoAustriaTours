@@ -2,6 +2,7 @@ import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
 import { quiz, enquiryForm, loadRecaptcha } from './forms';
 import { initFeaturedPackages } from './featured';
+import { initReveal } from './reveal';
 
 window.Alpine = Alpine;
 Alpine.plugin(focus);
@@ -23,3 +24,4 @@ Alpine.store('modal', {
 
 Alpine.start();
 initFeaturedPackages();
+initReveal();

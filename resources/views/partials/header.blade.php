@@ -1,5 +1,5 @@
 @php $tp = $transparentHeader ?? false; @endphp
-<header @if($tp) class="relative transition-colors duration-500 ease-in-out motion-reduce:transition-none" :class="scrolled || menu ? 'text-ink' : 'text-white'" @else class="sticky top-0 z-40 bg-soft-white/95 backdrop-blur border-b border-line" @endif x-data="{ menu: false }">
+<header @if($tp) class="relative transition-colors duration-500 ease-in-out motion-reduce:transition-none" :class="scrolled || menu ? 'text-ink' : 'text-white'" @else class="sticky top-0 z-40 bg-soft-white/95 backdrop-blur border-b border-line" @endif x-data="{ menu: false }" @keydown.escape.window="menu = false">
     @if($tp)
         {{-- Solid background fades in (opacity) instead of snapping --}}
         <div class="absolute inset-0 bg-soft-white/95 backdrop-blur border-b border-line shadow-sm transition-opacity duration-500 ease-in-out motion-reduce:transition-none" :class="scrolled || menu ? 'opacity-100' : 'opacity-0'" aria-hidden="true"></div>
@@ -41,15 +41,16 @@
     </div>
 
     <nav id="mobile-menu" aria-label="Mobile" x-show="menu" x-cloak class="lg:hidden border-t border-line bg-soft-white text-ink">
-        <ul class="container-page py-3 space-y-1 text-base">
-            <li><a class="block py-2" href="{{ route('home') }}">Home</a></li>
+        <ul class="container-page max-h-[calc(100svh-5rem)] divide-y divide-line overflow-y-auto py-2 text-base">
+            <li><a class="block py-3.5" href="{{ route('home') }}">Home</a></li>
             @foreach($navTourTypes as $t)
-                <li><a class="block py-2" href="{{ route('tours.show', $t->slug) }}">{{ $t->name }} Tours</a></li>
+                <li><a class="block py-3.5" href="{{ route('tours.show', $t->slug) }}">{{ $t->name }} Tours</a></li>
             @endforeach
-            <li><a class="block py-2" href="{{ route('packages.index') }}">Packages</a></li>
-            <li><a class="block py-2" href="{{ route('journal.index') }}">Journal</a></li>
-            <li><a class="block py-2" href="{{ route('about') }}">About</a></li>
-            <li><a class="block py-2" href="{{ route('contact') }}">Contact</a></li>
+            <li><a class="block py-3.5" href="{{ route('packages.index') }}">Packages</a></li>
+            <li><a class="block py-3.5" href="{{ route('journal.index') }}">Journal</a></li>
+            <li><a class="block py-3.5" href="{{ route('about') }}">About</a></li>
+            <li><a class="block py-3.5" href="{{ route('contact') }}">Contact</a></li>
+            <li class="py-4"><x-button class="w-full" @click="menu = false; $store.modal.show({})">Plan My Journey</x-button></li>
         </ul>
     </nav>
 </header>

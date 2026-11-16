@@ -17,16 +17,24 @@
         <div>
             <h2 class="font-sans text-sm font-semibold uppercase tracking-wider text-white">Contact</h2>
             <ul class="mt-3 space-y-2 text-sm">
-                <li><a class="hover:underline" href="tel:{{ $site['phone_tel'] ?? '' }}">{{ $site['phone'] ?? '' }}</a></li>
-                <li><a class="hover:underline" href="mailto:{{ $site['email'] ?? '' }}">{{ $site['email'] ?? '' }}</a></li>
-                <li>{{ $site['address'] ?? '' }}</li>
+                @if(! empty($site['phone']))
+                    <li><a class="hover:underline" href="tel:{{ $site['phone_tel'] ?? '' }}">{{ $site['phone'] }}</a></li>
+                @endif
+                @if(! empty($site['email']))
+                    <li><a class="hover:underline" href="mailto:{{ $site['email'] }}">{{ $site['email'] }}</a></li>
+                @endif
+                @if(! empty($site['address']))
+                    <li>{{ $site['address'] }}</li>
+                @endif
+                <li><a class="hover:underline" href="{{ route('contact') }}">Send us an enquiry</a></li>
             </ul>
         </div>
     </div>
     <div class="border-t border-white/10">
         <div class="container-page py-5 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <p>&copy; {{ date('Y') }} {{ $site['legal_company_name'] ?? '' }}. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $site['legal_company_name'] ?: ($site['brand_name'] ?? config('app.name')) }}. All rights reserved.</p>
             <p class="flex gap-4">
+                <a class="hover:underline" href="{{ route('photo-credits') }}">Photo credits</a>
                 <a class="hover:underline" href="{{ route('terms') }}">Terms &amp; Conditions</a>
                 <a class="hover:underline" href="{{ route('privacy') }}">Privacy Policy</a>
             </p>

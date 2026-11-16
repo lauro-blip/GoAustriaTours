@@ -30,7 +30,9 @@ class AppServiceProvider extends ServiceProvider
         View::composer(['layouts.*', 'partials.*', 'pages.*', 'packages.*', 'tours.*', 'errors.*'], function ($view) {
             static $nav = null;
             $nav ??= TourType::active()->get(['name', 'slug']);
-            $view->with(['site' => Setting::all_(), 'navTourTypes' => $nav]);
+            // Settings still holding a "[CONFIRM: ...]" placeholder are treated as empty on public pages, so they never show to visitors.
+            $site = array_map(fn ($v) => is_string($v) && str_contains($v, '[CONFIRM') ? '' : $v, Setting::all_());
+            $view->with(['site' => $site, 'navTourTypes' => $nav]);
         });
     }
 }

@@ -23,6 +23,10 @@ class SettingController extends Controller
             'email' => ['Public email', 'text'], 'address' => ['Address', 'textarea'],
             'social_facebook' => ['Facebook URL', 'text'], 'social_instagram' => ['Instagram URL', 'text'], 'social_youtube' => ['YouTube URL', 'text'],
         ],
+        'Meet your planner (home page; the section appears only when name and bio are filled in)' => [
+            'planner_name' => ['Planner name', 'text'], 'planner_role' => ['Role / title (e.g. Founder and Austria specialist)', 'text'],
+            'planner_bio' => ['Short bio (true facts only; blank line = new paragraph)', 'textarea'], 'planner_photo' => ['Photo (portrait, 4:5 works best)', 'image'],
+        ],
         'Enquiries' => [
             'notification_emails' => ['Staff notification emails (comma separated)', 'text'],
             'modal_discount' => ['Header modal discount figure (shown as "save up to X")', 'text'],

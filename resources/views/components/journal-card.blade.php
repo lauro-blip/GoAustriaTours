@@ -1,7 +1,7 @@
 @props(['post'])
 <article class="group flex h-full flex-col overflow-hidden rounded-[var(--radius-card)] border border-line bg-white shadow-card">
     <a href="{{ route('journal.show', $post) }}" tabindex="-1" aria-hidden="true" class="block aspect-[16/10] overflow-hidden bg-brand-soft">
-        <img src="{{ $post->imageUrl() }}" alt="{{ $post->image_alt }}" width="800" height="600" loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-105">
+        <img src="{{ $post->imageUrl() }}" alt="{{ $post->image_alt }}" width="800" height="600" loading="lazy" class="photo-grade h-full w-full object-cover transition duration-700 group-hover:scale-105">
     </a>
     <div class="flex flex-1 flex-col p-6">
         <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent-text">

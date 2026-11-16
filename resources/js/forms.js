@@ -80,11 +80,16 @@ export function quiz({ steps, icons = {}, formName, initial = {}, startAtContact
         get total() { return this.steps.length + 1; },        // +1 for the contact step
         get isContact() { return this.step >= this.steps.length; },
         get current() { return this.steps[this.step] ?? null; },
-        get progress() { return Math.round(((this.step + 1) / this.total) * 100); },
+        picked: null,   // option just tapped: shows the selected state briefly before auto-advancing
 
+        // Auto-next: highlight the tapped option, then move on after a short beat (instant for reduced motion).
         choose(value) {
-            this.answers[this.current.key] = value;
-            this.next();
+            if (this.picked !== null) return;   // ignore double taps while advancing
+            const key = this.current.key;
+            this.answers[key] = value;
+            this.picked = value;
+            const wait = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 260;
+            setTimeout(() => { this.picked = null; if (this.current && this.current.key === key) this.next(); }, wait);
         },
         next() {
             if (this.current && this.current.type === 'dropdown' && !this.answers[this.current.key]) return;

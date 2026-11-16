@@ -22,11 +22,11 @@
     </div>
     <div class="container-page grid gap-10 pb-12 pt-44 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-20 lg:pt-48">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Tailor-made Austria tours</p>
+            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Bespoke Austria journeys</p>
             <h1 class="mt-3 text-4xl sm:text-5xl lg:text-6xl !text-white">{{ $page->section('hero_title', 'Your Dream Austria, Planned Around You') }}</h1>
             <p class="mt-4 max-w-md text-lg text-white/90">{{ $page->section('hero_subtitle') }}</p>
             <ul class="mt-6 flex max-w-xs flex-col gap-2.5" aria-label="Why book with us">
-                @foreach([['shield', 'Best Price Guarantee', '[CONFIRM: wording]'], ['guide', 'Local Experts', 'Austria specialists'], ['star', 'Guest Reviews', '[CONFIRM: rating source]']] as [$ic, $t, $s])
+                @foreach([['calendar', 'Tailor-Made', 'Planned around you'], ['guide', 'Local Experts', 'Austria specialists'], ['mail', 'Free Quote', 'Personal and detailed']] as [$ic, $t, $s])
                     <li class="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-2.5 backdrop-blur-sm">
                         <x-icon :name="$ic" class="size-7 text-accent" />
                         <span class="text-sm"><strong class="block text-white">{{ $t }}</strong><span class="text-white/75">{{ $s }}</span></span>
@@ -42,7 +42,7 @@
 <section class="section" aria-labelledby="journey-title">
     <div class="container-page grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         {{-- PLACEHOLDER photo (cropped from the design mock-up): replace with a licensed/own image, see docs/reference/IMAGE_CREDITS.md --}}
-        <img src="{{ asset('images/hero/why-alps.webp') }}" alt="Hiker on an Alpine ridge above the clouds" width="576" height="675" loading="lazy" class="mx-auto w-full max-w-md rounded-sm object-cover lg:max-w-none">
+        <img src="{{ asset('images/hero/why-alps.webp') }}" alt="Hiker on an Alpine ridge above the clouds" width="576" height="675" loading="lazy" class="photo-grade mx-auto w-full max-w-md rounded-sm object-cover lg:max-w-none">
         <div>
             <p class="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink"><span class="h-px w-8 bg-secondary"></span>Why book with {{ $site['brand_name'] ?? 'GoAustriaTours' }}</p>
             <h2 id="journey-title" class="mt-4 text-4xl sm:text-5xl">Every Austrian Journey,<br><em>Feel Uniquely Yours.</em></h2>
@@ -55,7 +55,7 @@
                     </li>
                 @endforeach
             </ol>
-            <x-button class="mt-8" @click="$store.modal.show({})">Get a Free Quote</x-button>
+            <x-button class="mt-8" @click="$store.modal.show({})">Plan My Journey</x-button>
         </div>
     </div>
 </section>
@@ -67,14 +67,14 @@
         <div class="grid gap-6 md:grid-cols-3">
             @foreach($tourTypes as $t)
                 <x-card class="flex flex-col">
-                    <img src="{{ $t->image ? asset('storage/'.$t->image) : asset('images/tours/'.$t->slug.'.webp') }}" alt="{{ $t->image_alt ?: $t->name.' tours of Austria' }}" width="960" height="540" loading="lazy" class="aspect-[16/9] w-full object-cover">
+                    <img src="{{ $t->image ? asset('storage/'.$t->image) : asset('images/tours/'.$t->slug.'.webp') }}" alt="{{ $t->image_alt ?: $t->name.' tours of Austria' }}" width="960" height="540" loading="lazy" class="photo-grade aspect-[16/9] w-full object-cover">
                     <div class="flex flex-1 flex-col p-6">
                         <h3 class="text-3xl"><a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }} Tours</a></h3>
                         <p class="mt-1 text-sm font-medium text-accent-text">{{ $t->tagline }}</p>
                         <p class="mt-3 text-sm text-muted">{{ $t->summary }}</p>
                         <div class="mt-auto flex flex-wrap gap-3 pt-6">
-                            <x-button @click="$store.modal.show({})" aria-label="Get a quote for {{ $t->name }} tours">Get a Quote</x-button>
-                            <x-button variant="outline" :href="route('contact').'?topic='.$t->slug">Ask Us a Question</x-button>
+                            <x-button @click="$store.modal.show({})" aria-label="Enquire about {{ $t->name }} tours">Enquire Now</x-button>
+                            <x-button variant="outline" :href="route('contact').'?topic='.$t->slug">Speak With Us</x-button>
                         </div>
                     </div>
                 </x-card>
@@ -87,7 +87,7 @@
 @if($packages->isNotEmpty())
 <section id="featured" class="section scroll-mt-24" aria-labelledby="featured-title">
     <div class="container-page">
-        <x-section-heading eyebrow="Featured packages" title="Popular Austria tours" subtitle="Sample packages shown. Prices and itineraries to be confirmed." />
+        <x-section-heading eyebrow="Featured packages" title="Popular Austria tours" subtitle="Handpicked itineraries, each shaped around you once you enquire." />
         <div id="featured-list" data-endpoint="{{ route('packages.featured') }}" aria-live="polite">
             @include('partials.featured-packages')
         </div>
@@ -108,7 +108,7 @@
                 ['Castles & Countryside', 'hero/salzburg.webp', ['Vienna', 'Graz', 'Klagenfurt', 'Villach', 'Innsbruck', 'Salzburg']],
             ] as [$title, $img, $places])
                 <article class="group relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden rounded-[var(--radius-card)] text-white shadow-card">
-                    <img src="{{ asset('images/'.$img) }}" alt="" width="800" height="600" loading="lazy" class="absolute inset-0 -z-10 h-full w-full object-cover transition duration-700 group-hover:scale-105">
+                    <img src="{{ asset('images/'.$img) }}" alt="" width="800" height="600" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover transition duration-700 group-hover:scale-105">
                     <div class="absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/45 to-black/5" aria-hidden="true"></div>
                     <div class="p-6">
                         <h3 class="text-3xl !text-white">{{ $title }}</h3>
@@ -117,12 +117,12 @@
                                 <li class="flex items-center gap-2"><span class="size-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>{{ $place }}</li>
                             @endforeach
                         </ul>
-                        <x-button variant="light" :href="route('packages.index')" class="mt-5 !px-5 !py-2.5" aria-label="Explore {{ $title }}">Explore Now</x-button>
+                        <x-button variant="light" :href="route('packages.index')" class="mt-5 !px-5 !py-2.5" aria-label="Discover {{ $title }}">Discover</x-button>
                     </div>
                 </article>
             @endforeach
         </div>
-        <div class="mt-10 text-center"><x-button variant="secondary" :href="route('packages.index')">Explore Trips</x-button></div>
+        <div class="mt-10 text-center"><x-button variant="secondary" :href="route('packages.index')">View All Journeys</x-button></div>
     </div>
 </section>
 
@@ -135,8 +135,8 @@
                 ['pin', 'Local Austria experts', ['Itineraries built by people who know the country', 'Routes beyond the obvious stops', 'Insider tips for every region']],
                 ['guide', 'Tailored to you', ['Self drive, escorted or coach', 'Your pace, interests and budget', 'Easy changes before you book']],
                 ['city', 'Handpicked stays', ['Boutique properties and Alpine retreats', 'Chosen for location and character', 'From city palaces to lakeside inns']],
-                ['coin', 'Transparent pricing', ['A clear quote before you commit', 'No pressure, no obligation', '[CONFIRM: pricing promise]']],
-                ['shield', 'Peace of mind', ['Support from enquiry to return home', 'A real person to talk to', '[CONFIRM: protection or bonding details]']],
+                ['coin', 'Transparent pricing', ['A clear quote before you commit', 'No pressure, no obligation']],
+                ['shield', 'Peace of mind', ['Support from enquiry to return home', 'A real person to talk to']],
                 ['star', 'Considered details', ['Transfers and timings planned', 'Local recommendations on arrival', 'Small touches that make it effortless']],
             ] as [$ic, $t, $points])
                 <x-card class="p-8 transition duration-300 hover:-translate-y-1">
@@ -166,6 +166,30 @@
         </ol>
     </div>
 </section>
+
+{{-- 7b. MEET YOUR PLANNER: shows only when a name and bio are set in Admin > Settings > Planner (never invented) --}}
+@if(! empty($site['planner_name']) && ! empty($site['planner_bio']))
+<section class="section bg-sand" aria-labelledby="planner-title">
+    <div class="container-page grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <div class="mx-auto w-full max-w-sm">
+            @if(! empty($site['planner_photo']))
+                <img src="{{ asset('storage/'.$site['planner_photo']) }}" alt="{{ $site['planner_name'] }}" width="640" height="800" loading="lazy" class="aspect-[4/5] w-full rounded-sm object-cover shadow-card">
+            @else
+                <div class="flex aspect-[4/5] w-full items-center justify-center rounded-sm bg-brand font-display text-7xl text-accent shadow-card" aria-hidden="true">{{ \Illuminate\Support\Str::of($site['planner_name'])->explode(' ')->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('') }}</div>
+            @endif
+        </div>
+        <div>
+            <p class="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink"><span class="h-px w-8 bg-secondary"></span>Meet your planner</p>
+            <h2 id="planner-title" class="mt-4 text-4xl sm:text-5xl">{{ $site['planner_name'] }}</h2>
+            @if(! empty($site['planner_role']))<p class="mt-2 text-sm font-medium uppercase tracking-wider text-accent-text">{{ $site['planner_role'] }}</p>@endif
+            <div class="mt-6 max-w-xl space-y-4 text-muted">
+                @foreach(preg_split('/\R{2,}/', trim($site['planner_bio'])) as $para)<p>{{ $para }}</p>@endforeach
+            </div>
+            <x-button class="mt-8" @click="$store.modal.show({})">Plan My Journey</x-button>
+        </div>
+    </div>
+</section>
+@endif
 
 {{-- 8. TESTIMONIALS --}}
 <section class="section" aria-labelledby="reviews-title">
@@ -217,7 +241,7 @@
         <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 lg:gap-6">
             @foreach($gallery as $n => [$slug, $title, $caption])
                 <button type="button" @click="show({{ $n }})" aria-label="Open photo: {{ $title }}" class="group relative aspect-[4/3] overflow-hidden rounded-[var(--radius-card)] bg-brand-soft shadow-card {{ $n === 0 ? 'col-span-2 lg:col-span-1' : '' }}">
-                    <img src="{{ asset('images/gallery/'.$slug.'-thumb.webp') }}" alt="{{ $caption }}" width="800" height="600" loading="lazy" class="h-full w-full object-cover transition duration-700 group-hover:scale-105">
+                    <img src="{{ asset('images/gallery/'.$slug.'-thumb.webp') }}" alt="{{ $caption }}" width="800" height="600" loading="lazy" class="photo-grade h-full w-full object-cover transition duration-700 group-hover:scale-105">
                     <span class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90 transition group-hover:opacity-100" aria-hidden="true"></span>
                     <span class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 text-left text-white sm:p-5">
                         <span class="font-display text-xl leading-tight sm:text-2xl">{{ $title }}</span>

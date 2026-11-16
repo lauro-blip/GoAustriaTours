@@ -20,7 +20,8 @@ class PageController extends Controller
             'carouselPackages' => Package::published()->with(['tourType', 'destination'])->get(),
             'posts' => \App\Models\Post::published()->take(3)->get(),
             'testimonials' => Testimonial::where('is_active', true)->orderBy('sort_order')->get(),
-            'faqs' => Faq::where('is_active', true)->orderBy('sort_order')->get(),
+            // FAQs whose answer still holds a "[CONFIRM: ...]" placeholder stay hidden until the answer is written.
+            'faqs' => Faq::where('is_active', true)->where('answer', 'not like', '%[CONFIRM%')->orderBy('sort_order')->get(),
             'quizSteps' => QuizStep::forQuiz(),
         ]);
     }
@@ -50,6 +51,12 @@ class PageController extends Controller
     public function legal(string $slug)
     {
         return view('pages.simple', ['page' => Page::slug($slug) ?? abort(404)]);
+    }
+
+    /** Attribution for the Wikimedia Commons photos (CC BY / CC BY-SA require it). Keep in step with docs/reference/IMAGE_CREDITS.md. */
+    public function photoCredits()
+    {
+        return view('pages.photo-credits');
     }
 
     public function thankYou()

@@ -1,4 +1,7 @@
-@php($discount = \App\Models\Setting::get('modal_discount', '[CONFIRM: discount %]'))
+@php
+    $discount = \App\Models\Setting::get('modal_discount');
+    if (! $discount || str_contains($discount, '[CONFIRM')) { $discount = null; }   // no discount set: plain heading
+@endphp
 <div x-data x-show="$store.modal.open" x-cloak
      @keydown.escape.window="$store.modal.hide()"
      @if(session('error_form') === 'header-modal') x-init="$store.modal.show()" @endif
@@ -7,11 +10,11 @@
     <div class="relative w-full sm:max-w-2xl max-h-[92vh] overflow-y-auto bg-ivory rounded-t-2xl sm:rounded-2xl p-5 sm:p-8 shadow-2xl"
          x-trap.noscroll="$store.modal.open">
         <button type="button" class="absolute right-3 top-3 p-2" @click="$store.modal.hide()" aria-label="Close"><x-icon name="close" class="size-6" /></button>
-        <h2 id="modal-title" class="text-3xl pr-8">Fill out this form, save up to {{ $discount }} on your trip</h2>
+        <h2 id="modal-title" class="text-3xl pr-8">{{ $discount ? 'Fill out this form, save up to '.$discount.' on your trip' : 'Tell us about your trip' }}</h2>
         <p class="mt-1 mb-5 text-sm text-muted">Free, no-obligation quote from a local Austria expert.</p>
         <template x-if="$store.modal.open">
             <div>
-                <x-enquiry-form form-name="header-modal" uid="modal" :extended="true" button="Get My Free Quote" />
+                <x-enquiry-form form-name="header-modal" uid="modal" :extended="true" button="Request My Quote" />
             </div>
         </template>
     </div>

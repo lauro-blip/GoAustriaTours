@@ -32,7 +32,7 @@
     </div>
     <div class="border-t border-white/10">
         <div class="container-page py-5 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <p>&copy; {{ date('Y') }} {{ $site['legal_company_name'] ?: ($site['brand_name'] ?? config('app.name')) }}. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ ($site['legal_company_name'] ?? '') ?: ($site['brand_name'] ?? config('app.name')) }}. All rights reserved.</p>
             <p class="flex gap-4">
                 <a class="hover:underline" href="{{ route('photo-credits') }}">Photo credits</a>
                 <a class="hover:underline" href="{{ route('terms') }}">Terms &amp; Conditions</a>

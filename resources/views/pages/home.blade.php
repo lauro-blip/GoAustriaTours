@@ -402,7 +402,7 @@
         <div class="mt-8 flex flex-wrap justify-center gap-4">
             <x-button :href="route('contact')" @click.prevent="$store.modal.show({})">Plan My Journey</x-button>
             @if(! empty($site['phone']))
-                <x-button variant="light" :href="'tel:'.preg_replace('/[^\d+]/', '', $site['phone_tel'] ?: $site['phone'])">Call {{ $site['phone'] }}</x-button>
+                <x-button variant="light" :href="'tel:'.preg_replace('/[^\d+]/', '', ($site['phone_tel'] ?? '') ?: $site['phone'])">Call {{ $site['phone'] }}</x-button>
             @endif
         </div>
     </div>

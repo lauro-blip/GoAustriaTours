@@ -23,10 +23,10 @@
     </div>
     <div class="container-page md:!max-w-[1510px] grid flex-1 items-center gap-10 pb-16 pt-36 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-12 lg:pt-40">
         <div>
-            <p class="flex items-center gap-4 text-[13px] font-semibold uppercase tracking-[0.35em] text-accent"><span class="h-px w-12 bg-accent" aria-hidden="true"></span>Bespoke journeys</p>
+            <p class="flex items-center gap-4 text-[14px] font-semibold uppercase tracking-[0.35em] text-accent"><span class="h-px w-12 bg-accent" aria-hidden="true"></span>Bespoke journeys</p>
             <h1 class="mt-6 normal-case leading-[0.9] tracking-tight !text-white text-[5.5rem] sm:text-[8rem] xl:text-[9.5rem]">Austria.<span class="sr-only"> Bespoke tours, planned around you</span></h1>
             <p class="mt-6 max-w-xl font-display text-2xl italic leading-snug text-white/90 sm:text-4xl">Refined. Timeless. <span class="text-accent">Extraordinary.</span></p>
-            <ul class="mt-10 flex flex-wrap items-center gap-y-2 border-t border-white/20 pt-6 text-[13px] font-medium uppercase tracking-[0.2em] text-white/85" aria-label="Why book with us">
+            <ul class="mt-10 flex flex-wrap items-center gap-y-2 border-t border-white/20 pt-6 text-[14px] font-medium uppercase tracking-[0.2em] text-white/90" aria-label="Why book with us">
                 @foreach(['Tailor-made', 'Local Austria experts', 'Personal quote'] as $t)
                     <li class="flex items-center">{{ $t }}@unless($loop->last)<span class="px-4 text-[7px] text-accent" aria-hidden="true">&#9670;</span>@endunless</li>
                 @endforeach
@@ -36,6 +36,47 @@
     </div>
 
 </section>
+
+{{-- 3a. TRUST STRIP: built only from Admin > Trust & tracking. Blank or "[CONFIRM" values are not shown, and the whole strip disappears when nothing is filled in. --}}
+@php
+    $marks = collect(range(1, 4))->map(fn ($n) => [
+        'label' => trim((string) ($site["trust_mark_{$n}_label"] ?? '')),
+        'logo' => trim((string) ($site["trust_mark_{$n}_logo"] ?? '')),
+        'url' => trim((string) ($site["trust_mark_{$n}_url"] ?? '')),
+    ])->filter(fn ($m) => $m['label'] !== '' || $m['logo'] !== '')->values();
+    $established = trim((string) ($site['established_line'] ?? ''));
+    $reviewText = trim((string) ($site['review_summary'] ?? ''));
+    $reviewUrl = trim((string) ($site['review_url'] ?? ''));
+@endphp
+@if($marks->isNotEmpty() || $established !== '' || $reviewText !== '')
+<section class="border-b border-line bg-soft-white" aria-label="Why you can trust us">
+    <div class="container-page flex flex-col items-center gap-x-12 gap-y-5 py-7 text-center lg:flex-row lg:justify-between lg:text-left">
+        @if($established !== '')
+            <p class="font-display text-2xl italic leading-snug text-brand lg:whitespace-nowrap">{{ $established }}</p>
+        @endif
+        @if($marks->isNotEmpty())
+            <ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:flex-nowrap lg:whitespace-nowrap" aria-label="Memberships and protection">
+                @foreach($marks as $m)
+                    <li>
+                        @if($m['url'] !== '')<a href="{{ $m['url'] }}" target="_blank" rel="noopener" class="block">@endif
+                        @if($m['logo'] !== '')
+                            <img src="{{ asset('storage/'.$m['logo']) }}" alt="{{ $m['label'] ?: 'Membership logo' }}" class="h-11 w-auto max-w-[9rem] object-contain" loading="lazy">
+                        @else
+                            <span class="inline-flex items-center gap-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-brand"><span class="text-[9px] text-accent" aria-hidden="true">&#9670;</span>{{ $m['label'] }}</span>
+                        @endif
+                        @if($m['url'] !== '')</a>@endif
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+        @if($reviewText !== '')
+            <p class="text-base font-medium text-brand lg:whitespace-nowrap">
+                @if($reviewUrl !== '')<a href="{{ $reviewUrl }}" target="_blank" rel="noopener" class="underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-text">{{ $reviewText }}</a>@else{{ $reviewText }}@endif
+            </p>
+        @endif
+    </div>
+</section>
+@endif
 
 {{-- 3b. JOURNEY INTRO (image + numbered points) --}}
 <section class="section bg-soft-white" aria-labelledby="journey-title">
@@ -47,7 +88,7 @@
             <p class="absolute -left-3 bottom-12 bg-brand px-5 py-3 font-display text-lg font-semibold italic text-white shadow-xl sm:-left-6">Austria, <span class="text-accent">your way.</span></p>
         </div>
         <div>
-            <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Why book with {{ $site['brand_name'] ?? 'GoAustriaTours' }}</p>
+            <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Why book with {{ $site['brand_name'] ?? 'GoAustriaTours' }}</p>
             <h2 id="journey-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Every Austrian Journey,<br><em class="text-accent-text">Feel Uniquely Yours.</em></h2>
             <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">Discover Austria through thoughtfully crafted journeys shaped around your travel style and interests. From majestic Alpine landscapes and picturesque villages to grand imperial cities and authentic local experiences, every detail is designed to make your journey unforgettable.</p>
             <ol class="mt-10 max-w-xl border-t border-accent/40">
@@ -74,7 +115,7 @@
     <div class="container-page">
         <div class="mb-12 flex flex-col gap-8 lg:mb-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
             <div class="max-w-3xl">
-                <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Featured packages</p>
+                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Featured packages</p>
                 <h2 id="featured-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Our Featured <em class="text-accent-text">Itineraries.</em></h2>
                 <p class="mt-6 max-w-2xl text-lg leading-relaxed text-brand/85">A handful of itineraries to start from. Each one can be adapted to your dates, pace and interests.</p>
             </div>
@@ -105,7 +146,7 @@
 <section class="section bg-soft-white" aria-labelledby="types-title">
     <div class="container-page">
         <div class="mx-auto mb-10 max-w-3xl text-center lg:mb-12">
-            <p class="flex items-center justify-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Ways to travel<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
+            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Ways to travel<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
             <h2 id="types-title" class="mt-4 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Choose How You <em class="text-accent-text">See Austria.</em></h2>
             <p class="mt-4 text-lg lg:text-xl text-brand/85">Three ways to explore. Not sure which suits you? Ask us.</p>
         </div>
@@ -133,28 +174,49 @@
     </div>
 </section>
 
-{{-- 7. HOW IT WORKS --}}
-<section class="section relative isolate overflow-hidden bg-brand-dark text-white" aria-labelledby="how-title">
-    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,rgb(15_59_89)_0%,transparent_70%)]" aria-hidden="true"></div>
+{{-- 7. HOW IT WORKS: photo background under a deep navy veil, gold glows and an inset frame; three framed steps with Roman numerals --}}
+<section id="how-it-works" class="section relative isolate scroll-mt-0 overflow-hidden bg-brand-dark text-white" aria-labelledby="how-title">
+    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <img src="{{ asset('images/gallery/grossglockner.webp') }}" alt="" width="1600" height="1200" loading="lazy" class="photo-grade h-full w-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/90 via-brand-dark/65 to-brand-dark/90"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(15_59_89/0.85)_0%,transparent_65%)]"></div>
+        <div class="absolute -left-40 bottom-0 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.14),transparent)]"></div>
+        <div class="absolute -right-40 top-0 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]"></div>
+    </div>
+    <span class="pointer-events-none absolute inset-4 -z-10 hidden border border-accent/30 sm:block lg:inset-8" aria-hidden="true"></span>
     <div class="container-page">
-        <div class="mx-auto mb-14 max-w-3xl text-center lg:mb-20">
-            <p class="flex items-center justify-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>How it works<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
+        <div class="mx-auto mb-16 max-w-4xl text-center lg:mb-24">
+            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>How it works<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
             <h2 id="how-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">Three Simple Steps to <em class="text-accent">Your Journey.</em></h2>
-            <p class="mt-5 text-lg text-white/85">From first idea to the moment you arrive, we handle the details so you can enjoy the anticipation.</p>
+            <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/90">From first idea to the moment you arrive, we handle the details so you can enjoy the anticipation.</p>
         </div>
-        <ol class="relative grid gap-12 md:grid-cols-3 md:gap-10">
-            <span class="absolute left-[16.67%] right-[16.67%] top-[2.1rem] hidden h-px bg-gradient-to-r from-accent/0 via-accent/60 to-accent/0 md:block" aria-hidden="true"></span>
-            @foreach([['mail', 'Tell us your plans', 'Share when, how and with whom you would like to travel. A few questions is all it takes.'], ['guide', 'Receive your personal quote', 'A local expert designs a tailored itinerary and price around your wishes.'], ['calendar', 'Travel with confidence', 'We confirm every detail and look after you from arrival to departure.']] as $i => [$ic, $t, $d])
-                <li class="relative text-center">
-                    <span class="relative mx-auto flex size-[4.25rem] items-center justify-center rounded-full border border-accent/70 bg-brand-dark text-accent" aria-hidden="true"><x-icon :name="$ic" :stroke="1.2" class="size-7" /></span>
-                    <p class="mt-6 font-display text-6xl font-semibold italic leading-none text-white/15" aria-hidden="true">0{{ $i + 1 }}</p>
-                    <h3 class="-mt-3 text-2xl !text-white sm:text-3xl">{{ $t }}</h3>
-                    <p class="mx-auto mt-3 max-w-xs text-white/85">{{ $d }}</p>
+
+        <ol class="grid gap-14 md:grid-cols-3 md:gap-8 lg:gap-12">
+            @foreach([
+                ['I', 'mail', 'Tell us your plans', 'Share when, how and with whom you would like to travel. A few questions is all it takes.'],
+                ['II', 'guide', 'Receive your personal quote', 'A local expert designs a tailored itinerary and price around your wishes.'],
+                ['III', 'calendar', 'Travel with confidence', 'We confirm every detail and look after you from arrival to departure.'],
+            ] as [$num, $ic, $t, $d])
+                <li class="group relative">
+                    <div class="relative h-full border border-white/20 bg-brand-dark/60 px-7 pb-10 pt-14 text-center shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] transition duration-500 hover:-translate-y-1 hover:border-accent/60 sm:px-9 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                        <span class="pointer-events-none absolute inset-2 border border-accent/0 transition duration-500 group-hover:border-accent/30" aria-hidden="true"></span>
+                        {{-- icon badge straddles the top edge of the frame --}}
+                        <span class="absolute left-1/2 top-0 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-accent bg-brand-dark text-accent shadow-[0_0_0_6px_rgb(10_42_64/0.9)]" aria-hidden="true"><x-icon :name="$ic" :stroke="1.2" class="size-7" /></span>
+                        <p class="font-display text-6xl italic leading-none text-accent/90 sm:text-7xl" aria-hidden="true">{{ $num }}</p>
+                        <span class="mx-auto mt-5 block h-px w-12 bg-accent/70 transition-all duration-500 group-hover:w-24" aria-hidden="true"></span>
+                        <h3 class="mt-6 text-2xl !text-white sm:text-3xl">{{ $t }}</h3>
+                        <p class="mx-auto mt-4 max-w-xs leading-relaxed text-white/90">{{ $d }}</p>
+                    </div>
+                    @unless($loop->last)
+                        <span class="absolute -right-[1.15rem] top-1/2 hidden -translate-y-1/2 text-[9px] text-accent md:block lg:-right-[1.65rem]" aria-hidden="true">&#9670;</span>
+                    @endunless
                 </li>
             @endforeach
         </ol>
-        <div class="mt-14 text-center lg:mt-20">
-            <x-button class="!px-8 !py-3.5 uppercase tracking-wider" @click="$store.modal.show({})">Begin Planning</x-button>
+
+        <div class="mt-16 flex flex-col items-center gap-4 text-center lg:mt-24">
+            <x-button class="!px-9 !py-4 uppercase tracking-wider" @click="$store.modal.show({})">Begin Planning</x-button>
+            <p class="text-sm text-white/90">No obligation. A personal reply from a local expert.</p>
         </div>
     </div>
 </section>
@@ -165,7 +227,7 @@
     <div class="container-page">
         <div class="mb-10 flex flex-col gap-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Curated packages</p>
+                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Curated packages</p>
                 <h2 id="curated-title" class="mt-4 text-[32px] sm:text-[44px] lg:text-[56px]">Journeys We Have <em class="text-accent-text">Thoughtfully Curated.</em></h2>
                 <p class="mt-5 max-w-xl text-brand">Itineraries that balance the sights worth seeing with time to enjoy them. Each one is a starting point we adapt to you.</p>
             </div>
@@ -177,45 +239,17 @@
     </div>
 </section>
 @endif
-{{-- 5b. TOP DESTINATIONS (trip cards: text overlaid on the photo, places on one line with diamond separators) --}}
-@php
-    // Optional background video: drop an MP4 (and optionally a WebM) at public/videos/austria-destinations.mp4 / .webm. Until then the still photo shows.
-    $destVideo = file_exists(public_path('videos/austria-destinations.mp4')) ? asset('videos/austria-destinations.mp4') : null;
-    $destWebm = file_exists(public_path('videos/austria-destinations.webm')) ? asset('videos/austria-destinations.webm') : null;
-@endphp
-<section class="section relative isolate overflow-hidden bg-brand-dark text-white" aria-labelledby="destinations-title"
-    @if($destVideo)
-    x-data="{ play: false }"
-    x-init="if (! matchMedia('(prefers-reduced-motion: reduce)').matches && ! (navigator.connection && navigator.connection.saveData)) { new IntersectionObserver((e, o) => { if (e[0].isIntersecting) { play = true; o.disconnect() } }, { rootMargin: '300px' }).observe($el) }"
-    @endif>
-    {{-- Background: Alpine photo (or video) under a deep navy veil, soft gold glow and a thin inset frame --}}
-    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-        <img src="{{ asset('images/hero/hallstatt.webp') }}" alt="" width="1920" height="747" loading="lazy" class="photo-grade h-full w-full object-cover">
-        @if($destVideo)
-            <template x-if="play">
-                <video autoplay muted loop playsinline preload="none" poster="{{ asset('images/hero/hallstatt.webp') }}" class="absolute inset-0 h-full w-full object-cover">
-                    @if($destWebm)<source src="{{ $destWebm }}" type="video/webm">@endif
-                    <source src="{{ $destVideo }}" type="video/mp4">
-                </video>
-            </template>
-        @endif
-        <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/95 via-brand-dark/80 to-brand-dark/95"></div>
-        <div class="absolute -left-40 top-0 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.15),transparent)]"></div>
-        <div class="absolute -right-40 bottom-0 size-[34rem] bg-[radial-gradient(closest-side,rgb(15_59_89/0.4),transparent)]"></div>
-    </div>
-    <span class="pointer-events-none absolute inset-4 -z-10 hidden border border-accent/30 sm:block lg:inset-8" aria-hidden="true"></span>
+{{-- 5b. TOP DESTINATIONS (bento of trip cards: text overlaid on the photo, places on one line with diamond separators). Plain navy background on purpose: the photos are the star. --}}
+<section class="section bg-brand-dark text-white" aria-labelledby="destinations-title">
     <div class="container-page">
-        <div class="mb-12 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-3xl">
-                <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Top destinations</p>
-                <h2 id="destinations-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">From Alpine Peaks<br><em class="text-accent">To Imperial Streets.</em></h2>
-                <p class="mt-6 max-w-xl text-lg leading-relaxed text-white/85">Six ways to move through the country, from palaces on the Danube to lakeside villages and high Alpine passes. Each one is a starting point we shape around you.</p>
-            </div>
-            <a href="{{ route('packages.index') }}" class="shrink-0 self-start border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:text-accent lg:self-auto">Explore trips <span aria-hidden="true">&rarr;</span></a>
+        <div class="mx-auto mb-12 max-w-3xl text-center lg:mb-16">
+            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Top destinations<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
+            <h2 id="destinations-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">From Alpine Peaks<br><em class="text-accent">To Imperial Streets.</em></h2>
+            <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/90">Six ways to move through the country, from palaces on the Danube to lakeside villages and high Alpine passes. Each one is a starting point we shape around you.</p>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[19rem] lg:gap-6">
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[20rem] lg:gap-6">
             @foreach([
-                ['The Grand Austrian Journey', 'hero/schonbrunn.webp', ['Vienna', 'Wachau', 'Salzburg', 'Hallstatt', 'Gosau', 'Innsbruck']],
+                ['The Grand Austrian Journey', 'hero/hallstatt.webp', ['Vienna', 'Wachau', 'Salzburg', 'Hallstatt', 'Gosau', 'Innsbruck']],
                 ['Imperial & Alpine', 'packages/tyrol-private-escorted.webp', ['Vienna', 'Melk', 'Linz', 'Salzburg', 'Zell am See', 'Innsbruck']],
                 ['Lakeside Austria Escape', 'packages/alpine-lakes-self-drive.webp', ['Salzburg', 'St. Gilgen', 'St. Wolfgang', 'Hallstatt', 'Gosau', 'Bad Ischl']],
                 ['Danube & Vineyards', 'packages/classic-austria-by-coach.webp', ['Vienna', 'Krems', 'Dürnstein', 'Melk', 'Linz', 'Salzburg']],
@@ -225,22 +259,26 @@
                 {{-- Bento layout: the first journey is the large feature (2 columns x 2 rows from lg). Photo fills the card, text sits on a navy gradient. --}}
                 @php $feature = $n === 0; @endphp
                 <article class="group relative isolate flex min-h-[20rem] flex-col justify-end overflow-hidden border border-white/15 bg-brand-dark text-white shadow-[0_30px_60px_-25px_rgb(0_0_0/0.8)] transition duration-500 hover:border-accent/60 motion-reduce:transition-none {{ $feature ? 'sm:col-span-2 sm:min-h-[26rem] lg:row-span-2' : '' }}">
-                    <img src="{{ asset('images/'.$img) }}" alt="" width="800" height="600" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover transition duration-[1600ms] ease-out group-hover:scale-105 motion-reduce:transition-none">
-                    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/95 via-brand-dark/35 to-brand-dark/10" aria-hidden="true"></div>
+                    <img src="{{ asset('images/'.$img) }}" alt="" width="800" height="600" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover {{ $feature ? 'object-[50%_35%]' : '' }} transition duration-[1600ms] ease-out group-hover:scale-105 motion-reduce:transition-none">
+                    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark via-brand-dark/55 to-brand-dark/5" aria-hidden="true"></div>
                     <span class="pointer-events-none absolute inset-3 border border-accent/0 transition duration-500 group-hover:border-accent/60" aria-hidden="true"></span>
                     <span class="absolute left-6 top-5 font-display text-lg italic text-white/90" aria-hidden="true">0{{ $n + 1 }}</span>
                     <span class="absolute right-5 top-4 inline-flex size-10 items-center justify-center rounded-full border border-white/40 text-white transition duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-brand" aria-hidden="true">&nearr;</span>
                     <div class="p-6 {{ $feature ? 'sm:p-10' : 'sm:p-7' }}">
-                        @if($feature)<p class="mb-3 flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>Featured journey</p>@endif
+                        @if($feature)<p class="mb-3 flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent [text-shadow:0_1px_10px_rgb(0_0_0/0.7)]"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>Featured journey</p>@endif
                         <h3 class="leading-tight !text-white {{ $feature ? 'text-[32px] sm:text-[44px] lg:text-[56px]' : 'text-3xl' }}"><a href="{{ route('packages.index') }}" class="after:absolute after:inset-0">{{ $title }}</a></h3>
                         <ul class="mt-4 flex flex-wrap items-center gap-y-1 text-sm text-white/85 {{ $feature ? 'sm:text-base' : '' }}" aria-label="Places on {{ $title }}">
                             @foreach($places as $place)
                                 <li class="flex items-center">{{ $place }}@unless($loop->last)<span class="px-2.5 text-[7px] text-accent" aria-hidden="true">&#9670;</span>@endunless</li>
                             @endforeach
                         </ul>
+                        @if($feature)<span class="mt-7 inline-flex items-center gap-3 border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-white" aria-hidden="true">Explore this journey <span class="text-accent transition group-hover:translate-x-1">&rarr;</span></span>@endif
                     </div>
                 </article>
             @endforeach
+        </div>
+        <div class="mt-12 text-center lg:mt-16">
+            <x-button :href="route('packages.index')" class="!px-9 !py-4 uppercase tracking-wider">Explore trips</x-button>
         </div>
     </div>
 </section>
@@ -276,7 +314,7 @@
     <p class="pointer-events-none absolute -left-6 -top-10 -z-10 select-none font-display text-[26rem] italic leading-none text-accent/15 lg:text-[40rem]" aria-hidden="true">&ldquo;</p>
     <div class="container-page">
         <div class="mx-auto max-w-4xl text-center">
-            <p class="flex items-center justify-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Guest stories<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
+            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Guest stories<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
             <h2 id="reviews-title" class="sr-only">What our travellers say</h2>
             <figure class="mt-10">
                 <blockquote class="font-display text-3xl italic leading-[1.25] text-brand sm:text-4xl lg:text-[3.25rem]">&ldquo;{{ $lead->quote }}&rdquo;</blockquote>
@@ -293,7 +331,7 @@
                 <figure class="flex flex-col {{ $loop->first ? '' : 'md:border-l md:border-line md:pl-12' }}">
                     <span class="font-display text-5xl leading-none text-accent" aria-hidden="true">&ldquo;</span>
                     <blockquote class="-mt-2 flex-1 font-display text-2xl italic leading-snug text-brand">{{ $t->quote }}</blockquote>
-                    <figcaption class="mt-6 text-[13px] uppercase tracking-[0.2em] text-brand/85"><strong class="font-semibold text-brand">{{ $t->name }}</strong>@if($t->location)<span class="text-accent" aria-hidden="true"> &#9670; </span>{{ $t->location }}@endif</figcaption>
+                    <figcaption class="mt-6 text-[14px] uppercase tracking-[0.2em] text-brand/85"><strong class="font-semibold text-brand">{{ $t->name }}</strong>@if($t->location)<span class="text-accent" aria-hidden="true"> &#9670; </span>{{ $t->location }}@endif</figcaption>
                 </figure>
             @endforeach
         </div>
@@ -326,10 +364,10 @@
     <div class="container-page">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-2xl">
-                <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>The gallery</p>
+                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>The gallery</p>
                 <h2 id="gallery-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">Austria, <em class="text-accent">Frame By Frame.</em></h2>
             </div>
-            <p class="max-w-md text-lg leading-relaxed text-white/70">A few of the places our journeys pass through. Tap a photo to see it larger.</p>
+            <p class="max-w-md text-lg leading-relaxed text-white/90">A few of the places our journeys pass through. Tap a photo to see it larger.</p>
         </div>
 
         {{-- Desktop: cinematic accordion. The hovered/focused panel opens wide; click (or a second tap) opens the lightbox. --}}
@@ -349,7 +387,7 @@
                     <span class="absolute inset-x-0 bottom-0 block p-9 opacity-0 transition-opacity duration-500" :class="active === {{ $n }} && '!opacity-100 delay-300'">
                         <span class="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>{{ $tagline }}</span>
                         <span class="mt-3 block whitespace-nowrap font-display text-5xl font-semibold leading-none text-white">{{ $title }}</span>
-                        <span class="mt-3 block max-w-sm text-white/80">{{ $caption }}</span>
+                        <span class="mt-3 block max-w-sm text-white/90">{{ $caption }}</span>
                         <span class="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-white">View photo <x-icon name="search" :stroke="1.4" class="size-4 text-accent" /></span>
                     </span>
                 </button>
@@ -378,17 +416,17 @@
         class="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/90 p-4 sm:p-8" role="dialog" aria-modal="true" aria-label="Photo gallery"
         @click.self="close()" @touchstart.passive="tx = $event.changedTouches[0].clientX"
         @touchend.passive="let d = $event.changedTouches[0].clientX - tx; if (Math.abs(d) > 50) { d < 0 ? next() : prev() }">
-        <p class="absolute left-4 top-4 text-sm text-white/70 sm:left-8 sm:top-6" aria-live="polite"><span x-text="i + 1"></span> / <span x-text="items.length"></span></p>
-        <button type="button" @click="close()" class="absolute right-3 top-3 rounded-full p-3 text-white/80 hover:bg-white/10 hover:text-white sm:right-6 sm:top-5" aria-label="Close gallery"><x-icon name="close" :stroke="1.5" class="size-7" /></button>
+        <p class="absolute left-4 top-4 text-sm text-white/85 sm:left-8 sm:top-6" aria-live="polite"><span x-text="i + 1"></span> / <span x-text="items.length"></span></p>
+        <button type="button" @click="close()" class="absolute right-3 top-3 rounded-full p-3 text-white/90 hover:bg-white/10 hover:text-white sm:right-6 sm:top-5" aria-label="Close gallery"><x-icon name="close" :stroke="1.5" class="size-7" /></button>
 
-        <button type="button" @click="prev()" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-3 text-white/80 hover:bg-white/10 hover:text-white sm:left-6" aria-label="Previous photo"><x-icon name="chevron" :stroke="1.5" class="size-8 rotate-90" /></button>
-        <button type="button" @click="next()" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-3 text-white/80 hover:bg-white/10 hover:text-white sm:right-6" aria-label="Next photo"><x-icon name="chevron" :stroke="1.5" class="size-8 -rotate-90" /></button>
+        <button type="button" @click="prev()" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-3 text-white/90 hover:bg-white/10 hover:text-white sm:left-6" aria-label="Previous photo"><x-icon name="chevron" :stroke="1.5" class="size-8 rotate-90" /></button>
+        <button type="button" @click="next()" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-3 text-white/90 hover:bg-white/10 hover:text-white sm:right-6" aria-label="Next photo"><x-icon name="chevron" :stroke="1.5" class="size-8 -rotate-90" /></button>
 
         <figure class="flex max-h-full max-w-5xl flex-col items-center" @click.self="close()">
             <img :src="items[i].src" :alt="items[i].caption" class="max-h-[75vh] w-auto max-w-full rounded-md object-contain shadow-2xl">
             <figcaption class="mt-4 text-center text-white">
                 <span class="block font-display text-2xl" x-text="items[i].title"></span>
-                <span class="block text-sm text-white/70" x-text="items[i].caption"></span>
+                <span class="block text-sm text-white/90" x-text="items[i].caption"></span>
             </figcaption>
         </figure>
     </div>
@@ -401,7 +439,7 @@
     <div class="container-page">
         <div class="mb-12 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-3xl">
-                <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>The Journal</p>
+                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>The Journal</p>
                 <h2 id="journal-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Austria travel stories and tips</h2>
                 <p class="mt-5 max-w-xl text-lg leading-relaxed text-brand/85">Ideas, routes and practical advice for planning your trip.</p>
             </div>
@@ -415,9 +453,9 @@
                 <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/95 via-brand-dark/40 to-transparent" aria-hidden="true"></div>
                 <span class="pointer-events-none absolute inset-4 border border-accent/0 transition duration-500 group-hover:border-accent/70 sm:inset-6" aria-hidden="true"></span>
                 <div class="p-8 sm:p-12">
-                    <p class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>@if($lead->category)<span>{{ $lead->category }}</span><span aria-hidden="true">&middot;</span>@endif<time datetime="{{ $lead->published_at?->toDateString() }}" class="text-white/70">{{ $lead->published_at?->format('F j, Y') }}</time></p>
+                    <p class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>@if($lead->category)<span>{{ $lead->category }}</span><span aria-hidden="true">&middot;</span>@endif<time datetime="{{ $lead->published_at?->toDateString() }}" class="text-white/90">{{ $lead->published_at?->format('F j, Y') }}</time></p>
                     <h3 class="mt-4 max-w-xl text-3xl leading-tight !text-white sm:text-4xl lg:text-5xl"><a href="{{ route('journal.show', $lead) }}" class="after:absolute after:inset-0">{{ $lead->title }}</a></h3>
-                    <p class="mt-4 max-w-lg text-white/80">{{ $lead->excerpt }}</p>
+                    <p class="mt-4 max-w-lg text-white/90">{{ $lead->excerpt }}</p>
                     <span class="mt-6 inline-flex items-center gap-2 border-b border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em]" aria-hidden="true">Read article <span>&rarr;</span></span>
                 </div>
             </article>
@@ -452,7 +490,7 @@
     </div>
     <div class="container-page grid gap-12 lg:grid-cols-[4fr_8fr] lg:gap-24">
         <div class="lg:sticky lg:top-28 lg:self-start">
-            <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>FAQ</p>
+            <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>FAQ</p>
             <h2 id="faq-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Questions, <em class="text-accent-text">answered.</em></h2>
             <p class="mt-6 text-lg leading-relaxed text-brand/85">Everything you may wish to know before planning your journey to Austria.</p>
             <div class="mt-10 border border-accent/50 bg-white p-7 shadow-[0_24px_60px_-40px_rgb(10_42_64/0.5)]">
@@ -491,9 +529,9 @@
     </div>
     <span class="pointer-events-none absolute inset-4 -z-10 border border-accent/40 sm:inset-8" aria-hidden="true"></span>
     <div class="container-page max-w-3xl">
-        <p class="flex items-center justify-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Your Austrian journey<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
+        <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Your Austrian journey<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
         <h2 class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">{{ $page->section('cta_title', 'Ready to see Austria?') }}</h2>
-        <p class="mx-auto mt-5 max-w-xl text-lg text-white/80">{{ $page->section('cta_text') }}</p>
+        <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $page->section('cta_text') }}</p>
         <div class="mt-10 flex flex-wrap justify-center gap-4">
             <x-button :href="route('contact')" @click.prevent="$store.modal.show({})" class="!px-8 !py-3.5 uppercase tracking-wider">Plan My Journey</x-button>
             @if(! empty($site['phone']))

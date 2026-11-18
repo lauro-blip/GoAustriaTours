@@ -13,7 +13,7 @@
         ['admin.dashboard', 'Dashboard'], ['admin.enquiries.index', 'Enquiries'], ['admin.packages.index', 'Packages'],
         ['admin.tour-types.index', 'Tour types'], ['admin.destinations.index', 'Destinations'], ['admin.quiz.index', 'Quiz'],
         ['admin.pages.index', 'Pages'], ['admin.testimonials.index', 'Testimonials'], ['admin.faqs.index', 'FAQs'], ['admin.posts.index', 'Journal'],
-        ['admin.media.index', 'Media'], ['admin.settings.edit', 'Settings'], ['admin.ghl.edit', 'GoHighLevel'], ['admin.users.index', 'Admin users'],
+        ['admin.media.index', 'Media'], ['admin.settings.edit', 'Settings'], ['admin.trust.edit', 'Trust & tracking'], ['admin.ghl.edit', 'GoHighLevel'], ['admin.users.index', 'Admin users'],
     ];
 @endphp
 <div class="lg:flex min-h-screen">
@@ -26,8 +26,8 @@
             @foreach($links as [$r, $label])
                 <a href="{{ route($r) }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10 {{ request()->routeIs(Str::beforeLast($r, '.').'*') ? 'bg-white/15 font-semibold' : '' }}">{{ $label }}</a>
             @endforeach
-            <a href="{{ route('home') }}" target="_blank" rel="noopener" class="mt-3 block rounded-lg px-3 py-2 text-sm text-white/70 hover:bg-white/10">View site &nearr;</a>
-            <form method="POST" action="{{ route('admin.logout') }}">@csrf<button class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-white/70 hover:bg-white/10">Log out</button></form>
+            <a href="{{ route('home') }}" target="_blank" rel="noopener" class="mt-3 block rounded-lg px-3 py-2 text-sm text-white/85 hover:bg-white/10">View site &nearr;</a>
+            <form method="POST" action="{{ route('admin.logout') }}">@csrf<button class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-white/85 hover:bg-white/10">Log out</button></form>
         </nav>
     </aside>
 

@@ -114,6 +114,22 @@ class EnquiryTest extends TestCase
         $this->assertSame(0, Enquiry::count());
     }
 
+    public function test_phone_is_optional(): void
+    {
+        Http::fake([self::VERIFY_URL => Http::response(['success' => true])]);
+
+        $this->post('/enquiry', $this->payload(['phone' => '']))->assertSessionHasNoErrors();
+
+        $e = \App\Models\Enquiry::latest('id')->first();
+        $this->assertNull($e->phone_e164);
+        $this->assertNull($e->country_code);
+    }
+
+    public function test_forms_no_longer_ask_for_phone_or_partner_quote(): void
+    {
+        $this->get('/contact')->assertOk()->assertSee('Phone (optional)')->assertDontSee('second quote from a partner');
+    }
+
     public function test_invalid_phone_number_is_rejected(): void
     {
         Http::fake([self::VERIFY_URL => Http::response(['success' => true])]);

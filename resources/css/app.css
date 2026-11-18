@@ -11,6 +11,10 @@
  */
 @theme {
     --font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
+    /* Small text is one step larger than Tailwind's default: easier to read for 35+ visitors. */
+    --text-xs: 0.8125rem;
+    --text-sm: 0.9375rem;
+
     --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
 
     /* Palette: Primary #0F3B59, Secondary #7D929E, Text #0F3B59, Accent #DBA12C */
@@ -36,7 +40,7 @@
 @layer base {
     html { scroll-behavior: smooth; }
     body { @apply bg-ivory text-ink font-sans antialiased; }
-    h1, h2, h3 { @apply font-display font-normal capitalize text-brand leading-tight; }
+    h1, h2, h3 { @apply font-display font-medium capitalize text-brand leading-tight; }
     :focus-visible { outline: 3px solid var(--color-quiz); outline-offset: 2px; }
     @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }

@@ -27,7 +27,7 @@
             <span>{{ $package->tourType?->name }}</span>
             <span class="flex items-center gap-1.5"><x-icon name="calendar" :stroke="1.4" class="size-[15px] text-accent-text" />{{ $package->nights }} nights</span>
         </div>
-        <h3 class="mt-2.5 text-2xl font-normal leading-tight"><a href="{{ route('packages.show', $package) }}">{{ $package->title }}</a></h3>
+        <h3 class="mt-2.5 text-2xl font-medium leading-tight"><a href="{{ route('packages.show', $package) }}">{{ $package->title }}</a></h3>
 
         @if($places)
             <p class="mt-3.5 text-xs font-bold uppercase">Itinerary:</p>

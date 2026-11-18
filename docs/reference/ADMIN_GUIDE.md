@@ -11,7 +11,7 @@ Go to **/admin** and sign in. Your first login comes from the server's `.env` fi
 - **Pages:** home page text blocks, About, Contact, Terms, Privacy and Thank You (title, SEO fields, content, and a "hide from search engines" switch). Terms and Privacy are **starter templates only**: have them reviewed professionally.
 - **Testimonials / FAQs:** home page reviews and questions. Untick "placeholder" only for real, permitted reviews.
 - **Media:** upload images (JPG/PNG/WebP up to 8 MB). They are converted to WebP and resized automatically. Always write alt text.
-- **Settings:** brand and legal company name (used in the consent text), logo, favicon, phone, email, address, social links, staff notification emails (comma separated), Google Tag Manager ID, reCAPTCHA keys, footer text, default SEO text and image. GoHighLevel has its own menu item (below).
+- **Settings:** brand and legal company name (used in the consent text), logo, favicon, address, social links, staff notification emails (comma separated), reCAPTCHA keys, footer text, default SEO text and image. GoHighLevel has its own menu item (below).
 - **Admin users:** add or remove staff. You cannot delete yourself or the last admin.
 
 ## Good to know
@@ -19,3 +19,5 @@ Go to **/admin** and sign in. Your first login comes from the server's `.env` fi
 - Prices shown as `[CONFIRM: price]` appear because no price has been entered yet.
 - Changes appear on the site straight away.
 - **GoHighLevel:** paste the Private Integration Token (PIT) and the Location ID, press Save, then Test connection (read-only; it creates nothing). The token is stored encrypted and is never shown again (only its last 4 characters); leave it blank to keep the saved one. Values saved here override the server `.env` ones; tick "Remove the saved values" to fall back to `.env`. After the first successful connection, run `php artisan ghl:setup` on the server once to create the custom fields.
+- **Trust & tracking:** everything that builds buyer confidence. Phone (display + tap-to-call number) and public email appear in the top bar, footer and contact page. "Who you are": an established line ("Planning Austria journeys since 2012"), and the planner name, role, bio and photo (the "Meet your planner" section appears only when name and bio are filled in). Up to four memberships/protection marks (name, optional logo, optional link) and a review summary (for example "Rated 4.9 from 120 Google reviews") appear in a strip right under the hero. Only enter true, current facts; blank slots are hidden, and the whole strip disappears when empty. The Google Tag Manager ID goes here too: leave it blank to keep tracking OFF, and add it when your Google Ads conversions are ready.
+- **Forms:** the phone number is optional on every form; a phone that is given must be valid for the chosen country.

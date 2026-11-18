@@ -42,7 +42,7 @@
     @endif
 
     {{-- Preload the two above-the-fold font files (latin subset) so text renders without a swap flash. --}}
-    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="{{ Vite::asset('node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
     @stack('preload')
     @vite(['resources/css/app.css', 'resources/js/app.js'])

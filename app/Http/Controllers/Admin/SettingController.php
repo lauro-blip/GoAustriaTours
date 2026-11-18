@@ -19,20 +19,14 @@ class SettingController extends Controller
             'footer_text' => ['Footer text', 'textarea'],
         ],
         'Contact' => [
-            'phone' => ['Phone (as displayed)', 'text'], 'phone_tel' => ['Phone for tap-to-call (digits and +, e.g. +18005550100)', 'text'],
-            'email' => ['Public email', 'text'], 'address' => ['Address', 'textarea'],
+            'address' => ['Address', 'textarea'],
             'social_facebook' => ['Facebook URL', 'text'], 'social_instagram' => ['Instagram URL', 'text'], 'social_youtube' => ['YouTube URL', 'text'],
-        ],
-        'Meet your planner (home page; the section appears only when name and bio are filled in)' => [
-            'planner_name' => ['Planner name', 'text'], 'planner_role' => ['Role / title (e.g. Founder and Austria specialist)', 'text'],
-            'planner_bio' => ['Short bio (true facts only; blank line = new paragraph)', 'textarea'], 'planner_photo' => ['Photo (portrait, 4:5 works best)', 'image'],
         ],
         'Enquiries' => [
             'notification_emails' => ['Staff notification emails (comma separated)', 'text'],
             'modal_discount' => ['Header modal discount figure (shown as "save up to X")', 'text'],
         ],
-        'Tracking & security' => [
-            'gtm_id' => ['Google Tag Manager ID (GTM-XXXXXXX; leave blank to switch off)', 'text'],
+        'Security (reCAPTCHA)' => [
             'recaptcha_site_key' => ['reCAPTCHA v2 site key (blank = use .env value)', 'text'],
             'recaptcha_secret_key' => ['reCAPTCHA v2 secret key (blank = use .env value)', 'password'],
         ],
@@ -41,22 +35,48 @@ class SettingController extends Controller
         ],
     ];
 
+    /** The field groups this page edits. Overridden by TrustController. */
+    protected function groups(): array
+    {
+        return self::GROUPS;
+    }
+
+    /** Page chrome: title, heading, form action and whether to show the GoHighLevel status box. */
+    protected function page(): array
+    {
+        return ['title' => 'Settings', 'heading' => 'Site settings', 'action' => route('admin.settings.update'), 'ghl' => true];
+    }
+
     public function edit()
     {
         return view('admin.settings', [
-            'groups' => self::GROUPS, 'values' => Setting::all_(), 'ghlOn' => SyncEnquiryToGhl::enabled(),
+            'groups' => $this->groups(), 'values' => Setting::all_(), 'ghlOn' => SyncEnquiryToGhl::enabled(), 'page' => $this->page(),
         ]);
     }
 
     public function update(Request $request, ImageService $images)
     {
         $rules = [];
-        foreach (self::GROUPS as $keys) {
+        foreach ($this->groups() as $keys) {
             foreach ($keys as $key => [, $type]) {
                 $rules[$key] = $type === 'image' ? ['nullable', 'image', 'max:8192'] : ['nullable', 'string', 'max:2000'];
             }
         }
-        $rules['gtm_id'] = ['nullable', 'regex:/^GTM-[A-Z0-9]+$/'];
+        foreach (array_keys($rules) as $key) {
+            if (str_ends_with($key, '_url')) {
+                $rules[$key] = ['nullable', 'url:http,https', 'max:500'];
+            }
+        }
+        if (array_key_exists('gtm_id', $rules)) {
+            $rules['gtm_id'] = ['nullable', 'regex:/^GTM-[A-Z0-9]+$/'];
+        }
+        if (array_key_exists('email', $rules)) {
+            $rules['email'] = ['nullable', 'email', 'max:190'];
+        }
+        if (array_key_exists('phone_tel', $rules)) {
+            $rules['phone_tel'] = ['nullable', 'regex:/^\+?[0-9]{6,16}$/'];
+        }
+        if (array_key_exists('notification_emails', $rules)) {
         $rules['notification_emails'] = ['nullable', 'string', 'max:1000', function ($attr, $value, $fail) {
             foreach (array_filter(array_map('trim', explode(',', (string) $value))) as $email) {
                 if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -64,9 +84,13 @@ class SettingController extends Controller
                 }
             }
         }];
-        $request->validate($rules, ['gtm_id.regex' => 'GTM IDs look like GTM-ABC1234.']);
+        }
+        $request->validate($rules, [
+            'gtm_id.regex' => 'GTM IDs look like GTM-ABC1234.',
+            'phone_tel.regex' => 'Use digits and an optional leading +, with no spaces (for example +18005550100).',
+        ]);
 
-        foreach (self::GROUPS as $keys) {
+        foreach ($this->groups() as $keys) {
             foreach ($keys as $key => [, $type]) {
                 if ($type === 'image') {
                     if ($request->boolean($key.'_remove')) {

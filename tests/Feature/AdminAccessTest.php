@@ -12,7 +12,7 @@ class AdminAccessTest extends TestCase
 
     public function test_admin_pages_require_login(): void
     {
-        foreach (['/admin', '/admin/enquiries', '/admin/packages', '/admin/settings', '/admin/users', '/admin/media', '/admin/enquiries/export'] as $url) {
+        foreach (['/admin', '/admin/enquiries', '/admin/packages', '/admin/settings', '/admin/trust', '/admin/users', '/admin/media', '/admin/enquiries/export'] as $url) {
             $this->get($url)->assertRedirect(route('admin.login'));
         }
     }

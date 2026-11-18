@@ -39,7 +39,7 @@ class EnquiryController extends Controller
             'last_name' => ['required', 'string', 'max:80'],
             'email' => ['required', 'email:rfc', 'max:190'],
             'country' => ['required', Rule::in(array_keys(Countries::LIST))],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['nullable', 'string', 'max:30'],   // optional: a phone number is not required to get a quote
             'travel_date' => ['nullable', 'string', 'max:80'],
             'second_quote' => ['nullable', Rule::in(['Yes', 'No'])],
             'special_request' => ['nullable', 'string', 'max:2000'],
@@ -63,18 +63,20 @@ class EnquiryController extends Controller
             return $fail(['g-recaptcha-response' => 'Please confirm you are not a robot and try again.']);
         }
 
-        // Phone to E.164 using the chosen country.
+        // Phone is optional. When given, it must be valid for the chosen country and is stored as E.164.
         $phone = null;
-        try {
-            $util = PhoneNumberUtil::getInstance();
-            $parsed = $util->parse($data['phone'], $data['country']);
-            if ($util->isValidNumber($parsed)) {
-                $phone = $util->format($parsed, PhoneNumberFormat::E164);
+        if (filled($data['phone'] ?? null)) {
+            try {
+                $util = PhoneNumberUtil::getInstance();
+                $parsed = $util->parse($data['phone'], $data['country']);
+                if ($util->isValidNumber($parsed)) {
+                    $phone = $util->format($parsed, PhoneNumberFormat::E164);
+                }
+            } catch (NumberParseException) {
             }
-        } catch (NumberParseException) {
-        }
-        if (! $phone) {
-            return $fail(['phone' => 'Please enter a valid phone number for the selected country.']);
+            if (! $phone) {
+                return $fail(['phone' => 'Please enter a valid phone number for the selected country, or leave it blank.']);
+            }
         }
 
         $package = ! empty($data['package_id']) ? Package::find($data['package_id']) : null;
@@ -96,7 +98,7 @@ class EnquiryController extends Controller
             'first_name' => $this->clean($data['first_name']),
             'last_name' => $this->clean($data['last_name']),
             'email' => mb_strtolower(trim($data['email'])),
-            'country_code' => Countries::LIST[$data['country']][0],
+            'country_code' => $phone ? Countries::LIST[$data['country']][0] : null,
             'phone_e164' => $phone,
             'travel_date' => $this->clean($data['travel_date'] ?? null),
             'second_quote' => $data['second_quote'] ?? null,

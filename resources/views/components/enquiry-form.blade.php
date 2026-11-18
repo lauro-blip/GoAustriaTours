@@ -47,12 +47,12 @@
     <x-form-field name="email" type="email" label="Email" required :id="$uid" :active="$active" autocomplete="email" />
 
     <div class="grid grid-cols-[minmax(0,9rem)_1fr] gap-3">
-        <x-form-field name="country" type="select" label="Country code" required :id="$uid" :active="$active">
+        <x-form-field name="country" type="select" label="Country code" :id="$uid" :active="$active">
             @foreach(\App\Support\Countries::options() as $iso => [$dial, $label])
                 <option value="{{ $iso }}" @selected(($active ? old('country') : null) === $iso || (! $active && $iso === 'US') || ($active && ! old('country') && $iso === 'US'))>{{ $iso }} {{ $dial }}</option>
             @endforeach
         </x-form-field>
-        <x-form-field name="phone" type="tel" label="Phone" required :id="$uid" :active="$active" autocomplete="tel-national" />
+        <x-form-field name="phone" type="tel" label="Phone (optional)" :id="$uid" :active="$active" autocomplete="tel-national" />
     </div>
 
     @if($extended)
@@ -72,16 +72,9 @@
         </div>
     @endif
 
-    <div class="grid gap-4 sm:grid-cols-2">
-        <x-form-field name="travel_date" label="Preferred travel date (approx.)" placeholder="e.g. June 2027" :id="$uid" :active="$active" />
-        <x-form-field name="second_quote" type="select" label="Would you like a second quote from a partner?" :id="$uid" :active="$active">
-            <option value="">Select</option>
-            <option value="Yes" @selected($active && old('second_quote') === 'Yes')>Yes</option>
-            <option value="No" @selected($active && old('second_quote') === 'No')>No</option>
-        </x-form-field>
-    </div>
+    <x-form-field name="travel_date" label="Preferred travel date (approx.)" placeholder="e.g. June 2027" :id="$uid" :active="$active" />
 
-    <x-form-field name="special_request" type="textarea" label="Special request" :id="$uid" :active="$active" />
+    <x-form-field name="special_request" type="textarea" label="Anything we should know? (optional)" :id="$uid" :active="$active" />
 
     {{-- Required consent. Unticked by default; wording is fixed (see App\Support\Consent). --}}
     <div>

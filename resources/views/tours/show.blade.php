@@ -14,7 +14,7 @@
         <div>
             <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{{ $tourType->tagline }}</p>
             <h1 class="mt-3 text-5xl sm:text-6xl !text-white">{{ $tourType->name }} tours of Austria</h1>
-            <p class="mt-5 max-w-xl text-lg text-white/85">{{ $tourType->summary }}</p>
+            <p class="mt-5 max-w-xl text-lg text-white/90">{{ $tourType->summary }}</p>
         </div>
         <div class="rounded-2xl border-4 border-quiz bg-white p-6 text-ink">
             <h2 class="font-sans text-lg font-extrabold uppercase tracking-wider text-brand text-center">Get a free {{ $tourType->name }} quote</h2>

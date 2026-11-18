@@ -1,9 +1,9 @@
 @extends('admin.layout')
-@section('title', 'Settings')
-@section('heading', 'Site settings')
+@section('title', $page['title'])
+@section('heading', $page['heading'])
 
 @section('content')
-<form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="max-w-3xl space-y-8">
+<form method="POST" action="{{ $page['action'] }}" enctype="multipart/form-data" class="max-w-3xl space-y-8">
     @csrf @method('PUT')
     @foreach($groups as $group => $keys)
         <fieldset class="space-y-4 rounded-xl border border-line bg-white p-6">
@@ -26,10 +26,12 @@
         </fieldset>
     @endforeach
 
+    @if($page['ghl'])
     <fieldset class="rounded-xl border border-line bg-white p-6">
         <legend class="px-2 text-2xl font-display">GoHighLevel</legend>
         <p class="text-sm">Sync status: <strong>{{ $ghlOn ? 'ON' : 'OFF' }}</strong>. Manage the token and location ID in <a href="{{ route('admin.ghl.edit') }}" class="underline">Admin &gt; GoHighLevel</a>.</p>
     </fieldset>
+    @endif
     <x-button type="submit" variant="secondary">Save settings</x-button>
 </form>
 @endsection

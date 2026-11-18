@@ -58,6 +58,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('pages/{page}', [Admin\PageController::class, 'update'])->name('pages.update');
         Route::get('settings', [Admin\SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');
+        Route::get('trust', [Admin\TrustController::class, 'edit'])->name('trust.edit');
+        Route::put('trust', [Admin\TrustController::class, 'update'])->name('trust.update');
         Route::get('ghl', [Admin\GhlController::class, 'edit'])->name('ghl.edit');
         Route::put('ghl', [Admin\GhlController::class, 'update'])->name('ghl.update');
         Route::post('ghl/test', [Admin\GhlController::class, 'test'])->middleware('throttle:10,1')->name('ghl.test');

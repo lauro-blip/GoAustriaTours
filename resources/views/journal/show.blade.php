@@ -26,7 +26,7 @@
 
         <div class="mt-12 rounded-2xl bg-brand p-8 text-center text-white">
             <h2 class="text-3xl !text-white">Planning your Austria trip?</h2>
-            <p class="mt-2 text-white/85">Tell us what you love and get a free, personal quote.</p>
+            <p class="mt-2 text-white/90">Tell us what you love and get a free, personal quote.</p>
             <x-button variant="light" class="mt-5" @click="$store.modal.show({})">Plan My Journey</x-button>
         </div>
     </div>

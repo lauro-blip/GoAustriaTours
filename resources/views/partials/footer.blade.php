@@ -1,4 +1,4 @@
-<footer class="bg-brand-dark text-white/80 mt-auto">
+<footer class="bg-brand-dark text-white/90 mt-auto">
     <div class="container-page py-12 grid gap-10 md:grid-cols-3">
         <div>
             <img src="{{ asset('images/logo-white.png') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="960" height="320" loading="lazy" class="h-16 w-auto">

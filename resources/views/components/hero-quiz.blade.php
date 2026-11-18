@@ -46,7 +46,7 @@
         </template>
 
         <div x-show="isContact" class="mt-4">
-            <h3 class="font-display text-3xl !font-normal normal-case leading-tight text-center text-brand">Where should we send your <em class="text-accent-text">personal quote?</em></h3>
+            <h3 class="font-display text-3xl !font-medium normal-case leading-tight text-center text-brand">Where should we send your <em class="text-accent-text">personal quote?</em></h3>
             <div class="mt-4">
                 <x-enquiry-form form-name="hero-quiz" uid="quiz" button="Request My Quote">
                     <template x-for="(v, k) in answers" :key="k"><input type="hidden" :name="`quiz_answers[${k}]`" :value="v"></template>

@@ -41,13 +41,11 @@ class JournalTest extends TestCase
         $this->get('/journal')->assertOk()->assertDontSee('When to Visit Austria')->assertDontSee('Three Days in Vienna');
     }
 
-    public function test_home_shows_journal_and_package_carousel_sections(): void
+    public function test_home_shows_journal_section(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Planning Your Next Austrian Escape?')
             ->assertSee('Austria travel stories and tips')
-            ->assertSee('/journal/self-drive-or-coach-how-to-choose', false)
-            ->assertSee('Alpine Highlights by Coach');
+            ->assertSee('/journal/self-drive-or-coach-how-to-choose', false);
     }
 
     public function test_sitemap_includes_journal(): void

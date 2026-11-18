@@ -16,27 +16,26 @@ class PageController extends Controller
         return view('pages.home', [
             'page' => Page::slug('home'),
             'tourTypes' => TourType::active()->get(),
-            'destinations' => \App\Models\Destination::active()->get(['name', 'slug']),   // hero "Where to next?" selector
-            'packages' => static::featuredPackages(),
-            'carouselPackages' => Package::published()->with(['tourType', 'destination'])->get(),
+            'curatedPackages' => static::curatedPackages(),
+            'featuredPackages' => Package::published()->where('is_featured', true)->with(['tourType', 'destination'])->get(),
             'posts' => \App\Models\Post::published()->take(3)->get(),
             'testimonials' => Testimonial::where('is_active', true)->orderBy('sort_order')->get(),
             // FAQs whose answer still holds a "[CONFIRM: ...]" placeholder stay hidden until the answer is written.
-            'faqs' => Faq::where('is_active', true)->where('answer', 'not like', '%[CONFIRM%')->orderBy('sort_order')->get(),
+            'faqs' => Faq::where('is_active', true)->where('answer', 'not like', '%[CONFIRM%')->orderBy('sort_order')->take(6)->get(),   // the home FAQ shows the first 6
             'quizSteps' => QuizStep::forQuiz(),
         ]);
     }
 
-    /** Featured packages, 3 per page ('featured_page' query param). Used by the home page and the ajax endpoint. */
-    public static function featuredPackages()
+    /** Curated packages (every published package), 6 per page ('curated_page' query param). Used by the home page and the ajax endpoint. */
+    public static function curatedPackages()
     {
-        return Package::published()->where('is_featured', true)->with(['tourType', 'destination'])
-            ->paginate(3, ['*'], 'featured_page')->withPath(route('home'));
+        return Package::published()->with(['tourType', 'destination'])
+            ->paginate(6, ['*'], 'curated_page')->withPath(route('home'));
     }
 
-    public function featured()
+    public function curated()
     {
-        return view('partials.featured-packages', ['packages' => static::featuredPackages()]);
+        return view('partials.curated-packages', ['packages' => static::curatedPackages()]);
     }
 
     public function about()

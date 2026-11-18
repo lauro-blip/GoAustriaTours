@@ -62,12 +62,12 @@ Companion docs: `CONTENT_TO_CONFIRM.md` (full list), `IMAGE_CREDITS.md`, `FORMS_
 
 | Done | Item | Where it shows | Where to enter | Your answer |
 |---|---|---|---|---|
-| [ ] | Real package list: names, nights, destinations | Featured packages, carousel, Packages page | Admin > Packages | |
+| [ ] | Real package list: names, nights, destinations | Featured and Curated packages, Packages page | Admin > Packages | |
 | [ ] | **Real "from" prices (USD).** Confirm whether the "pp" (per person) suffix is right | Package cards and pages. Sample prices ($1,790 to $4,290) are illustrative only | Admin > Packages | |
 | [ ] | Descriptions, highlights, itineraries, inclusions, exclusions for each package | Package pages (descriptions say `[CONFIRM: full description.]`) | Admin > Packages | |
 | [ ] | Package photos (upload your own or keep the stock photos) | Package cards and pages | Admin > Packages | |
 | [ ] | Tour type page copy: Self Drive, Escorted, Coach | /tours/self-drive, /escorted, /coach | Admin > Tour types | |
-| [ ] | Remove or change the subtitle "Sample packages shown. Prices and itineraries to be confirmed." once packages are real | Home > Featured packages | **Code** | |
+| [ ] | Remove or change the subtitle "Sample packages shown. Prices and itineraries to be confirmed." once packages are real | Home > Curated packages | **Code** | |
 | [ ] | "Top destinations" trip names and place lists: confirm they are real trips you sell, and where each "Explore Now" should link | Home > Top destinations | **Code** | |
 
 ## 6. Pages and content

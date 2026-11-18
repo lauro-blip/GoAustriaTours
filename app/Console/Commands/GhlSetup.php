@@ -16,7 +16,7 @@ class GhlSetup extends Command
     public function handle(): int
     {
         if (! GhlClient::configured()) {
-            $this->error('GHL_API_TOKEN and GHL_LOCATION_ID must be set in .env first.');
+            $this->error('The GoHighLevel token and location ID must be saved in Admin > GoHighLevel (or GHL_API_TOKEN / GHL_LOCATION_ID in .env) first.');
 
             return self::FAILURE;
         }

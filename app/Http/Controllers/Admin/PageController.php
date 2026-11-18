@@ -11,7 +11,7 @@ class PageController extends Controller
     /** Home page text blocks editable in admin: key => label. */
     public const HOME_SECTIONS = [
         'hero_title' => 'Hero headline (H1)', 'hero_subtitle' => 'Hero subheading',
-        'why_title' => '"Why choose us" heading', 'cta_title' => 'Final call to action heading', 'cta_text' => 'Final call to action text',
+        'cta_title' => 'Final call to action heading', 'cta_text' => 'Final call to action text',
     ];
 
     public function index()

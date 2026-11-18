@@ -57,7 +57,7 @@ class EnquiryController extends Controller
     public function retryGhl(Enquiry $enquiry)
     {
         if (! SyncEnquiryToGhl::enabled()) {
-            return back()->withErrors(['ghl' => 'GoHighLevel sync is off. Add GHL_API_TOKEN and GHL_LOCATION_ID to .env first.']);
+            return back()->withErrors(['ghl' => 'GoHighLevel sync is off. Add the token and location ID in Admin > GoHighLevel first.']);
         }
         $enquiry->update(['ghl_status' => 'pending', 'ghl_error' => null]);
         SyncEnquiryToGhl::dispatch($enquiry->id);

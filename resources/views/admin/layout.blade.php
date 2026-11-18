@@ -13,7 +13,7 @@
         ['admin.dashboard', 'Dashboard'], ['admin.enquiries.index', 'Enquiries'], ['admin.packages.index', 'Packages'],
         ['admin.tour-types.index', 'Tour types'], ['admin.destinations.index', 'Destinations'], ['admin.quiz.index', 'Quiz'],
         ['admin.pages.index', 'Pages'], ['admin.testimonials.index', 'Testimonials'], ['admin.faqs.index', 'FAQs'], ['admin.posts.index', 'Journal'],
-        ['admin.media.index', 'Media'], ['admin.settings.edit', 'Settings'], ['admin.users.index', 'Admin users'],
+        ['admin.media.index', 'Media'], ['admin.settings.edit', 'Settings'], ['admin.ghl.edit', 'GoHighLevel'], ['admin.users.index', 'Admin users'],
     ];
 @endphp
 <div class="lg:flex min-h-screen">
@@ -33,7 +33,7 @@
 
     <main class="flex-1 p-4 sm:p-8 min-w-0">
         <header class="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h1 class="font-display text-4xl">@yield('heading')</h1>
+            <h1 class="font-display text-[32px]">@yield('heading')</h1>
             <div>@yield('actions')</div>
         </header>
         @if(session('status'))<p class="mb-4 rounded-lg border border-green-300 bg-green-50 p-3 text-sm text-green-900" role="status">{{ session('status') }}</p>@endif

@@ -34,7 +34,7 @@
     <div class="container-page flex min-h-[22rem] flex-col justify-end pb-10 pt-24 sm:min-h-[28rem] sm:pb-14">
         <nav aria-label="Breadcrumb" class="text-sm text-white/80"><a class="underline underline-offset-4" href="{{ route('packages.index') }}">Packages</a> <span aria-hidden="true">/</span> {{ $package->title }}</nav>
         <p class="mt-5 text-xs font-semibold uppercase tracking-[0.25em] text-accent">{{ $package->tourType?->name }} &middot; {{ $package->nights }} nights</p>
-        <h1 class="mt-3 max-w-3xl text-4xl sm:text-5xl lg:text-6xl !text-white">{{ $package->title }}</h1>
+        <h1 class="mt-3 max-w-3xl text-[32px] sm:text-[44px] lg:text-[56px] !text-white">{{ $package->title }}</h1>
         @if($package->summary)<p class="mt-4 max-w-2xl text-lg text-white/90">{{ $package->summary }}</p>@endif
     </div>
 </section>

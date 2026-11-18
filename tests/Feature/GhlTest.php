@@ -35,7 +35,7 @@ class GhlTest extends TestCase
             'form_name' => $form, 'first_name' => 'Ada', 'last_name' => 'L', 'email' => 'ada@example.com',
             'country_code' => '+1', 'phone_e164' => '+12025550143', 'consent_given' => true, 'consent_text' => 'x',
             'terms_version' => '2026-01', 'consented_at' => now(), 'tracking_first' => $touch, 'tracking_last' => $touch,
-            'quiz_answers' => ['season' => 'Summer', 'budget' => '$2K per person'],
+            'quiz_answers' => ['season' => 'Summer', 'nights' => '7 nights'],
         ]);
     }
 

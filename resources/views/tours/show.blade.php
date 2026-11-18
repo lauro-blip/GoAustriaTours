@@ -27,7 +27,7 @@
     <div class="container-page">
         <div class="prose-content max-w-3xl mx-auto">{!! $tourType->body !!}</div>
         @if($packages->isNotEmpty())
-            <h2 class="mt-12 mb-8 text-center text-4xl">{{ $tourType->name }} packages</h2>
+            <h2 class="mt-12 mb-8 text-center text-[32px]">{{ $tourType->name }} packages</h2>
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">@foreach($packages as $p)<x-package-card :package="$p" />@endforeach</div>
         @endif
     </div>

@@ -28,7 +28,7 @@
 
     <fieldset class="rounded-xl border border-line bg-white p-6">
         <legend class="px-2 text-2xl font-display">GoHighLevel</legend>
-        <p class="text-sm">Sync status: <strong>{{ $ghlOn ? 'ON' : 'OFF' }}</strong>. The token and location ID are set in the server <code>.env</code> file (GHL_API_TOKEN, GHL_LOCATION_ID) and cannot be edited here.</p>
+        <p class="text-sm">Sync status: <strong>{{ $ghlOn ? 'ON' : 'OFF' }}</strong>. Manage the token and location ID in <a href="{{ route('admin.ghl.edit') }}" class="underline">Admin &gt; GoHighLevel</a>.</p>
     </fieldset>
     <x-button type="submit" variant="secondary">Save settings</x-button>
 </form>

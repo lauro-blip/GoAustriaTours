@@ -10,7 +10,7 @@
 <body class="min-h-screen bg-brand flex items-center justify-center p-4">
     <form method="POST" action="{{ route('admin.login.submit') }}" class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl space-y-4">
         @csrf
-        <h1 class="text-4xl text-center">Admin login</h1>
+        <h1 class="text-[32px] text-center">Admin login</h1>
         <x-form-field name="email" type="email" label="Email" required autocomplete="username" id="login" />
         <x-form-field name="password" type="password" label="Password" required autocomplete="current-password" id="login" />
         <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remember" value="1" class="accent-brand"> Keep me signed in</label>

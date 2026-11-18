@@ -23,30 +23,30 @@
     </div>
 
     <div class="flex flex-1 flex-col px-[18px] pb-[22px] pt-5">
-        <div class="flex items-center justify-between gap-3 text-[11px] uppercase">
+        <div class="flex items-center justify-between gap-3 text-xs uppercase">
             <span>{{ $package->tourType?->name }}</span>
             <span class="flex items-center gap-1.5"><x-icon name="calendar" :stroke="1.4" class="size-[15px] text-accent-text" />{{ $package->nights }} nights</span>
         </div>
-        <h3 class="mt-2.5 text-2xl font-bold leading-tight"><a href="{{ route('packages.show', $package) }}">{{ $package->title }}</a></h3>
+        <h3 class="mt-2.5 text-2xl font-normal leading-tight"><a href="{{ route('packages.show', $package) }}">{{ $package->title }}</a></h3>
 
         @if($places)
             <p class="mt-3.5 text-xs font-bold uppercase">Itinerary:</p>
-            <p class="mt-2.5 flex items-start gap-2 text-[13px] leading-5"><x-icon name="pin" :stroke="1.3" class="mt-0.5 size-4 shrink-0" /><span>{{ $places }}</span></p>
+            <p class="mt-2.5 flex items-start gap-2 text-sm leading-5"><x-icon name="pin" :stroke="1.3" class="mt-0.5 size-4 shrink-0" /><span>{{ $places }}</span></p>
         @endif
 
-        <a href="{{ route('packages.show', $package) }}" class="mt-8 self-start border-b border-brand pb-0.5 text-[10px] font-medium uppercase tracking-[0.2em] hover:border-accent hover:text-accent-text" aria-label="Explore {{ $package->title }}">Explore tour</a>
+        <a href="{{ route('packages.show', $package) }}" class="mt-8 self-start border-b border-brand pb-0.5 text-xs font-medium uppercase tracking-[0.2em] hover:border-accent hover:text-accent-text" aria-label="Explore {{ $package->title }}">Explore tour</a>
 
         <div class="mt-auto pt-6"><div class="flex items-end justify-between gap-3 border-t border-accent/30 pt-7">
             <div>
                 @if($package->price_from)
-                    <p class="text-[10px] uppercase tracking-wider">Starting from</p>
+                    <p class="text-xs uppercase tracking-wider">Starting from</p>
                     <p class="mt-1 leading-none"><strong class="text-xl font-semibold text-brand">${{ number_format($package->price_from) }}</strong><span class="ml-1 text-xs">per person</span></p>
                 @else
-                    <p class="text-[10px] uppercase tracking-wider">Price</p>
+                    <p class="text-xs uppercase tracking-wider">Price</p>
                     <p class="mt-1 leading-none"><strong class="text-xl font-semibold text-brand">On request</strong></p>
                 @endif
             </div>
-            <x-button @click="$store.modal.show({ package_id: {{ $package->id }} })" class="!h-10 !rounded-sm !px-[14px] !py-0 !text-[11px] uppercase tracking-wide" aria-label="Enquire about {{ $package->title }}">Enquire</x-button>
+            <x-button @click="$store.modal.show({ package_id: {{ $package->id }} })" class="!h-10 !rounded-sm !px-[14px] !py-0 !text-xs uppercase tracking-wide" aria-label="Enquire about {{ $package->title }}">Enquire</x-button>
         </div></div>
     </div>
 </x-card>

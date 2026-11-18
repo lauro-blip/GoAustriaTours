@@ -16,7 +16,7 @@ class GhlTest extends Command
     public function handle(): int
     {
         if (! GhlClient::configured()) {
-            $this->error('GHL is OFF: GHL_API_TOKEN and/or GHL_LOCATION_ID are empty in .env.');
+            $this->error('GHL is OFF: the token and/or location ID are empty (Admin > GoHighLevel, or .env).');
 
             return self::FAILURE;
         }

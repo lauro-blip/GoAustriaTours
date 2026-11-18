@@ -19,7 +19,7 @@
             <time datetime="{{ $post->published_at?->toDateString() }}" class="font-medium normal-case tracking-normal text-muted">{{ $post->published_at?->format('F j, Y') }}</time>
             <span aria-hidden="true">&middot;</span><span class="font-medium normal-case tracking-normal text-muted">{{ $post->readingMinutes() }} min read</span>
         </p>
-        <h1 class="mt-3 text-4xl sm:text-5xl">{{ $post->title }}</h1>
+        <h1 class="mt-3 text-[32px] sm:text-[44px]">{{ $post->title }}</h1>
         @if($post->excerpt)<p class="mt-4 text-lg text-muted">{{ $post->excerpt }}</p>@endif
         <img src="{{ $post->imageUrl() }}" alt="{{ $post->image_alt }}" width="1200" height="800" class="mt-8 w-full rounded-2xl object-cover">
         <div class="prose-content mt-8">{!! $post->body !!}</div>

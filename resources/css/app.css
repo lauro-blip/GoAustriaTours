@@ -1,9 +1,5 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/dm-sans';
-@import '@fontsource/cormorant-garamond/600.css';
-@import '@fontsource/cormorant-garamond/700.css';
-@import '@fontsource/cormorant-garamond/600-italic.css';
-@import '@fontsource/cormorant-garamond/700-italic.css';
+/* Fonts are imported in resources/js/app.js: Tailwind's CSS inlining breaks the font url() paths on Windows. */
 
 @source '../../storage/framework/views/*.php';
 @source "../**/*.blade.php";
@@ -40,7 +36,7 @@
 @layer base {
     html { scroll-behavior: smooth; }
     body { @apply bg-ivory text-ink font-sans antialiased; }
-    h1, h2, h3 { @apply font-display font-bold capitalize text-brand leading-tight; }
+    h1, h2, h3 { @apply font-display font-normal capitalize text-brand leading-tight; }
     :focus-visible { outline: 3px solid var(--color-quiz); outline-offset: 2px; }
     @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
@@ -67,13 +63,6 @@
 /* Scroll reveal (resources/js/reveal.js). Only hidden once JS has marked the page .reveal-ready, so no-JS visitors see everything. */
 .reveal-ready [data-reveal] { opacity: 0; transform: translateY(18px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
 .reveal-ready [data-reveal].is-in { opacity: 1; transform: none; }
-
-/* Hero place-name ticker: the list is rendered twice, so sliding left by half the track loops seamlessly. Fades out at both ends. */
-@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.marquee { mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); }
-.marquee-track { animation: marquee 38s linear infinite; }
-.marquee:hover .marquee-track { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
 
 /* Home hero background: 3 slides x 8s on a 24s loop. Each fades in/out with overlap (smooth crossfade) while slowly zooming in (Ken Burns).
    Slide 1 starts 2s into its cycle so it is fully visible on first paint. */

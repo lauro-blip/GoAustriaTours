@@ -1,7 +1,14 @@
+import '@fontsource-variable/dm-sans';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/cormorant-garamond/600-italic.css';
+import '@fontsource/cormorant-garamond/700.css';
+import '@fontsource/cormorant-garamond/700-italic.css';
 import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
 import { quiz, enquiryForm, loadRecaptcha } from './forms';
-import { initFeaturedPackages } from './featured';
+import { initCuratedPackages } from './curated';
 import { initReveal } from './reveal';
 
 window.Alpine = Alpine;
@@ -23,5 +30,5 @@ Alpine.store('modal', {
 });
 
 Alpine.start();
-initFeaturedPackages();
+initCuratedPackages();
 initReveal();

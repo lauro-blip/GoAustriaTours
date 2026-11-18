@@ -163,6 +163,11 @@ class ContentSeeder extends Seeder
             ['When is the best time to visit Austria?', 'Summer suits hiking and the lakes, autumn the colours and wine harvest, winter the Christmas markets and skiing, spring the blossoms and fewer crowds.'],
             ['Can I tailor a tour?', '[CONFIRM: customisation options.]'],
             ['What is included in the price?', '[CONFIRM: standard inclusions.]'],
+            // General travel information (no business claims). Review before publishing.
+            ['How many days should I spend in Austria?', 'Many travellers choose 7 to 10 days, which allows time for Vienna, Salzburg and either the Salzkammergut lakes or Tyrol without rushing. Shorter trips work well around a single region, and longer ones allow a slower pace.'],
+            ['Do I need a vignette to drive on Austrian motorways?', 'Yes. Cars on Austrian motorways need a vignette, available as a digital or sticker version. Some tunnels and mountain roads, such as the Grossglockner High Alpine Road, charge a separate toll. In wintry conditions between 1 November and 15 April, winter equipment is required.'],
+            ['What currency is used, and is tipping expected?', 'Austria uses the euro. Cards are widely accepted, though cash is useful in small villages and mountain huts. Tipping is appreciated rather than obligatory: rounding up or adding around 5 to 10 percent in restaurants is customary.'],
+            ['What language is spoken, and what should I pack?', 'German is the official language, and English is widely spoken in hotels, restaurants and tourist areas. Alpine weather can change quickly, so layers and comfortable walking shoes are worth packing in any season.'],
         ] as $i => [$q, $a]) {
             Faq::create(['question' => $q, 'answer' => $a, 'sort_order' => $i + 1]);
         }

@@ -30,7 +30,7 @@ Nothing below was invented as fact; each is a placeholder in the site. Search th
 ## Accounts and keys
 - Google Tag Manager ID and Google Ads conversion tag
 - Production reCAPTCHA v2 keys
-- GoHighLevel PIT and location ID (then `php artisan ghl:setup`)
+- GoHighLevel PIT and location ID (enter in Admin > GoHighLevel, then `php artisan ghl:setup`)
 - SMTP mail settings for production
 - Hero photo credits (CC BY / BY-SA) must be shown publicly before launch.
 - Journey intro section photo (`public/images/hero/why-alps.webp`) is a low-res crop from a design mock-up: replace with the original/licensed image.

@@ -11,10 +11,11 @@ Go to **/admin** and sign in. Your first login comes from the server's `.env` fi
 - **Pages:** home page text blocks, About, Contact, Terms, Privacy and Thank You (title, SEO fields, content, and a "hide from search engines" switch). Terms and Privacy are **starter templates only**: have them reviewed professionally.
 - **Testimonials / FAQs:** home page reviews and questions. Untick "placeholder" only for real, permitted reviews.
 - **Media:** upload images (JPG/PNG/WebP up to 8 MB). They are converted to WebP and resized automatically. Always write alt text.
-- **Settings:** brand and legal company name (used in the consent text), logo, favicon, phone, email, address, social links, staff notification emails (comma separated), Google Tag Manager ID, reCAPTCHA keys, footer text, default SEO text and image. GoHighLevel shows ON/OFF only: its keys are set on the server.
+- **Settings:** brand and legal company name (used in the consent text), logo, favicon, phone, email, address, social links, staff notification emails (comma separated), Google Tag Manager ID, reCAPTCHA keys, footer text, default SEO text and image. GoHighLevel has its own menu item (below).
 - **Admin users:** add or remove staff. You cannot delete yourself or the last admin.
 
 ## Good to know
 - The consent wording on forms is fixed on purpose. Only the company name changes (Settings > legal company name).
 - Prices shown as `[CONFIRM: price]` appear because no price has been entered yet.
 - Changes appear on the site straight away.
+- **GoHighLevel:** paste the Private Integration Token (PIT) and the Location ID, press Save, then Test connection (read-only; it creates nothing). The token is stored encrypted and is never shown again (only its last 4 characters); leave it blank to keep the saved one. Values saved here override the server `.env` ones; tick "Remove the saved values" to fall back to `.env`. After the first successful connection, run `php artisan ghl:setup` on the server once to create the custom fields.

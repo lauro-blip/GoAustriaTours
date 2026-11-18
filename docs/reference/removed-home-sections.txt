@@ -1,0 +1,177 @@
+Home page sections removed in the "slim down" update. Paste back into resources/views/pages/home.blade.php to restore.
+Needs $carouselPackages from PageController (removed) for the Discover carousel; the Why section used $page->section('why_title').
+
+{{-- 5c. TRAVEL STYLE: pick an interest. A list on the left drives a large photo on the right. Photos reuse public/images/gallery (credits already listed). --}}
+@php
+    $styles = [
+        ['vienna', 'Culture & Imperial Cities', 'Palaces, opera houses and grand cafés in Vienna and beyond.', 'Imperial elegance'],
+        ['grossglockner', 'Alpine Adventure', 'High mountain roads, hiking trails and wide Alpine views.', 'Mountain drives'],
+        ['hallstatt', 'Lakes & Villages', 'Slow days in lakeside villages and the Salzkammergut.', 'Lakeside serenity'],
+        ['wachau', 'Wine & Gastronomy', 'Vineyard terraces, local tables and the Danube valley.', 'Vineyard escapes'],
+    ];
+@endphp
+<section class="section relative isolate overflow-hidden bg-soft-white" aria-labelledby="style-title" x-data="{ active: 0 }">
+    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <div class="absolute -right-40 -top-32 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]"></div>
+        <p class="absolute -left-4 bottom-0 select-none font-display text-[12rem] font-semibold italic leading-none text-brand/[0.035] lg:text-[22rem]">Style</p>
+    </div>
+    <div class="container-page grid items-center gap-12 lg:grid-cols-[5fr_6fr] lg:gap-24">
+        <div>
+            <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Travel style</p>
+            <h2 id="style-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Find the Austria That <em class="text-accent-text">Suits You.</em></h2>
+            <p class="mt-6 max-w-lg text-lg leading-relaxed text-brand/85">Every traveller is drawn to something different. Tell us what moves you, and we will shape the journey around it.</p>
+
+            <ul class="mt-10 border-t border-accent/40">
+                @foreach($styles as $i => [$slug, $title, $text, $tag])
+                    <li class="border-b border-line">
+                        <button type="button" @mouseenter="active = {{ $i }}" @focus="active = {{ $i }}" @click="active = {{ $i }}" :aria-expanded="active === {{ $i }}" aria-controls="style-panel-{{ $i }}"
+                            class="group flex w-full items-center gap-5 py-5 text-left">
+                            <span class="w-8 shrink-0 font-display text-lg italic text-accent-text" aria-hidden="true">0{{ $i + 1 }}</span>
+                            <span class="flex-1 font-display text-2xl font-semibold leading-tight text-brand/60 transition-colors duration-300 group-hover:text-brand sm:text-3xl {{ $i === 0 ? '!text-brand' : '' }}" :class="active === {{ $i }} ? '!text-brand' : ''">{{ $title }}</span>
+                            <span class="h-px w-6 bg-accent transition-all duration-500 {{ $i === 0 ? 'w-12' : '' }}" :class="active === {{ $i }} ? '!w-12' : ''" aria-hidden="true"></span>
+                        </button>
+                        <div id="style-panel-{{ $i }}" class="grid transition-[grid-template-rows] duration-500 ease-out motion-reduce:transition-none {{ $i === 0 ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]' }}" :class="active === {{ $i }} ? '!grid-rows-[1fr]' : '!grid-rows-[0fr]'">
+                            <div class="overflow-hidden">
+                                <div class="pb-6 pl-[3.25rem]">
+                                    <p class="max-w-sm leading-relaxed text-brand/85">{{ $text }}</p>
+                                    <button type="button" @click="$store.modal.show({})" class="mt-4 border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-brand transition hover:text-accent-text" tabindex="{{ $i === 0 ? 0 : -1 }}" :tabindex="active === {{ $i }} ? 0 : -1">Plan this style <span aria-hidden="true">&rarr;</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+
+        {{-- Photo stage: the photos crossfade as the list selection changes --}}
+        <div class="relative mx-auto w-full max-w-xl pb-6 pr-6 lg:max-w-none">
+            <span class="absolute bottom-0 right-0 top-6 left-6 border border-accent/60" aria-hidden="true"></span>
+            <div class="relative aspect-[4/5] overflow-hidden bg-brand-dark shadow-[0_40px_80px_-40px_rgb(10_42_64/0.7)] sm:aspect-[5/6] lg:aspect-[4/5]">
+                @foreach($styles as $i => [$slug, $title, $text, $tag])
+                    <figure class="absolute inset-0 transition-opacity duration-[900ms] ease-out motion-reduce:transition-none {{ $i === 0 ? 'opacity-100' : 'opacity-0' }}" :class="active === {{ $i }} ? '!opacity-100' : '!opacity-0'" @if($i > 0) aria-hidden="true" @endif>
+                        <img src="{{ asset('images/gallery/'.$slug.'.webp') }}" alt="{{ $i === 0 ? $title : '' }}" width="1200" height="1500" loading="{{ $i === 0 ? 'eager' : 'lazy' }}" class="photo-grade h-full w-full object-cover transition-transform duration-[2500ms] ease-out motion-reduce:transition-none {{ $i === 0 ? 'scale-100' : 'scale-110' }}" :class="active === {{ $i }} ? '!scale-100' : '!scale-110'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-transparent to-transparent"></div>
+                        <figcaption class="absolute inset-x-0 bottom-0 p-7 sm:p-9">
+                            <span class="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>{{ $tag }}</span>
+                            <span class="mt-2 block font-display text-3xl font-semibold italic text-white sm:text-4xl">{{ $title }}</span>
+                        </figcaption>
+                    </figure>
+                @endforeach
+                <span class="pointer-events-none absolute inset-4 border border-white/30 sm:inset-6" aria-hidden="true"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- 6. WHY: cinematic photo banner with the heading; a white panel with the four reasons overlaps its lower edge --}}
+<section class="relative bg-ivory pb-[45px] md:pb-[90px]" aria-labelledby="why-title">
+    <div class="relative isolate flex min-h-[26rem] items-start justify-center overflow-hidden bg-brand-dark px-[15px] pt-[45px] text-center text-white md:px-[60px] md:pt-[90px] lg:min-h-[34rem]">
+        <img src="{{ asset('images/gallery/hallstatt.webp') }}" alt="" width="1600" height="1200" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover">
+        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-brand-dark/85 via-brand-dark/55 to-brand-dark/80" aria-hidden="true"></div>
+        <div class="max-w-3xl">
+            <p class="flex items-center justify-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Why {{ $site['brand_name'] ?? 'GoAustriaTours' }}<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
+            <h2 id="why-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">{{ $page->section('why_title', 'Why travellers choose us') }}</h2>
+        </div>
+    </div>
+
+    <div class="container-page relative z-10 -mt-24 lg:-mt-32">
+        <div class="bg-white shadow-[0_40px_90px_-40px_rgb(10_42_64/0.55)]">
+            <div class="grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+                @foreach([
+                    ['Local Austria Experts', 'Itineraries built by people who know the country, with routes beyond the obvious stops.'],
+                    ['Tailored To You', 'Self drive, escorted or coach, shaped around your pace, interests and budget.'],
+                    ['Handpicked Stays', 'Boutique properties and Alpine retreats, chosen for location and character.'],
+                    ['Peace Of Mind', 'A clear quote before you commit and a real person by your side, from enquiry to return home.'],
+                ] as $i => [$t, $d])
+                    <div class="group relative bg-white p-8 transition-colors duration-500 hover:bg-ivory sm:p-10">
+                        <span class="block font-display text-6xl font-semibold italic leading-none text-accent" aria-hidden="true">0{{ $i + 1 }}</span>
+                        <h3 class="mt-6 text-2xl sm:text-3xl">{{ $t }}</h3>
+                        <span class="mt-4 block h-px w-10 bg-accent transition-all duration-500 group-hover:w-20" aria-hidden="true"></span>
+                        <p class="mt-4 leading-relaxed text-brand/85">{{ $d }}</p>
+                    </div>
+                @endforeach
+            </div>
+            <div class="flex flex-col items-center justify-between gap-5 border-t border-line px-8 py-6 text-center sm:flex-row sm:px-10 sm:text-left">
+                <p class="font-display text-xl italic text-brand sm:text-2xl">Austria, planned around you.</p>
+                <x-button class="!px-8 !py-3.5 uppercase tracking-wider" @click="$store.modal.show({})">Plan My Journey</x-button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+=========================
+{{-- 8c. SEAMLESS PAYMENTS: framed split panel, photo on the left (Grossglockner, see IMAGE_CREDITS.md) --}}
+<section class="section relative isolate overflow-hidden bg-ivory" aria-labelledby="payments-title">
+    <div class="pointer-events-none absolute -right-40 top-10 -z-10 size-[32rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]" aria-hidden="true"></div>
+    <div class="container-page">
+        <div class="grid overflow-hidden bg-white shadow-[0_40px_90px_-50px_rgb(10_42_64/0.55)] lg:grid-cols-[5fr_7fr]">
+            <div class="relative isolate min-h-[22rem] lg:min-h-full">
+                <img src="{{ asset('images/gallery/grossglockner.webp') }}" alt="" width="1600" height="1200" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover">
+                <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/90 via-brand-dark/25 to-brand-dark/10" aria-hidden="true"></div>
+                <span class="pointer-events-none absolute inset-4 border border-accent/60 sm:inset-6" aria-hidden="true"></span>
+                <div class="absolute inset-x-0 bottom-0 p-8 sm:p-12">
+                    <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>Travel with confidence</p>
+                    <p class="mt-4 max-w-xs font-display text-3xl font-semibold italic leading-tight text-white sm:text-4xl">Every detail, quietly taken care of.</p>
+                </div>
+            </div>
+            <div class="p-8 sm:p-12 lg:p-16">
+                <h2 id="payments-title" class="text-[32px] leading-[1.05] sm:text-[44px]">Seamless Payments<br><em class="text-accent-text">Simple, Secure &amp; Stress-Free.</em></h2>
+                <p class="mt-6 max-w-xl text-lg leading-relaxed text-brand/85">Make booking your Austria getaway simple and stress-free with secure payments, flexible options, and hassle-free confirmations.</p>
+                <ul class="mt-10 grid border-t border-accent/40 sm:grid-cols-2">
+                    @foreach([
+                        ['users', 'Individual Payments', 'Each traveller pays their share online with ease.'],
+                        ['lock', 'Secure Transactions', 'Enjoy safe and reliable payments from anywhere.'],
+                        ['mail', 'Instant Confirmation', 'Receive booking confirmations straight to your inbox.'],
+                        ['card', 'Flexible Options', 'Choose convenient payment options that suit your group.'],
+                    ] as $i => [$ic, $t, $d])
+                        <li class="flex gap-5 border-b border-line py-7 sm:pr-6 {{ $i % 2 ? 'sm:border-l sm:pl-8 sm:pr-0' : '' }}">
+                            <x-icon :name="$ic" :stroke="1" class="size-10 shrink-0 text-accent-text" />
+                            <div><h3 class="text-2xl">{{ $t }}</h3><p class="mt-1.5 text-brand/85">{{ $d }}</p></div>
+                        </li>
+                    @endforeach
+                </ul>
+                <x-button class="mt-10 !px-8 !py-3.5 uppercase tracking-wider" @click="$store.modal.show({})">Request My Quote</x-button>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- 8d. DISCOVER AUSTRIA: package carousel (CSS scroll-snap, Alpine prev/next) --}}
+@if($carouselPackages->isNotEmpty())
+<section class="section relative isolate overflow-hidden bg-soft-white" aria-labelledby="discover-title"
+    x-data="{ atStart: true, atEnd: false, progress: 0,
+        update() { const t = $refs.track; const max = t.scrollWidth - t.clientWidth; this.atStart = t.scrollLeft <= 4; this.atEnd = t.scrollLeft + t.clientWidth >= t.scrollWidth - 4; this.progress = max > 0 ? Math.min(1, Math.max(0, t.scrollLeft / max)) : 1 },
+        go(dir) { const t = $refs.track; t.scrollBy({ left: dir * t.clientWidth * 0.85, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) } }"
+    x-init="$nextTick(() => update())" @resize.window.debounce.150ms="update()">
+    <div class="pointer-events-none absolute -left-40 top-0 -z-10 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]" aria-hidden="true"></div>
+    <div class="container-page">
+        <div class="mb-12 flex flex-col gap-8 lg:mb-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+            <div class="max-w-3xl">
+                <p class="flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Discover Austria</p>
+                <h2 id="discover-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Planning Your Next <em class="text-accent-text">Austrian Escape?</em></h2>
+                <p class="mt-6 max-w-2xl text-lg leading-relaxed text-brand/85">From Austria’s majestic Alpine landscapes to its charming villages and elegant historic cities, discover remarkable destinations, authentic experiences, and unforgettable journeys, thoughtfully tailored around the way you want to explore Austria.</p>
+            </div>
+            <div class="flex shrink-0 gap-3">
+                <button type="button" @click="go(-1)" :disabled="atStart" class="inline-flex size-14 items-center justify-center rounded-full border border-accent/70 bg-transparent text-brand transition duration-300 hover:bg-brand hover:text-white disabled:pointer-events-none disabled:opacity-30" aria-label="Previous packages"><x-icon name="chevron" :stroke="1.3" class="size-5 rotate-90" /></button>
+                <button type="button" @click="go(1)" :disabled="atEnd" class="inline-flex size-14 items-center justify-center rounded-full border border-accent/70 bg-transparent text-brand transition duration-300 hover:bg-brand hover:text-white disabled:pointer-events-none disabled:opacity-30" aria-label="Next packages"><x-icon name="chevron" :stroke="1.3" class="size-5 -rotate-90" /></button>
+            </div>
+        </div>
+
+        <div x-ref="track" @scroll.passive.throttle.100ms="update()" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Austria tour packages"
+            class="-mx-[15px] flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-[15px] pb-8 pt-1 [scrollbar-width:none] md:-mx-[60px] md:px-[60px] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
+            @foreach($carouselPackages as $p)
+                <div class="w-[85%] shrink-0 snap-start sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]" role="group" aria-roledescription="slide" aria-label="{{ $loop->iteration }} of {{ $carouselPackages->count() }}">
+                    <x-package-card :package="$p" />
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-6 flex items-center gap-8">
+            <div class="relative h-px flex-1 bg-line" aria-hidden="true"><span class="absolute inset-y-[-1px] left-0 h-[3px] w-1/4 bg-accent transition-[left] duration-200" :style="`left: ${progress * 75}%`"></span></div>
+            <a href="{{ route('packages.index') }}" class="shrink-0 border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-brand transition hover:text-accent-text">View all packages <span aria-hidden="true">&rarr;</span></a>
+        </div>
+    </div>
+</section>
+@endif
+

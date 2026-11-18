@@ -4,7 +4,9 @@ namespace App\Services;
 
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\RequestException;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
@@ -15,13 +17,38 @@ class GhlClient
         private ?string $token = null,
         private ?string $locationId = null,
     ) {
-        $this->token ??= config('goaustria.ghl.token');
-        $this->locationId ??= config('goaustria.ghl.location_id');
+        $this->token ??= static::resolvedToken();
+        $this->locationId ??= static::resolvedLocationId();
+    }
+
+    /** Token saved in Admin > GoHighLevel (stored encrypted); null if none or it cannot be decrypted (e.g. APP_KEY changed). */
+    public static function savedToken(): ?string
+    {
+        $stored = Setting::get('ghl_api_token');
+        if (! $stored) {
+            return null;
+        }
+        try {
+            return Crypt::decryptString($stored);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /** Admin-saved values win; the .env values (GHL_API_TOKEN / GHL_LOCATION_ID) are the fallback. */
+    public static function resolvedToken(): ?string
+    {
+        return static::savedToken() ?: (config('goaustria.ghl.token') ?: null);
+    }
+
+    public static function resolvedLocationId(): ?string
+    {
+        return Setting::get('ghl_location_id') ?: (config('goaustria.ghl.location_id') ?: null);
     }
 
     public static function configured(): bool
     {
-        return filled(config('goaustria.ghl.token')) && filled(config('goaustria.ghl.location_id'));
+        return filled(static::resolvedToken()) && filled(static::resolvedLocationId());
     }
 
     public function locationId(): string
@@ -86,7 +113,12 @@ class GhlClient
 
     private function cacheKey(): string
     {
-        return 'ghl.field_ids.'.md5((string) $this->locationId);
+        return static::fieldCacheKey((string) $this->locationId);
+    }
+
+    public static function fieldCacheKey(string $locationId): string
+    {
+        return 'ghl.field_ids.'.md5($locationId);
     }
 
     /** Find an existing contact by email (null if none). */

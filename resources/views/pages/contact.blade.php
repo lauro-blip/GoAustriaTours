@@ -1,4 +1,4 @@
-@extends('layouts.app', ['metaTitle' => $page->meta_title, 'metaDescription' => $page->meta_description, 'noindex' => $page->noindex])
+@extends('layouts.app', ['noStickyBar' => true, 'metaTitle' => $page->meta_title, 'metaDescription' => $page->meta_description, 'noindex' => $page->noindex])
 
 @section('content')
 <section class="section">

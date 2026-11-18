@@ -70,6 +70,14 @@ class SettingController extends Controller
         if (array_key_exists('gtm_id', $rules)) {
             $rules['gtm_id'] = ['nullable', 'regex:/^GTM-[A-Z0-9]+$/'];
         }
+        foreach ([
+            'clarity_id' => '/^[a-z0-9]{6,20}$/', 'google_ads_id' => '/^AW-[0-9]{6,14}$/',
+            'google_ads_conversion_label' => '/^[A-Za-z0-9_-]{6,40}$/', 'meta_pixel_id' => '/^[0-9]{8,20}$/',
+        ] as $key => $regex) {
+            if (array_key_exists($key, $rules)) {
+                $rules[$key] = ['nullable', 'regex:'.$regex];
+            }
+        }
         if (array_key_exists('email', $rules)) {
             $rules['email'] = ['nullable', 'email', 'max:190'];
         }
@@ -87,6 +95,10 @@ class SettingController extends Controller
         }
         $request->validate($rules, [
             'gtm_id.regex' => 'GTM IDs look like GTM-ABC1234.',
+            'clarity_id.regex' => 'The Clarity project ID is lowercase letters and numbers only (6 to 20 characters).',
+            'google_ads_id.regex' => 'The Google Ads tag ID looks like AW-123456789.',
+            'google_ads_conversion_label.regex' => 'Paste only the label, for example AbC-D_efG (without the AW id and slash).',
+            'meta_pixel_id.regex' => 'The Meta Pixel ID is digits only.',
             'phone_tel.regex' => 'Use digits and an optional leading +, with no spaces (for example +18005550100).',
         ]);
 

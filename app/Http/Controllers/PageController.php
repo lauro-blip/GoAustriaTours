@@ -13,9 +13,13 @@ class PageController extends Controller
 {
     public function home()
     {
+        $tourTypes = TourType::active()->get();
+
         return view('pages.home', [
             'page' => Page::slug('home'),
-            'tourTypes' => TourType::active()->get(),
+            'tourTypes' => $tourTypes,
+            // Google Ads message match: ?tour=self-drive (a real, active tour type slug) re-words the hero. Unknown values are ignored.
+            'activeTour' => request()->filled('tour') ? $tourTypes->firstWhere('slug', (string) request('tour')) : null,
             'curatedPackages' => static::curatedPackages(),
             'featuredPackages' => Package::published()->where('is_featured', true)->with(['tourType', 'destination'])->get(),
             'posts' => \App\Models\Post::published()->take(3)->get(),

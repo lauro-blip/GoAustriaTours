@@ -1,7 +1,7 @@
 <footer class="bg-brand-dark text-white/90 mt-auto">
     <div class="container-page py-12 grid gap-10 md:grid-cols-3">
         <div>
-            <img src="{{ asset('images/logo-white.png') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="960" height="320" loading="lazy" class="h-16 w-auto">
+            <img src="{{ asset('images/logo-white.webp') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="500" height="167" loading="lazy" class="h-16 w-auto">
             <p class="mt-3 text-sm">{{ $site['footer_text'] ?? '' }}</p>
         </div>
         <div>

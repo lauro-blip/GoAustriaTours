@@ -68,6 +68,8 @@ class GhlPayload
             'source: '.(($last['utm_source'] ?? null) ?: 'direct'),
             $e->package_name ? 'package: '.$e->package_name : null,
             'form: '.$e->form_name,
+            'nurture: new-lead',   // trigger tag for the follow-up workflow in GoHighLevel (see docs/reference/GHL_FOLLOW_UP.md)
+            self::interestTag($e->page_url),
         ]));
 
         return [
@@ -79,5 +81,14 @@ class GhlPayload
             'tags' => $tags,
             'missing' => $missing,
         ];
+    }
+
+    /** "interest: self-drive" when the enquiry came from a message-matched page (?tour=slug) and the slug is a real tour type. */
+    private static function interestTag(?string $pageUrl): ?string
+    {
+        parse_str((string) parse_url((string) $pageUrl, PHP_URL_QUERY), $q);
+        $slug = is_string($q['tour'] ?? null) ? $q['tour'] : null;
+
+        return $slug && \App\Models\TourType::where('slug', $slug)->exists() ? 'interest: '.$slug : null;
     }
 }

@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-    'metaTitle' => $page->meta_title,
+    'metaTitle' => $activeTour ? $activeTour->name.' Tours of Austria | '.($site['brand_name'] ?? 'GoAustriaTours') : $page->meta_title,
     'metaDescription' => $page->meta_description,
     'transparentHeader' => true,
 ])
@@ -10,22 +10,29 @@
 @endif
 @endpush
 
+@push('preload')
+<link rel="preload" as="image" href="{{ asset('images/hero/hallstatt.webp') }}" imagesrcset="{{ asset('images/hero/hallstatt-768.webp') }} 768w, {{ asset('images/hero/hallstatt-1280.webp') }} 1280w, {{ asset('images/hero/hallstatt.webp') }} 1920w" imagesizes="100vw" fetchpriority="high">
+@endpush
+
 @section('content')
 {{-- 3. HERO --}}
 <section class="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-brand text-white">
     {{-- Hero background: Austrian landmarks, CSS crossfade (credits in docs/reference/IMAGE_CREDITS.md) --}}
     <div class="absolute inset-0 -z-10 bg-brand-dark" aria-hidden="true">
         @foreach([['hallstatt', 'center'], ['salzburg', 'center'], ['schonbrunn', 'center 70%']] as $i => [$img, $pos])
-            <img src="{{ asset('images/hero/'.$img.'.webp') }}" alt="" width="1920" height="{{ ['747', '883', '1055'][$i] }}" @if($i === 0) fetchpriority="high" @else loading="lazy" @endif class="hero-slide absolute inset-0 h-full w-full object-cover" style="object-position: {{ $pos }}">
+            <img src="{{ asset('images/hero/'.$img.'.webp') }}"
+                srcset="{{ asset('images/hero/'.$img.'-768.webp') }} 768w, {{ asset('images/hero/'.$img.'-1280.webp') }} 1280w, {{ asset('images/hero/'.$img.'.webp') }} 1920w" sizes="100vw"
+                alt="" width="1920" height="{{ ['747', '883', '1055'][$i] }}" @if($i === 0) fetchpriority="high" @else loading="lazy" fetchpriority="low" decoding="async" @endif
+                class="hero-slide absolute inset-0 h-full w-full object-cover" style="object-position: {{ $pos }}">
         @endforeach
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-brand-dark/50 to-brand-dark/85"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-brand-dark/60 via-transparent to-transparent"></div>
     </div>
     <div class="container-page md:!max-w-[1510px] grid flex-1 items-center gap-10 pb-16 pt-36 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-12 lg:pt-40">
         <div>
-            <p class="flex items-center gap-4 text-[14px] font-semibold uppercase tracking-[0.35em] text-accent"><span class="h-px w-12 bg-accent" aria-hidden="true"></span>Bespoke journeys</p>
-            <h1 class="mt-6 normal-case leading-[0.9] tracking-tight !text-white text-[5.5rem] sm:text-[8rem] xl:text-[9.5rem]">Austria.<span class="sr-only"> Bespoke tours, planned around you</span></h1>
-            <p class="mt-6 max-w-xl font-display text-2xl italic leading-snug text-white/90 sm:text-4xl">Refined. Timeless. <span class="text-accent">Extraordinary.</span></p>
+            <p class="flex items-center gap-4 text-[14px] font-semibold uppercase tracking-[0.35em] text-accent"><span class="h-px w-12 bg-accent" aria-hidden="true"></span>{{ $activeTour ? $activeTour->name.' tours of Austria' : 'Bespoke journeys' }}</p>
+            <h1 class="mt-6 normal-case leading-[0.9] tracking-tight !text-white text-[5.5rem] sm:text-[8rem] xl:text-[9.5rem]">Austria.<span class="sr-only"> {{ $activeTour ? $activeTour->name.' tours' : 'Bespoke tours' }}, planned around you</span></h1>
+            <p class="mt-6 max-w-xl font-display text-2xl italic leading-snug text-white/90 sm:text-4xl">@if($activeTour && filled($activeTour->tagline)) {{ $activeTour->tagline }} @else Refined. Timeless. <span class="text-accent">Extraordinary.</span> @endif</p>
             <ul class="mt-10 flex flex-wrap items-center gap-y-2 border-t border-white/20 pt-6 text-[14px] font-medium uppercase tracking-[0.2em] text-white/90" aria-label="Why book with us">
                 @foreach(['Tailor-made', 'Local Austria experts', 'Personal quote'] as $t)
                     <li class="flex items-center">{{ $t }}@unless($loop->last)<span class="px-4 text-[7px] text-accent" aria-hidden="true">&#9670;</span>@endunless</li>

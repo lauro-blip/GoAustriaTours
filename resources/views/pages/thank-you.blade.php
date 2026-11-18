@@ -1,4 +1,13 @@
-@extends('layouts.app', ['metaTitle' => 'Thank you | '.($site['brand_name'] ?? ''), 'noindex' => true])
+@extends('layouts.app', ['metaTitle' => 'Thank you | '.($site['brand_name'] ?? ''), 'noindex' => true, 'noStickyBar' => true])
+
+@push('tracking')
+@if(! empty($site['google_ads_id']) && ! empty($site['google_ads_conversion_label']))
+<script>gtag('event', 'conversion', { send_to: @js($site['google_ads_id'].'/'.$site['google_ads_conversion_label']) });</script>
+@endif
+@if(! empty($site['meta_pixel_id']))
+<script>fbq('track', 'Lead');</script>
+@endif
+@endpush
 
 @push('head')
 <script>
@@ -14,6 +23,7 @@
         <x-icon name="check" class="mx-auto size-14 rounded-full bg-brand-soft p-3 text-brand" />
         <h1 class="mt-6 text-5xl">Thank you, we have your enquiry</h1>
         <p class="mt-4 text-lg text-muted">A local Austria expert will be in touch with your free quote soon. In a hurry? Call <a class="underline text-brand" href="tel:{{ $site['phone_tel'] ?? '' }}">{{ $site['phone'] ?? '' }}</a>.</p>
+        @if(! empty($site['response_promise']))<p class="mt-4 text-lg font-medium text-brand">{{ $site['response_promise'] }}</p>@endif
         <div class="mt-8"><x-button :href="route('home')">Back to home</x-button></div>
     </div>
 </section>

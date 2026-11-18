@@ -4,6 +4,8 @@
     $icons = collect($steps)->pluck('options')->flatten(1)->pluck('icon')->filter()->unique()
         ->mapWithKeys(fn ($n) => [$n => \Illuminate\Support\Facades\Blade::render('<x-icon name="'.e($n).'" class="size-7" :stroke="1.3" />')])->all();
     $failed = old('form_name') === 'hero-quiz';
+    $promise = trim((string) \App\Models\Setting::get('response_promise', ''));
+    if (str_contains($promise, '[CONFIRM')) { $promise = ''; }
 @endphp
 <section id="quiz" aria-labelledby="quiz-title" class="relative rounded-sm border border-accent/60 bg-ivory p-7 text-ink shadow-[0_40px_90px_-20px_rgb(0_0_0/0.65)] sm:p-10">
     <span class="pointer-events-none absolute inset-2 border border-accent/25" aria-hidden="true"></span>
@@ -64,4 +66,5 @@
     </noscript>
 
     <p class="mt-5 flex items-center justify-center gap-1.5 text-xs text-muted"><x-icon name="lock" class="size-4" /> Takes less than 30 seconds &middot; No obligation</p>
+    @if($promise !== '')<p class="mt-2 text-center text-sm font-medium text-brand">{{ $promise }}</p>@endif
 </section>

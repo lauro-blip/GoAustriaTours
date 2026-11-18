@@ -45,6 +45,14 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - **Placeholders**: contact details, prices, testimonials, legal text and images are placeholders. Never invent business facts. Use `[CONFIRM: ...]` and list them in `docs/reference/CONTENT_TO_CONFIRM.md`. Public pages must never show one: `$site` settings, FAQs and prices holding `[CONFIRM` are hidden or replaced ("Price on request", plain modal heading); unconfirmed hero/Why claims (best price, review rating, pricing promise, bonding) are removed from the views until real wording exists. Page/tour-type/package text from the database is still shown, so edit it in Admin.
 - Legal pages are starter templates only, not legal advice.
 
+## Conversion features (CRO)
+- **Sticky mobile bar** (`partials/sticky-cta.blade.php`, included by the layout): Call + "Plan My Journey", phones/tablets only, appears after scrolling past ~70% of the viewport. Pages with their own bottom bar or a form-only page pass `'noStickyBar' => true` in `@extends` (package page, contact, thank-you).
+- **Google Ads message match:** `/?tour=self-drive|escorted|coach` (must be a real active `TourType` slug; anything else is ignored, never echoed) re-words the hero eyebrow, tagline (from `TourType->tagline`), sr-only H1 and the page title. Canonical stays on the clean URL. Use these URLs as the ad group Final URLs. The tour slug is also sent to GoHighLevel as the tag `interest: <slug>`.
+- **GoHighLevel follow-up:** every contact gets the tag `nurture: new-lead` (workflow trigger). Workflow itself lives in GoHighLevel: `docs/reference/GHL_FOLLOW_UP.md`.
+- **Response promise** (Admin > Trust & tracking > `response_promise`): shown under the quiz and on the thank-you page only when set; never invent one.
+- **Optional tracking IDs** (Admin > Trust & tracking): Microsoft Clarity, Google Ads tag (+ conversion label, fired on the thank-you page) and Meta Pixel load only when filled in. Leave Google Ads/Meta blank if GTM handles them.
+- **Images:** hero slides ship as `{name}.webp` (1920), `{name}-1280.webp`, `{name}-768.webp` with `srcset` and an LCP preload; the logos are WebP (`logo-white.webp`, `logo-navy.webp`). Add the 768/1280 variants for any new hero image.
+
 ## Conventions
 - Admin > Settings (`SettingController`, groups in `GROUPS`) and Admin > Trust & tracking (`TrustController extends SettingController`, groups in `TRUST_GROUPS`) share one save/validate routine; add a field to the right `GROUPS` array. Trust & tracking owns phone, phone_tel, email, the planner fields, `established_line`, `trust_mark_N_*`, `review_*` and `gtm_id`.
 - Settings are read with `Setting::get('key')` (cached; flushed on write). Views receive `$site` and `$navTourTypes` via a view composer.

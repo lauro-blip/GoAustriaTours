@@ -41,8 +41,15 @@ class TrustController extends SettingController
             'review_summary' => ['Summary (e.g. "Rated 4.9 from 120 Google reviews")', 'text'],
             'review_url' => ['Link to the reviews page (optional)', 'text'],
         ],
+        'Response promise (shown by the quiz and on the thank-you page; only promise what you will do)' => [
+            'response_promise' => ['Response promise (e.g. "A personal reply within 1 business day")', 'text'],
+        ],
         'Tracking' => [
             'gtm_id' => ['Google Tag Manager ID (GTM-XXXXXXX). Leave blank to keep tracking OFF; add it when your Google Ads conversions are ready.', 'text'],
+            'clarity_id' => ['Microsoft Clarity project ID (free heatmaps and session recordings; letters/numbers from clarity.microsoft.com). Leave blank for OFF.', 'text'],
+            'google_ads_id' => ['Google Ads tag ID (AW-123456789) for conversion tracking WITHOUT Tag Manager. Leave blank if you use GTM, to avoid counting twice.', 'text'],
+            'google_ads_conversion_label' => ['Google Ads conversion label (the part after the slash in "AW-123456789/AbC-D_efG"). Fires on the thank-you page.', 'text'],
+            'meta_pixel_id' => ['Meta (Facebook/Instagram) Pixel ID, for remarketing and the Lead event on the thank-you page. Leave blank for OFF.', 'text'],
         ],
     ];
 

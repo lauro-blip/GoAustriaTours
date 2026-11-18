@@ -1,4 +1,4 @@
-@extends('layouts.app', [
+@extends('layouts.app', ['noStickyBar' => true, 
     'metaTitle' => $package->seo_title ?: $package->title.' | '.($site['brand_name'] ?? ''),
     'metaDescription' => $package->meta_description ?: \Illuminate\Support\Str::limit(strip_tags((string) $package->summary), 155),
     'canonical' => route('packages.show', $package),

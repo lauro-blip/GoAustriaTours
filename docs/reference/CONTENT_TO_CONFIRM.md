@@ -38,3 +38,6 @@ Nothing below was invented as fact; each is a placeholder in the site. Search th
 - Seamless Payments section (home, after gallery): payment wording supplied by the owner. Confirm per-traveller online payment, secure payments, instant confirmation emails and flexible options are real before launch; the site itself does not process payments.
 - Journal: the 4 starter articles (database/seeders/SamplePostData.php) are general-guidance DRAFTS written as placeholders: review/replace in Admin > Journal. Check the seasonal claims (e.g. Grossglockner opening times) before launch. Their images reuse the gallery photos.
 - Package card: shown price now has a 'pp' (per person) suffix, copied from the design reference. Confirm that is how prices are quoted.
+- Response promise wording (for example "A personal reply within 1 business day"): only promise what you will do. Enter in Admin > Trust & tracking.
+- Microsoft Clarity project ID, Google Ads tag ID and conversion label, Meta Pixel ID (Admin > Trust & tracking), when those accounts exist.
+- Build the GoHighLevel follow-up workflow (`docs/reference/GHL_FOLLOW_UP.md`).

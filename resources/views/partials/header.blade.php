@@ -10,10 +10,10 @@
                 <img src="{{ asset('storage/'.$site['logo']) }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="250" height="83" class="w-[180px] sm:w-[250px] max-w-full h-auto">
             @elseif($tp)
                 {{-- Both logos stacked; they crossfade --}}
-                <img src="{{ asset('images/logo-white.png') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="250" height="83" class="w-[180px] sm:w-[250px] max-w-full h-auto transition-opacity duration-500 ease-in-out motion-reduce:transition-none" :class="scrolled || menu ? 'opacity-0' : 'opacity-100'">
-                <img src="{{ asset('images/logo-navy.png') }}" alt="" aria-hidden="true" width="250" height="83" class="absolute left-0 top-0 w-[180px] sm:w-[250px] max-w-full h-auto transition-opacity duration-500 ease-in-out motion-reduce:transition-none opacity-0" :class="scrolled || menu ? 'opacity-100' : 'opacity-0'">
+                <img src="{{ asset('images/logo-white.webp') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="250" height="83" class="w-[180px] sm:w-[250px] max-w-full h-auto transition-opacity duration-500 ease-in-out motion-reduce:transition-none" :class="scrolled || menu ? 'opacity-0' : 'opacity-100'">
+                <img src="{{ asset('images/logo-navy.webp') }}" alt="" aria-hidden="true" width="250" height="83" class="absolute left-0 top-0 w-[180px] sm:w-[250px] max-w-full h-auto transition-opacity duration-500 ease-in-out motion-reduce:transition-none opacity-0" :class="scrolled || menu ? 'opacity-100' : 'opacity-0'">
             @else
-                <img src="{{ asset('images/logo-navy.png') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="250" height="83" class="w-[180px] sm:w-[250px] max-w-full h-auto">
+                <img src="{{ asset('images/logo-navy.webp') }}" alt="{{ $site['brand_name'] ?? 'GoAustriaTours' }}" width="250" height="83" class="w-[180px] sm:w-[250px] max-w-full h-auto">
             @endif
         </a>
 

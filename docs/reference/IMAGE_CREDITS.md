@@ -18,13 +18,22 @@ Rules for adding images: use only images free for commercial use with no licence
 | packages/alpine-highlights-by-coach.webp | Featured package card | https://commons.wikimedia.org/wiki/File:Gro%C3%9Fglockner-Hochalpenstra%C3%9Fe_2.jpg | Dimitry Anikin | CC0 |
 | packages/imperial-austria-self-drive.webp | Featured package card | same photo as schonbrunn.webp above | Martin Falbisoner | CC BY-SA 4.0 |
 | packages/vienna-salzburg-private-escorted.webp | Featured package card | same photo as salzburg.webp above | Uoaei1 | CC BY-SA 4.0 |
+| packages/grossglockner-and-high-tauern-self-drive.webp | Package card (cropped from grossglockner.webp on this site; credit as the original) | see grossglockner.webp | see source | see source |
+| packages/salzkammergut-and-styria-self-drive.webp | Package card (cropped from hallstatt.webp on this site; credit as the original) | see hallstatt.webp | see source | see source |
+| packages/vienna-and-wachau-wine-country-self-drive.webp | Package card (cropped from wachau.webp on this site; credit as the original) | see wachau.webp | see source | see source |
+| packages/imperial-capitals-private-escorted.webp | Package card (cropped from vienna.webp on this site; credit as the original) | see vienna.webp | see source | see source |
+| packages/musical-austria-private-escorted.webp | Package card (cropped from salzburg.webp on this site; credit as the original) | see salzburg.webp | see source | see source |
+| packages/salzkammergut-private-escorted.webp | Package card (cropped from hallstatt.webp on this site; credit as the original) | see hallstatt.webp | see source | see source |
+| packages/lakes-and-mountains-by-coach.webp | Package card (cropped from hallstatt.webp on this site; credit as the original) | see hallstatt.webp | see source | see source |
+| packages/danube-valley-by-coach.webp | Package card (cropped from wachau.webp on this site; credit as the original) | see wachau.webp | see source | see source |
+| packages/tyrol-and-vorarlberg-by-coach.webp | Package card (cropped from innsbruck.webp on this site; credit as the original) | see innsbruck.webp | see source | see source |
 
 ## Placeholders to replace
 | Slot | Location |
 |---|---|
 | Hero background photos | Home page hero (3 Commons photos now; replace with own/licensed photography when available) |
 | Tour type card images (Self Drive, Escorted, Coach) | Home page tour type cards; Admin > Tour types > Image |
-| Package main images and galleries (6 sample packages) | Package cards/pages; Admin > Packages |
+| Package main images and galleries (15 sample packages; the 9 newest reuse crops of site photos) | Package cards/pages; Admin > Packages |
 | Social sharing image | Admin > Settings > Default social image |
 | Logo and favicon | Admin > Settings (text wordmark "GoAustriaTours" now) |
 

@@ -67,7 +67,7 @@ class ContentSeeder extends Seeder
         $this->syncSamplePackages(false);
     }
 
-    /** Seeds the 6 sample packages. $overwrite = true refreshes existing rows (local dev only: it replaces admin edits). */
+    /** Seeds the 15 sample packages. $overwrite = true refreshes existing rows (local dev only: it replaces admin edits). */
     public function syncSamplePackages(bool $overwrite): void
     {
         $samples = [
@@ -77,6 +77,15 @@ class ContentSeeder extends Seeder
             ['escorted', 'tyrol', 'tyrol-private-escorted'],
             ['coach', 'vienna-salzburg', 'classic-austria-by-coach'],
             ['coach', 'tyrol', 'alpine-highlights-by-coach'],
+            ['self-drive', 'tyrol', 'grossglockner-and-high-tauern-self-drive'],
+            ['self-drive', 'vienna-salzburg', 'salzkammergut-and-styria-self-drive'],
+            ['self-drive', 'vienna-salzburg', 'vienna-and-wachau-wine-country-self-drive'],
+            ['escorted', 'vienna-salzburg', 'imperial-capitals-private-escorted'],
+            ['escorted', 'vienna-salzburg', 'musical-austria-private-escorted'],
+            ['escorted', 'vienna-salzburg', 'salzkammergut-private-escorted'],
+            ['coach', 'vienna-salzburg', 'lakes-and-mountains-by-coach'],
+            ['coach', 'vienna-salzburg', 'danube-valley-by-coach'],
+            ['coach', 'tyrol', 'tyrol-and-vorarlberg-by-coach'],
         ];
 
         foreach ($samples as $i => [$type, $dest, $slug]) {
@@ -96,7 +105,7 @@ class ContentSeeder extends Seeder
                 'exclusions' => SamplePackageData::exclusions(),
                 'faqs' => [],
                 'is_published' => true,
-                'is_featured' => true,
+                'is_featured' => $d['featured'] ?? true,   // the 6 original samples are featured; the extra 9 only show in the Curated grid
                 'sort_order' => $i + 1,
             ];
             $overwrite ? Package::updateOrCreate(['slug' => $slug], $row) : Package::firstOrCreate(['slug' => $slug], $row);

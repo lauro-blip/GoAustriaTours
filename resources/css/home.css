@@ -918,3 +918,46 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .consult { padding: 10px 0; }
 .t3 .consult-in { width: 100%; max-width: 1390px; margin: 0 auto; padding: 0 60px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
 @media (max-width: 767px) { .t3 .consult-in { padding: 0 15px; gap: 12px; } }
+
+/* footer logo: keep the 500x167 proportions (the height attribute was forcing it taller) */
+.t3 .fc-brand img, .t3 .foot img { width: 190px; height: auto; aspect-ratio: 500 / 167; object-fit: contain; }
+
+/* header: transparent with a big logo at the top, solid navy with a smaller logo once scrolled (animated) */
+.t3 .hdr { background: transparent; box-shadow: none; transition: background-color 0.45s ease, box-shadow 0.45s ease, backdrop-filter 0.45s ease; }
+.t3 .hdr::before { content: ''; position: absolute; inset: 0 0 -40px 0; background: linear-gradient(to bottom, rgba(10, 42, 64, 0.55), rgba(10, 42, 64, 0)); opacity: 1; transition: opacity 0.45s ease; pointer-events: none; z-index: -1; }
+.t3 .hdr .wrap { min-height: 112px; transition: min-height 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.t3 .hdr .logo img { width: 230px; transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.t3 .hdr .nav > li > a, .t3 .hdr .nav > li > button { text-shadow: 0 1px 10px rgba(10, 42, 64, 0.55); transition: padding 0.45s cubic-bezier(0.22, 1, 0.36, 1), color 0.2s; }
+.t3 .hdr.solid { background: rgba(10, 42, 64, 0.97); box-shadow: 0 4px 20px rgba(10, 42, 64, 0.25); }
+.t3 .hdr.solid::before { opacity: 0; }
+.t3 .hdr.solid .wrap { min-height: 76px; }
+.t3 .hdr.solid .logo img { width: 150px; }
+.t3 .hdr.solid .nav > li > a, .t3 .hdr.solid .nav > li > button { text-shadow: none; }
+@media (max-width: 1099px) {
+    .t3 .hdr .wrap { min-height: 88px; }
+    .t3 .hdr .logo img { width: 170px; }
+    .t3 .hdr.solid .wrap { min-height: 66px; }
+    .t3 .hdr.solid .logo img { width: 130px; }
+}
+@media (prefers-reduced-motion: reduce) { .t3 .hdr, .t3 .hdr::before, .t3 .hdr .wrap, .t3 .hdr .logo img, .t3 .hdr .nav > li > a, .t3 .hdr .nav > li > button { transition: none; } }
+
+/* "Where to?" strip (v2): solid navy bar, gold hairline, label aligned to the 1390px grid, diamond separators, soft edge fade */
+.t3 .hero > .strip { background: rgba(10, 42, 64, 0.96); border-top: 1px solid rgba(219, 161, 44, 0.7); box-shadow: 0 -10px 30px -12px rgba(10, 42, 64, 0.5); }
+.t3 .strip b { display: flex; align-items: center; gap: 12px; padding: 20px 34px 20px max(15px, calc((100vw - 1390px) / 2 + 60px)); background: transparent; color: var(--accent); font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.2em; white-space: nowrap; position: relative; }
+.t3 .strip b::before { content: ''; width: 16px; height: 16px; flex: none; background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DBA12C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.5'/%3E%3C/svg%3E"); }
+.t3 .strip b::after { content: ''; position: absolute; right: 0; top: 50%; height: 26px; margin-top: -13px; width: 1px; background: rgba(255, 255, 255, 0.28); }
+.t3 .mq { -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent); }
+.t3 .mq-set { gap: 0; padding-right: 0; }
+.t3 .mq-set a { display: flex; align-items: center; padding: 20px 0; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.18em; color: #fff; opacity: 0.92; transition: color 0.2s, opacity 0.2s; }
+.t3 .mq-set a::after { content: ''; width: 5px; height: 5px; margin: 0 28px; background: var(--accent); transform: rotate(45deg); opacity: 0.85; flex: none; }
+.t3 .mq-set a:hover { color: var(--accent); opacity: 1; }
+@media (max-width: 767px) { .t3 .strip b { padding: 16px 16px 16px 15px; } .t3 .mq-set a { padding: 16px 0; } .t3 .mq-set a::after { margin: 0 20px; } }
+
+/* "Where to?" strip (v3): frosted glass instead of a solid colour. Blur on desktop; phones get a slightly stronger tint and no blur to keep scrolling smooth. */
+.t3 .hero > .strip { background: rgba(10, 42, 64, 0.62); -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15); border-top: 1px solid rgba(255, 255, 255, 0.35); box-shadow: none; }
+.t3 .mq-set a { text-shadow: 0 1px 8px rgba(10, 42, 64, 0.55); }
+@media (max-width: 767px) { .t3 .hero > .strip { background: rgba(10, 42, 64, 0.8); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* "Where to?" strip (v4): the requested glass values */
+.t3 .hero > .strip { background: rgba(10, 42, 64, 0.4); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 0 solid rgba(255, 255, 255, 0.12); border-radius: 0; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
+@media (max-width: 767px) { .t3 .hero > .strip { background: rgba(10, 42, 64, 0.7); -webkit-backdrop-filter: none; backdrop-filter: none; } }

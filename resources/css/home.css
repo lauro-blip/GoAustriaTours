@@ -1,3 +1,8 @@
+/* Self-hosted fonts (latin subset, from Fontsource): public/fonts. Inter + Playfair are preloaded in layouts/site.blade.php. */
+@font-face { font-family: "Inter Variable"; font-style: normal; font-display: swap; font-weight: 100 900; src: url("/fonts/inter-latin-wght-normal.woff2") format("woff2-variations"); }
+@font-face { font-family: "Playfair Display Variable"; font-style: normal; font-display: swap; font-weight: 400 900; src: url("/fonts/playfair-display-latin-wght-normal.woff2") format("woff2-variations"); }
+@font-face { font-family: "Playfair Display Variable"; font-style: italic; font-display: swap; font-weight: 400 900; src: url("/fonts/playfair-display-latin-wght-italic.woff2") format("woff2-variations"); }
+@font-face { font-family: "JetBrains Mono Variable"; font-style: normal; font-display: swap; font-weight: 100 800; src: url("/fonts/jetbrains-mono-latin-wght-normal.woff2") format("woff2-variations"); }
 /* Home page styles: Playfair Display headings, Inter body, JetBrains Mono small labels; everything scoped under .t3. */
 .t3 { --accent: #dba12c; --accent-d: #7a5505; --green: #0f3b59; --ice: #7d929e; --dark: #0a2a40; --navy: #0f3b59; --ink: #3e251e; --muted: rgba(62, 37, 30, .82); --cream: #faf8f4; --tint: #f1ece4; --line: #dbd4cc; --head: "Playfair Display Variable", "Playfair Display", Georgia, serif; --mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, Consolas, monospace; --body: "Inter Variable", "Inter", system-ui, sans-serif; font-family:var(--body); color:var(--ink); background:var(--cream); line-height:1.6; -webkit-font-smoothing:antialiased }
 .t3 *,.t3 *:before,.t3 *:after { box-sizing:border-box }
@@ -81,9 +86,9 @@
 .t3 .hero-bg { position:absolute; top:0; right:0; bottom:0; left:0 }
 .t3 .hero-bg:after { content:""; position:absolute; top:0; right:0; bottom:0; left:0; background:linear-gradient(to bottom,#0a2a408c,#0a2a404d 45%,#0a2a40a6) }
 .t3 .hero-bg img { position:absolute; top:0; right:0; bottom:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0; animation:t3-fade 24s infinite }
-.t3 .hero-bg img:nth-child(1) { opacity:1; animation-delay:0s }
-.t3 .hero-bg img:nth-child(2) { animation-delay:8s }
-.t3 .hero-bg img:nth-child(3) { animation-delay:16s }
+.t3 .hero-bg img:nth-child(1) { opacity:1; animation-delay:-1.5s }
+.t3 .hero-bg img:nth-child(2) { animation-delay:6.5s }
+.t3 .hero-bg img:nth-child(3) { animation-delay:14.5s }
 @keyframes t3-fade { 0% { opacity:0 } 6% { opacity:1 } 33% { opacity:1 } 40% { opacity:0 } to { opacity:0 } }
 .t3 .strip { position:absolute; left:0; right:0; bottom:72px; z-index:1; border-top:1px solid rgba(255,255,255,.28); padding:16px 0; overflow:hidden }
 .t3 .strip .wrap { display:flex; gap:34px; align-items:center; white-space:nowrap; overflow-x:auto; scrollbar-width:none }
@@ -196,7 +201,7 @@
 .t3 .foot-grid { display:grid; gap:40px }
 @media(min-width:800px) { .t3 .foot-grid { grid-template-columns:1.4fr 1fr 1fr 1fr } }
 .t3 .foot img { width:190px; margin-bottom:16px }
-.t3 .foot h4 { font-family:var(--head); font-weight:400; color:#fff; font-size:1.2rem; margin-bottom:14px }
+.t3 .foot h3 { font-family:var(--head); font-weight:400; color:#fff; font-size:1.2rem; margin-bottom:14px }
 .t3 .foot a { display:block; padding:5px 0; font-size:.92rem }
 .t3 .foot a:hover { color:var(--accent) }
 .t3 .copy { text-align:center; margin-top:50px; font-size:.82rem; opacity:.6 }
@@ -795,7 +800,7 @@ html:has(.t3) { scroll-padding-top:96px }
 @media (max-width: 1099px) { .t3 .bi { border-bottom: 1px solid rgba(255, 255, 255, 0.12); padding-top: 24px; } .t3 .bi:last-child { border-bottom: 0; } }
 .t3 .bic { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 20px; color: var(--accent); }
 .t3 .bic svg { width: 100%; height: 100%; stroke-width: 1.1; }
-.t3 .bi h3 { font-family: var(--head); font-style: italic; font-weight: 500; font-size: 1.6rem; line-height: 1.2; color: #fff; margin-bottom: 12px; }
+.t3 .bi h2 { font-family: var(--head); font-style: italic; font-weight: 500; font-size: 1.6rem; line-height: 1.2; color: #fff; margin-bottom: 12px; }
 .t3 .bi p { font-size: 0.95rem; line-height: 1.65; color: rgba(255, 255, 255, 0.88); max-width: 290px; margin: 0 auto; }
 
 /* journal */
@@ -830,14 +835,14 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .foot-grid { display: grid; grid-template-columns: 1fr; gap: 40px; padding-top: 72px; padding-bottom: 64px; }
 @media (min-width: 700px) { .t3 .foot-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1100px) { .t3 .foot-grid { grid-template-columns: 1.3fr 1fr 1fr 1.2fr; gap: 48px; } }
-.t3 .fc h4 { font-family: var(--head); font-weight: 500; font-size: 1.05rem; color: #fff; margin-bottom: 16px; }
+.t3 .fc h3 { font-family: var(--head); font-weight: 500; font-size: 1.05rem; color: #fff; margin-bottom: 16px; }
 .t3 .fc > a { display: block; padding: 5px 0; font-size: 0.92rem; color: rgba(255, 255, 255, 0.82); transition: color 0.2s, transform 0.2s; }
 .t3 .fc > a:hover { color: var(--accent); transform: translateX(3px); }
 .t3 .fc-contact { display: grid; gap: 26px; align-content: start; }
 .t3 .fci { display: flex; gap: 14px; align-items: flex-start; }
 .t3 .fic { flex: none; width: 22px; height: 22px; margin-top: 2px; color: var(--accent); }
 .t3 .fic svg { width: 100%; height: 100%; display: block; }
-.t3 .fci h4 { margin-bottom: 6px; }
+.t3 .fci h3 { margin-bottom: 6px; }
 .t3 .fci a, .t3 .fci p { font-size: 0.92rem; line-height: 1.6; color: rgba(255, 255, 255, 0.85); margin: 0; word-break: break-word; }
 .t3 .fci a:hover { color: var(--accent); }
 .t3 .fc-brand img { width: 190px; margin-bottom: 18px; }
@@ -870,7 +875,7 @@ html:has(.t3) { scroll-padding-top:96px }
 @media (max-width: 1099px) { .t3 .bi { border-bottom-color: var(--line); } }
 .t3 .bic { width: 58px; height: 58px; color: var(--accent-d); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.3s; }
 .t3 .bi:hover .bic { transform: translateY(-4px); color: var(--accent); }
-.t3 .bi h3 { color: var(--navy); font-size: 1.45rem; }
+.t3 .bi h2 { color: var(--navy); font-size: 1.45rem; }
 .t3 .bi p { color: var(--muted); font-size: 0.94rem; }
 
 /* band (v3): hairline icons in a fine ring, a short gold rule under each title */
@@ -878,8 +883,8 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .bic { width: 84px; height: 84px; margin: 0 auto 26px; padding: 16px; border: 1px solid rgba(219, 161, 44, 0.55); border-radius: 50%; color: var(--accent-d); transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s, color 0.3s, border-color 0.3s; }
 .t3 .bic svg { width: 100%; height: 100%; stroke-width: 1; }
 .t3 .bi:hover .bic { transform: translateY(-5px); background: var(--navy); border-color: var(--navy); color: var(--accent); }
-.t3 .bi h3 { font-size: 1.5rem; letter-spacing: 0.005em; margin-bottom: 0; }
-.t3 .bi h3::after { content: ''; display: block; width: 28px; height: 1px; background: var(--accent); margin: 16px auto 16px; }
+.t3 .bi h2 { font-size: 1.5rem; letter-spacing: 0.005em; margin-bottom: 0; }
+.t3 .bi h2::after { content: ''; display: block; width: 28px; height: 1px; background: var(--accent); margin: 16px auto 16px; }
 .t3 .bi p { line-height: 1.75; }
 
 /* band (v4): 40px padding, a little life in the background (soft glows, fine lattice, faint alpine skyline) */
@@ -1014,3 +1019,33 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .mega-list a { font-size: 0.9rem; line-height: 1.35; }
 .t3 .mega-cards.c3 a.txt { aspect-ratio: auto; }
 .t3 .mega-in.one .mega-cards.c3 { gap: 18px; }
+
+/* ---- Mobile carousels (js/carousel.js adds .is-car and the .car-ui controls under 700px) ---- */
+@media (max-width: 699px) {
+    .t3 .is-car { display: flex !important; flex-wrap: nowrap; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; margin-left: -15px; margin-right: -15px; padding: 2px 15px 6px; scroll-padding-left: 15px; grid-template-columns: none; }
+    .t3 .is-car::-webkit-scrollbar { display: none; }
+    .t3 .is-car > * { flex: 0 0 84%; min-width: 0; scroll-snap-align: start; margin: 0; }
+    .t3 .is-car > [hidden] { display: none; }
+    .t3 .is-car .rv, .t3 .is-car.rv { opacity: 1; transform: none; }
+    .t3 .is-car.band-grid > * { flex-basis: 78%; }
+    .t3 .is-car.stats > * { flex-basis: 86%; }
+    .t3 .car-ui { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+    .t3 .car-ui[hidden] { display: none; }
+    .t3 .car-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--navy); background: transparent; color: var(--navy); font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+    .t3 .car-btn:disabled { opacity: 0.3; }
+    .t3 .car-btn:not(:disabled):active { background: var(--accent); border-color: var(--accent); }
+    .t3 .car-dots { display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 64px; }
+    .t3 .car-dots button { width: 22px; height: 22px; padding: 0; border: 0; background: transparent; display: inline-flex; align-items: center; justify-content: center; }
+    .t3 .car-dots button::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: rgba(15, 59, 89, 0.25); transition: width 0.25s, background 0.25s; }
+    .t3 .car-dots button[aria-current="true"]::before { width: 22px; border-radius: 4px; background: var(--accent); }
+    .t3 .car-count { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; color: var(--navy); }
+    .t3 .car-ui.on-dark .car-btn { border-color: rgba(255, 255, 255, 0.6); color: #fff; }
+    .t3 .car-ui.on-dark .car-dots button::before { background: rgba(255, 255, 255, 0.35); }
+    .t3 .car-ui.on-dark .car-dots button[aria-current="true"]::before { background: var(--accent); }
+    .t3 .car-ui.on-dark .car-count { color: #fff; }
+    .t3 [data-pager] { display: none; }
+}
+
+/* Performance: skip rendering work for sections far below the fold until they are near the viewport. */
+.t3 main > .sec, .t3 main > .band, .t3 main > .cta2 { content-visibility: auto; contain-intrinsic-size: auto 720px; }
+

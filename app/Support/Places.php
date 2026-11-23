@@ -122,7 +122,8 @@ class Places
     private static function decorate(string $key): array
     {
         $pl = self::ALL[$key] + ['key' => $key];
-        $pl['imageUrl'] = ($pl['image'] && is_file(public_path('images/'.$pl['image'].'.webp'))) ? asset('images/'.$pl['image'].'.webp') : null;
+        $thumb = $pl['image'] && is_file(public_path('images/'.$pl['image'].'-thumb.webp')) ? $pl['image'].'-thumb' : $pl['image'];
+        $pl['imageUrl'] = ($pl['image'] && is_file(public_path('images/'.$thumb.'.webp'))) ? asset('images/'.$thumb.'.webp') : null;
         $pl['mapUrl'] = 'https://www.openstreetmap.org/?mlat='.$pl['lat'].'&mlon='.$pl['lon'].'#map=11/'.$pl['lat'].'/'.$pl['lon'];
         $pl['searchUrl'] = route('packages.index', ['q' => $pl['terms'][0]]);
 

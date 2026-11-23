@@ -5,7 +5,7 @@
 ])
 
 @push('preload')
-<link rel="preload" as="image" href="{{ asset('images/winter/hero-wagrain-1280.webp') }}" fetchpriority="high">
+<link rel="preload" as="image" href="{{ asset('images/winter/hero-wagrain-1280.webp') }}" imagesrcset="{{ asset('images/winter/hero-wagrain-768.webp') }} 768w, {{ asset('images/winter/hero-wagrain-1280.webp') }} 1280w, {{ asset('images/winter/hero-wagrain.webp') }} 1920w" imagesizes="100vw" fetchpriority="high">
 @endpush
 
 @section('content')
@@ -60,7 +60,7 @@
 <section class="hero">
     <div class="hero-bg" aria-hidden="true">
         @foreach(['hero-wagrain', 'hero-salzburg', 'hero-montafon'] as $h)
-            <img src="{{ $w($h, '-1280') }}" srcset="{{ $w($h, '-768') }} 768w, {{ $w($h, '-1280') }} 1280w, {{ $w($h) }} 1920w" sizes="100vw" alt="" @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
+            @if($loop->first)<img src="{{ $w($h, '-1280') }}" srcset="{{ $w($h, '-768') }} 768w, {{ $w($h, '-1280') }} 1280w, {{ $w($h) }} 1920w" sizes="100vw" alt="" fetchpriority="high">@else<img data-src="{{ $w($h, '-1280') }}" data-srcset="{{ $w($h, '-768') }} 768w, {{ $w($h, '-1280') }} 1280w, {{ $w($h) }} 1920w" sizes="100vw" alt="">@endif
         @endforeach
     </div>
     <div class="wrap hero-in">
@@ -119,10 +119,10 @@
 {{-- ============ PLANNED AROUND YOU BAND ============ --}}
 <section class="band" aria-label="How we plan your Austria journey">
     <div class="wrap band-grid">
-        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="1.5"/><path d="M31 17l-4.5 9.5L17 31l4.5-9.5z"/><path d="M24 3v4M24 41v4M3 24h4M41 24h4"/></svg></span><h3>Custom Itineraries</h3><p>Self drive, escorted or by coach: every route is tailored to your dates, pace and interests.</p></div>
-        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 42V15l16-8 16 8v27"/><path d="M4 42h40"/><path d="M19 42V31h10v11"/><path d="M15 21h4M29 21h4M15 26h4M29 26h4"/><path d="M24 2.5v4"/></svg></span><h3>Handpicked Stays</h3><p>Hotels chosen for their location and character, with the insight of local experts.</p></div>
-        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 33a16 16 0 0 1 32 0z"/><path d="M5 38h38"/><path d="M24 13v4"/><path d="M20.5 12h7"/><path d="M13 33a11 11 0 0 1 6-9.5"/></svg></span><h3>Personal Contact</h3><p>A real person who knows your plans and answers your questions before and during your trip.</p></div>
-        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 5v38"/><path d="M24 9h13l4 4-4 4H24z"/><path d="M24 21H11l-4 4 4 4h13z"/><path d="M24 33h11l3 3-3 3H24"/><path d="M18 43h12"/></svg></span><h3>Three Ways to Travel</h3><p>Self drive, escorted or coach. Choose the style that suits you and we plan the rest.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="1.5"/><path d="M31 17l-4.5 9.5L17 31l4.5-9.5z"/><path d="M24 3v4M24 41v4M3 24h4M41 24h4"/></svg></span><h2>Custom Itineraries</h2><p>Self drive, escorted or by coach: every route is tailored to your dates, pace and interests.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 42V15l16-8 16 8v27"/><path d="M4 42h40"/><path d="M19 42V31h10v11"/><path d="M15 21h4M29 21h4M15 26h4M29 26h4"/><path d="M24 2.5v4"/></svg></span><h2>Handpicked Stays</h2><p>Hotels chosen for their location and character, with the insight of local experts.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 33a16 16 0 0 1 32 0z"/><path d="M5 38h38"/><path d="M24 13v4"/><path d="M20.5 12h7"/><path d="M13 33a11 11 0 0 1 6-9.5"/></svg></span><h2>Personal Contact</h2><p>A real person who knows your plans and answers your questions before and during your trip.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 5v38"/><path d="M24 9h13l4 4-4 4H24z"/><path d="M24 21H11l-4 4 4 4h13z"/><path d="M24 33h11l3 3-3 3H24"/><path d="M18 43h12"/></svg></span><h2>Three Ways to Travel</h2><p>Self drive, escorted or coach. Choose the style that suits you and we plan the rest.</p></div>
     </div>
 </section>
 

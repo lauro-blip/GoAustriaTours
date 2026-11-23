@@ -1,13 +1,9 @@
 // Home page behaviour (plain JS): mobile menu, destination filter + 6-per-page pager, counters, review slider, reveal on scroll.
-import '@fontsource-variable/playfair-display';
-import '@fontsource-variable/playfair-display/wght-italic.css';
-import '@fontsource-variable/inter';
-import '@fontsource-variable/jetbrains-mono';
 import '../css/home.css';
 import { initQuiz } from './study-quiz';
 import { initQuoteModal } from './study-modal';
+import { initCarousels } from './carousel.js';
 import { initInlineForms } from './inline-forms';
-import '../css/inner.css';
 
 document.documentElement.classList.add('tp3-js');
 const $ = (s, r = document) => r.querySelector(s);
@@ -17,7 +13,7 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 // header: transparent over the hero, solid once scrolled
 const hdr = $('.t3 .hdr');
 const onScroll = () => hdr.classList.toggle('solid', scrollY > 40);
-onScroll();
+requestAnimationFrame(onScroll); // reading scrollY forces layout, so not during script evaluation
 addEventListener('scroll', onScroll, { passive: true });
 
 const mobile = $('.t3 .mobile');
@@ -29,11 +25,14 @@ $$('[data-tours]').forEach((sec) => {
     const cells = $$('[data-grid] .cell', sec);
     const pager = $('[data-pager]', sec);
     const count = $('[data-count]', sec);
-    const per = 6;
+    const grid = $('[data-grid]', sec);
+    const mqm = matchMedia('(max-width: 699px)');
+    const perPage = () => (mqm.matches ? 999 : 6);
     let dest = '';
     let page = 1;
     const render = () => {
         const list = cells.filter((c) => !dest || c.dataset.dest === dest);
+        const per = perPage();
         const pages = Math.max(1, Math.ceil(list.length / per));
         page = Math.min(page, pages);
         cells.forEach((c) => { c.hidden = true; });
@@ -55,7 +54,9 @@ $$('[data-tours]').forEach((sec) => {
         mk('←', page - 1, { aria: 'Previous page', disabled: page === 1 });
         for (let n = 1; n <= pages; n++) mk(String(n), n, { current: n === page });
         mk('→', page + 1, { aria: 'Next page', disabled: page === pages });
+        grid.dispatchEvent(new Event('car:refresh'));
     };
+    mqm.addEventListener('change', () => { page = 1; render(); });
     $$('.chip', sec).forEach((chip) => chip.addEventListener('click', () => {
         $$('.chip', sec).forEach((c) => c.classList.toggle('on', c === chip));
         dest = chip.dataset.dest;
@@ -82,9 +83,13 @@ $$('[data-reviews]').forEach((box) => {
     }
 });
 
+// Hero slides 2 and 3 load after the page is ready so they never compete with the first paint.
+addEventListener('load', () => $$('.hero-bg img[data-src]').forEach((im) => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; }), { once: true });
+
 initQuiz();
 initQuoteModal();
 initInlineForms();
+initCarousels();
 
 // counters + reveal
 const io = new IntersectionObserver((entries) => {

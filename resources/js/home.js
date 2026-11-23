@@ -90,24 +90,6 @@ $$('[data-reviews]').forEach((box) => {
 // Hero slides 2 and 3 load after the page is ready so they never compete with the first paint.
 addEventListener('load', () => $$('.hero-bg img[data-src]').forEach((im) => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; }), { once: true });
 
-// Section headings stay on one line: shrink from the design size (44px desktop / 32px mobile) until they fit, never below 20px.
-const fitHeadings = () => {
-    const max = innerWidth >= 768 ? 44 : 32;
-    $$('.t3 .h').forEach((h) => {
-        const box = getComputedStyle(h.parentElement);
-        const avail = h.parentElement.clientWidth - (parseFloat(box.paddingLeft) || 0) - (parseFloat(box.paddingRight) || 0);
-        h.classList.add('fit');
-        let size = max;
-        h.style.fontSize = size + 'px';
-        while (h.scrollWidth > avail + 1 && size > 20) { size -= 1; h.style.fontSize = size + 'px'; }
-        if (h.scrollWidth > avail + 1) { h.classList.remove('fit'); h.style.fontSize = ''; }
-    });
-};
-fitHeadings();
-document.fonts?.ready.then(fitHeadings);
-let fitTimer;
-addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitHeadings, 120); });
-
 initQuiz();
 initQuoteModal();
 initInlineForms();

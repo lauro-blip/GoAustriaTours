@@ -1088,8 +1088,7 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .tsel { display: none; }
 .t3 .cph { display: none; }
 .t3 .h { text-wrap: balance; }
-.t3 .h em, .t3 .h.oneline em { display: inline; }
-.t3 .h.fit { white-space: nowrap; }
+.t3 .h em, .t3 .h.oneline em { display: block; }
 .t3 .fcta-t { text-wrap: balance; }
 @media (max-width: 699px) {
     .t3 .tours-filter .chips { display: none; }

@@ -71,7 +71,7 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - Settings are read with `Setting::get('key')` (cached; flushed on write). Public views receive `$site` (settings; `[CONFIRM` values blanked) from a view composer; `layouts.site` also gets the nav data.
 - New simple admin list: extend `Admin\CrudController` (model, routeName, title, columns, fields, rules) and add a `$crud(...)` line in `routes/admin.php`.
 - Public brand colours/fonts live ONLY in the variables at the top of `.t3` in `resources/css/home.css`; the admin has its own tokens in `app.css` (`@theme`).
-- Typography: section headings (`.h`, `.pk-h`) are 44px on desktop (768px and up) and 32px on mobile and body text is Inter weight 300 (set on `.t3`; hero sub is 400 for readability on photos). Change them only at the end of `home.css` / `inner.css`. `fitHeadings()` in `home.js` keeps each `.h` on ONE line by shrinking it from that size (never below 20px; if it still does not fit it wraps, balanced).
+- Typography: section headings (`.h`, `.pk-h`) are 44px on desktop (768px and up) and 32px on mobile and body text is Inter weight 300 (set on `.t3`; hero sub is 400 for readability on photos). Change them only at the end of `home.css` / `inner.css`. Fixed sizes, no shrink-to-fit: headings wrap naturally (balanced) and the italic part sits on its own line.
 - Never use `@if` directly after a word with no space in Blade (it is not parsed). Never nest `<noscript>`.
 - Uploaded images go through `ImageService` (validated, WebP, 480/960/1600 widths). Alt text is required.
 

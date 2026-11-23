@@ -35,6 +35,7 @@
             <p>&copy; {{ date('Y') }} {{ ($site['legal_company_name'] ?? '') ?: ($site['brand_name'] ?? config('app.name')) }}. All rights reserved.</p>
             <p class="flex gap-4">
                 <a class="hover:underline" href="{{ route('photo-credits') }}">Photo credits</a>
+                <a class="hover:underline" href="{{ route('testimonials') }}">Testimonials</a>
                 <a class="hover:underline" href="{{ route('terms') }}">Terms &amp; Conditions</a>
                 <a class="hover:underline" href="{{ route('privacy') }}">Privacy Policy</a>
             </p>

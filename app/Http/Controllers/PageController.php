@@ -20,13 +20,11 @@ class PageController extends Controller
             'tourTypes' => $tourTypes,
             // Google Ads message match: ?tour=self-drive (a real, active tour type slug) re-words the hero. Unknown values are ignored.
             'activeTour' => request()->filled('tour') ? $tourTypes->firstWhere('slug', (string) request('tour')) : null,
-            'curatedPackages' => static::curatedPackages(),
-            'featuredPackages' => Package::published()->where('is_featured', true)->with(['tourType', 'destination'])->get(),
-            'posts' => \App\Models\Post::published()->take(3)->get(),
-            'testimonials' => Testimonial::where('is_active', true)->orderBy('sort_order')->get(),
-            // FAQs whose answer still holds a "[CONFIRM: ...]" placeholder stay hidden until the answer is written.
-            'faqs' => Faq::where('is_active', true)->where('answer', 'not like', '%[CONFIRM%')->orderBy('sort_order')->take(6)->get(),   // the home FAQ shows the first 6
+            'packages' => Package::published()->with(['tourType', 'destination'])->get(),
             'quizSteps' => QuizStep::forQuiz(),
+            'testimonials' => Testimonial::where('is_active', true)->orderBy('sort_order')->take(6)->get(),
+            'destinations' => \App\Models\Destination::active()->get(),
+            'posts' => \App\Models\Post::published()->take(3)->get(),
         ]);
     }
 
@@ -45,6 +43,12 @@ class PageController extends Controller
     public function about()
     {
         return view('pages.simple', ['page' => Page::slug('about') ?? abort(404)]);
+    }
+
+    /** Every active guest story (the home page shows them as a pull-quote section). */
+    public function testimonials()
+    {
+        return view('pages.testimonials', ['stories' => Testimonial::where('is_active', true)->orderBy('sort_order')->get()]);
     }
 
     public function contact()

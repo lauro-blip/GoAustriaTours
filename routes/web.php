@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::get('/testimonials', [PageController::class, 'testimonials'])->name('testimonials');
 Route::get('/terms-and-conditions', [PageController::class, 'legal'])->defaults('slug', 'terms')->name('terms');
 Route::get('/privacy-policy', [PageController::class, 'legal'])->defaults('slug', 'privacy')->name('privacy');
 Route::get('/photo-credits', [PageController::class, 'photoCredits'])->name('photo-credits');

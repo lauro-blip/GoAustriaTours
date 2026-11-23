@@ -24,6 +24,7 @@ class SeoController extends Controller
             $urls[] = [route('tours.show', $t), $t->updated_at];
         }
         $urls[] = [route('journal.index'), now()];
+        $urls[] = [route('testimonials'), now()];
         foreach (\App\Models\Post::published()->get() as $post) {
             $urls[] = [route('journal.show', $post), $post->updated_at];
         }

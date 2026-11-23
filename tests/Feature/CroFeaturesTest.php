@@ -31,7 +31,7 @@ class CroFeaturesTest extends TestCase
         Setting::put('phone', '+1 800 555 0199');
         Setting::put('phone_tel', '+18005550199');
 
-        $this->get('/')->assertOk()->assertSee('Plan My Journey')->assertSee('Call us on +1 800 555 0199', false);
+        $this->get('/')->assertOk()->assertSee('Request a quote')->assertSee('+1 800 555 0199', false);
         $this->get('/journal')->assertOk()->assertSee('Call us on +1 800 555 0199', false);
         $this->get('/contact')->assertOk()->assertDontSee('Call us on +1 800 555 0199', false);
         $this->get('/packages/imperial-austria-self-drive')->assertOk()->assertDontSee('Call us on +1 800 555 0199', false);
@@ -39,20 +39,20 @@ class CroFeaturesTest extends TestCase
 
     public function test_sticky_bar_without_a_phone_has_no_call_button(): void
     {
-        $this->get('/')->assertOk()->assertDontSee('Call us on', false);
+        $this->get('/')->assertOk()->assertDontSee('Consult with our Travel Specialists', false);
     }
 
     // ---- Google Ads message match
     public function test_tour_parameter_rewords_the_hero_for_a_real_tour_type(): void
     {
         $this->get('/?tour=escorted')->assertOk()->assertSee('Escorted tours of Austria')->assertSee('Escorted Tours of Austria | ', false);
-        $this->get('/')->assertOk()->assertSee('Bespoke journeys');
+        $this->get('/')->assertOk()->assertSee('Coach tours');
     }
 
     public function test_unknown_or_hostile_tour_values_are_ignored_and_never_echoed(): void
     {
-        $this->get('/?tour=nonsense')->assertOk()->assertSee('Bespoke journeys');
-        $this->get('/?tour=<script>alert(1)</script>')->assertOk()->assertDontSee('<script>alert(1)', false)->assertSee('Bespoke journeys');
+        $this->get('/?tour=nonsense')->assertOk()->assertSee('Coach tours');
+        $this->get('/?tour=<script>alert(1)</script>')->assertOk()->assertDontSee('<script>alert(1)', false)->assertSee('Coach tours');
     }
 
     public function test_canonical_ignores_the_query_string(): void

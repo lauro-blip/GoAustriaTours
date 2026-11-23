@@ -60,9 +60,9 @@ class SeoTest extends TestCase
         $this->get('/no-such-page')->assertNotFound()->assertSee("We can't find that page", false);
     }
 
-    public function test_home_has_faq_structured_data(): void
+    public function test_home_has_organization_structured_data(): void
     {
-        $this->get('/')->assertSee('"@type":"FAQPage"', false)->assertSee('"@type":"TravelAgency"', false);
+        $this->get('/')->assertSee('"@type":"TravelAgency"', false);
     }
 
     public function test_site_settings_reach_page_views_not_just_the_layout(): void
@@ -71,7 +71,7 @@ class SeoTest extends TestCase
         \App\Models\Setting::put('legal_company_name', 'Acme Alpine Ltd');
 
         $this->get('/contact')->assertSee('+1 800 555 0199', false);
-        $this->get('/')->assertSee('Call +1 800 555 0199', false);
+        $this->get('/')->assertSee('+1 800 555 0199', false);
         // The consent text uses the legal company name from settings.
         $this->get('/contact')->assertSee('provided by Acme Alpine Ltd.', false);
     }

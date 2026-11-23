@@ -1,50 +1,203 @@
-@extends('layouts.app', [
-    'metaTitle' => $activeTour ? $activeTour->name.' Tours of Austria | '.($site['brand_name'] ?? 'GoAustriaTours') : $page->meta_title,
-    'metaDescription' => $page->meta_description,
-    'transparentHeader' => true,
-])
+@php
+    // Home page. All data comes from the database; no invented facts.
+    $img = fn (string $p) => asset('images/'.$p);
+    $w = fn (string $n, string $suffix = '') => asset('images/winter/'.$n.$suffix.'.webp');
+    $winter = ['hallstatt', 'zellamsee', 'kitzbuhel', 'steinernes-meer', 'tauplitz', 'untersberg', 'salzburg', 'schonbrunn', 'xmas-salzburg'];
+    $places = function ($pkg) {
+        return collect($pkg->itinerary ?? [])
+            ->map(fn ($d) => trim(\Illuminate\Support\Str::after($d['title'] ?? '', ':')))
+            ->flatMap(fn ($t) => preg_split('/\s+(?:and|&)\s+|,\s*/', $t))
+            ->map(fn ($t) => \Illuminate\Support\Str::ucfirst(trim(preg_replace('/^the\s+/i', '', $t))))
+            ->filter()->unique()->values();
+    };
+    $price = fn ($pkg) => $pkg->price_from ? '$'.number_format($pkg->price_from) : null;
+    $phone = trim((string) ($site['phone'] ?? ''));
+    $tel = preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $phone));
+    $brand = $site['brand_name'] ?? 'GoAustriaTours';
 
-@push('jsonld')
-@if($faqSchema = \App\Support\Schema::faq($faqs->map(fn ($f) => ['question' => $f->question, 'answer' => $f->answer])))
-<script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+    $pkgs = $packages->values()->map(function ($p, $i) use ($winter, $w, $places, $price) {
+        return (object) [
+            'p' => $p, 'image' => $w($winter[$i % count($winter)], '-768'), 'places' => $places($p), 'price' => $price($p),
+            'dest' => $p->destination?->slug,
+        ];
+    });
+    $featured = $pkgs->take(12)->values();
+    $featuredPages = $featured->chunk(6);
+    $popular = $pkgs->slice(6, 6)->values();
+
+    $cols = [
+        ['vienna-salzburg', 'Vienna, Salzburg & the Danube', 'Imperial elegance'],
+        ['tyrol', 'Tyrol & the Alps', 'Peaks, lakes and snow'],
+    ];
+    $navPlaces = config('goaustria.nav_places', []);
+    $tiles = [
+        ['hallstatt', 'Salzkammergut', 'Hallstatt in Winter'],
+        ['zellamsee', 'Salzburgerland', 'Zell am See & Kaprun'],
+        ['kitzbuhel', 'Tyrol', 'Kitzbühel Old Town'],
+        ['xmas-salzburg', 'Salzburg', 'Advent Markets'],
+        ['untersberg', 'Salzburg', 'Untersberg Views'],
+        ['tauplitz', 'Styria', 'Tauplitz & the Grimming'],
+    ];
+    $ico = [
+        'cal' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4m8-4v4"/></svg>',
+        'pin' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+        'route' => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg>',
+    ];
+@endphp
+@php
+    $metaTitle = $activeTour ? $activeTour->name.' Tours of Austria | '.$brand : ($page?->meta_title ?: $brand);
+    $metaDescription = $page?->meta_description ?: ($site['default_meta_description'] ?? '');
+    $canonical = route('home');
+    $ogImage = ! empty($site['default_social_image']) ? asset('storage/'.$site['default_social_image']) : $w('hero-wagrain', '-1280');
+@endphp
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ $metaTitle }}</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    <link rel="canonical" href="{{ $canonical }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ $brand }}">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $canonical }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    {{-- Favicon: the Admin > Settings upload wins; otherwise the bundled "G" monogram in public/ --}}
+    @if(! empty($site['favicon']))
+        <link rel="icon" href="{{ asset('storage/'.$site['favicon']) }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192.png') }}">
+    @endif
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+    @include('partials.tracking-head')
+    <link rel="preload" as="image" href="{{ $w('hero-wagrain', '-1280') }}" fetchpriority="high">
+    @vite(['resources/js/home.js'])
+    <script type="application/ld+json">{!! json_encode(\App\Support\Schema::organization($site), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+</head>
+<body class="t3" style="margin:0">
+@if(! empty($site['gtm_id']))
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $site['gtm_id'] }}" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
 @endif
-@endpush
+<a href="#main" class="skip">Skip to content</a>
 
-@push('preload')
-<link rel="preload" as="image" href="{{ asset('images/hero/hallstatt.webp') }}" imagesrcset="{{ asset('images/hero/hallstatt-768.webp') }} 768w, {{ asset('images/hero/hallstatt-1280.webp') }} 1280w, {{ asset('images/hero/hallstatt.webp') }} 1920w" imagesizes="100vw" fetchpriority="high">
-@endpush
+{{-- ============ HEADER ============ --}}
+<header class="hdr">
+    <div class="wrap">
+        <a class="logo" href="{{ route('home') }}" aria-label="{{ $brand }}"><img class="on-dark" src="{{ $img('logo-white.webp') }}" alt="{{ $brand }}" width="500" height="167"><img class="on-light" src="{{ $img('logo-navy.webp') }}" alt="" width="500" height="167"></a>
+        <ul class="nav" aria-label="Main">
+            <li><a class="on" href="{{ route('home') }}">Home</a></li>
+            <li><button type="button">Destinations <i class="caret"></i></button>
+                <div class="mega">
+                    <div class="mega-in">
+                        <div>
+                            <h5>Explore by region</h5>
+                            <div class="mega-cards">
+                                @foreach($destinations as $d)
+                                    <a href="{{ route('packages.index', ['destination' => $d->slug]) }}"><img src="{{ $w($winter[$loop->index % count($winter)], '-768') }}" alt="" loading="lazy"><span>{{ $d->name }}</span></a>
+                                @endforeach
+                            </div>
+                        </div>
+                        <div>
+                            <h5>Popular destinations</h5>
+                            <ul class="mega-list">
+                                @foreach($navPlaces as $slug => $list)@foreach($list as $pl)<li><a href="{{ route('packages.index', ['q' => $pl[1]]) }}">{{ $pl[0] }}</a></li>@endforeach @endforeach
+                            </ul>
+                            <a class="more" href="{{ route('packages.index') }}">View all destinations &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><button type="button">Austria Vacations <i class="caret"></i></button>
+                <div class="mega">
+                    <div class="mega-in one">
+                        <div>
+                            <h5>Tour types</h5>
+                            <div class="mega-cards c3">
+                                @foreach($tourTypes as $t)
+                                    <a href="{{ route('tours.show', $t->slug) }}"><img src="{{ $w($winter[($loop->index + 2) % count($winter)], '-768') }}" alt="" loading="lazy"><span>{{ $t->name }}</span></a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><button type="button">Travel Style <i class="caret"></i></button>
+                <div class="mega">
+                    <div class="mega-in one">
+                        <div>
+                            <h5>Travel style</h5>
+                            <div class="mega-cards c3">
+                                @foreach(config('goaustria.travel_styles', []) as $slug => $st)
+                                    <a class="txt" href="{{ route('packages.index', ['style' => $slug]) }}"><b>{{ $st['name'] }}</b><em>{{ $st['text'] }}</em><u>Discover</u></a>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><button type="button">About Us <i class="caret"></i></button>
+                <div class="drop">
+                    <a href="{{ route('about') }}">About us</a>
+                    <a href="{{ route('journal.index') }}">Journal</a>
+                    <a href="{{ route('testimonials') }}">Testimonials</a>
+                    <a href="{{ route('terms') }}">Terms &amp; Conditions</a>
+                    <a href="{{ route('privacy') }}">Privacy Policy</a>
+                </div>
+            </li>
+            <li><a href="{{ route('contact') }}">Contact us</a></li>
+        </ul>
+        <a class="cta" href="{{ route('contact') }}" data-quote>Plan your journey <i class="caret"></i></a>
+        <button class="burger" type="button" data-open-menu aria-label="Open menu"><i></i><i></i><i></i></button>
+    </div>
+</header>
+<nav class="mobile" aria-label="Mobile">
+    <button class="close" type="button" data-close-menu aria-label="Close menu">&times;</button>
+    <p class="mt">Plan your journey</p>
+    <a href="{{ route('home') }}" data-close-menu>Home</a>
+    <div class="sub"><a href="{{ route('packages.index') }}">Destinations</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach</div>
+    <div class="sub"><a href="{{ route('packages.index') }}">Austria Vacations</a>@foreach($tourTypes as $t)<a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }}</a>@endforeach</div>
+    <a href="{{ route('about') }}">About us</a>
+    <a href="{{ route('contact') }}">Contact us</a>
+</nav>
 
-@section('content')
-{{-- 3. HERO --}}
-<section class="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-brand text-white">
-    {{-- Hero background: Austrian landmarks, CSS crossfade (credits in docs/reference/IMAGE_CREDITS.md) --}}
-    <div class="absolute inset-0 -z-10 bg-brand-dark" aria-hidden="true">
-        @foreach([['hallstatt', 'center'], ['salzburg', 'center'], ['schonbrunn', 'center 70%']] as $i => [$img, $pos])
-            <img src="{{ asset('images/hero/'.$img.'.webp') }}"
-                srcset="{{ asset('images/hero/'.$img.'-768.webp') }} 768w, {{ asset('images/hero/'.$img.'-1280.webp') }} 1280w, {{ asset('images/hero/'.$img.'.webp') }} 1920w" sizes="100vw"
-                alt="" width="1920" height="{{ ['747', '883', '1055'][$i] }}" @if($i === 0) fetchpriority="high" @else loading="lazy" fetchpriority="low" decoding="async" @endif
-                class="hero-slide absolute inset-0 h-full w-full object-cover" style="object-position: {{ $pos }}">
+<main id="main">
+{{-- ============ HERO ============ --}}
+<section class="hero">
+    <div class="hero-bg" aria-hidden="true">
+        @foreach(['hero-wagrain', 'hero-salzburg', 'hero-montafon'] as $h)
+            <img src="{{ $w($h, '-1280') }}" srcset="{{ $w($h, '-768') }} 768w, {{ $w($h, '-1280') }} 1280w, {{ $w($h) }} 1920w" sizes="100vw" alt="" @if($loop->first) fetchpriority="high" @else loading="lazy" @endif>
         @endforeach
-        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-brand-dark/50 to-brand-dark/85"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-brand-dark/60 via-transparent to-transparent"></div>
     </div>
-    <div class="container-page md:!max-w-[1510px] grid flex-1 items-center gap-10 pb-16 pt-36 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-12 lg:pt-40">
-        <div>
-            <p class="flex items-center gap-4 text-[14px] font-semibold uppercase tracking-[0.35em] text-accent"><span class="h-px w-12 bg-accent" aria-hidden="true"></span>{{ $activeTour ? $activeTour->name.' tours of Austria' : 'Bespoke journeys' }}</p>
-            <h1 class="mt-6 normal-case leading-[0.9] tracking-tight !text-white text-[5.5rem] sm:text-[8rem] xl:text-[9.5rem]">Austria.<span class="sr-only"> {{ $activeTour ? $activeTour->name.' tours' : 'Bespoke tours' }}, planned around you</span></h1>
-            <p class="mt-6 max-w-xl font-display text-2xl italic leading-snug text-white/90 sm:text-4xl">@if($activeTour && filled($activeTour->tagline)) {{ $activeTour->tagline }} @else Refined. Timeless. <span class="text-accent">Extraordinary.</span> @endif</p>
-            <ul class="mt-10 flex flex-wrap items-center gap-y-2 border-t border-white/20 pt-6 text-[14px] font-medium uppercase tracking-[0.2em] text-white/90" aria-label="Why book with us">
-                @foreach(['Tailor-made', 'Local Austria experts', 'Personal quote'] as $t)
-                    <li class="flex items-center">{{ $t }}@unless($loop->last)<span class="px-4 text-[7px] text-accent" aria-hidden="true">&#9670;</span>@endunless</li>
-                @endforeach
-            </ul>
+    <div class="wrap hero-in">
+        <div class="hero-copy">
+            <p class="eyebrow">{{ $activeTour ? $activeTour->name.' tours of Austria' : 'Self drive · Escorted · Coach tours' }}</p>
+            <h1>Your Austria Trip,<em>Planned for You</em></h1>
+            <p class="sub">@if($activeTour && filled($activeTour->tagline)){{ $activeTour->tagline }}@else Answer a few quick questions about how you like to travel, and a personal travel specialist will design your Austria itinerary.@endif</p>
         </div>
-        <x-hero-quiz :steps="$quizSteps" />
+        <div class="hero-quiz">
+            <span class="qtag">Complimentary &middot; No obligation</span>
+            <p class="qtitle">Plan my journey</p>
+            @include('pages.partials.study-quiz')
+        </div>
     </div>
-
+    <div class="strip" aria-label="Where to?">
+        <b>Where to?</b>
+        <div class="mq"><div class="mq-track">
+            @foreach([1, 2] as $copy)
+                <div class="mq-set" @if($copy === 2) aria-hidden="true" @endif>@foreach($navPlaces as $list)@foreach($list as $pl)<a href="{{ route('packages.index', ['q' => $pl[1]]) }}" @if($copy === 2) tabindex="-1" @endif>{{ $pl[1] }}</a>@endforeach @endforeach</div>
+            @endforeach
+        </div></div>
+    </div>
 </section>
 
-{{-- 3a. TRUST STRIP: built only from Admin > Trust & tracking. Blank or "[CONFIRM" values are not shown, and the whole strip disappears when nothing is filled in. --}}
+{{-- ============ TRUST STRIP: built only from Admin > Trust & tracking; blank or "[CONFIRM" values never show ============ --}}
 @php
     $marks = collect(range(1, 4))->map(fn ($n) => [
         'label' => trim((string) ($site["trust_mark_{$n}_label"] ?? '')),
@@ -56,500 +209,384 @@
     $reviewUrl = trim((string) ($site['review_url'] ?? ''));
 @endphp
 @if($marks->isNotEmpty() || $established !== '' || $reviewText !== '')
-<section class="border-b border-line bg-soft-white" aria-label="Why you can trust us">
-    <div class="container-page flex flex-col items-center gap-x-12 gap-y-5 py-7 text-center lg:flex-row lg:justify-between lg:text-left">
-        @if($established !== '')
-            <p class="font-display text-2xl italic leading-snug text-brand lg:whitespace-nowrap">{{ $established }}</p>
-        @endif
+<section class="trust" aria-label="Why you can trust us">
+    <div class="wrap trust-in">
+        @if($established !== '')<p class="trust-est">{{ $established }}</p>@endif
         @if($marks->isNotEmpty())
-            <ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 lg:flex-nowrap lg:whitespace-nowrap" aria-label="Memberships and protection">
+            <ul class="trust-marks" aria-label="Memberships and protection">
                 @foreach($marks as $m)
                     <li>
-                        @if($m['url'] !== '')<a href="{{ $m['url'] }}" target="_blank" rel="noopener" class="block">@endif
-                        @if($m['logo'] !== '')
-                            <img src="{{ asset('storage/'.$m['logo']) }}" alt="{{ $m['label'] ?: 'Membership logo' }}" class="h-11 w-auto max-w-[9rem] object-contain" loading="lazy">
-                        @else
-                            <span class="inline-flex items-center gap-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-brand"><span class="text-[9px] text-accent" aria-hidden="true">&#9670;</span>{{ $m['label'] }}</span>
-                        @endif
+                        @if($m['url'] !== '')<a href="{{ $m['url'] }}" target="_blank" rel="noopener">@endif
+                        @if($m['logo'] !== '')<img src="{{ asset('storage/'.$m['logo']) }}" alt="{{ $m['label'] ?: 'Membership logo' }}" loading="lazy">@else<span>{{ $m['label'] }}</span>@endif
                         @if($m['url'] !== '')</a>@endif
                     </li>
                 @endforeach
             </ul>
         @endif
-        @if($reviewText !== '')
-            <p class="text-base font-medium text-brand lg:whitespace-nowrap">
-                @if($reviewUrl !== '')<a href="{{ $reviewUrl }}" target="_blank" rel="noopener" class="underline decoration-accent decoration-2 underline-offset-4 hover:text-accent-text">{{ $reviewText }}</a>@else{{ $reviewText }}@endif
-            </p>
-        @endif
+        @if($reviewText !== '')<p class="trust-rev">@if($reviewUrl !== '')<a href="{{ $reviewUrl }}" target="_blank" rel="noopener">{{ $reviewText }}</a>@else{{ $reviewText }}@endif</p>@endif
     </div>
 </section>
 @endif
 
-{{-- 3b. JOURNEY INTRO (image + numbered points) --}}
-<section class="section bg-soft-white" aria-labelledby="journey-title">
-    <div class="container-page grid items-center gap-14 lg:grid-cols-[5fr_6fr] lg:gap-24">
-        {{-- PLACEHOLDER photo (cropped from the design mock-up): replace with a licensed/own image, see docs/reference/IMAGE_CREDITS.md --}}
-        <div class="relative mx-auto w-full max-w-md pb-6 pr-6 lg:max-w-none">
-            <span class="absolute bottom-0 right-0 top-6 left-6 border border-accent/60" aria-hidden="true"></span>
-            <img src="{{ asset('images/hero/why-alps.webp') }}" alt="Hiker on an Alpine ridge above the clouds" width="576" height="675" loading="lazy" class="photo-grade relative aspect-[4/5] w-full object-cover shadow-[0_30px_60px_-30px_rgb(10_42_64/0.6)]">
-            <p class="absolute -left-3 bottom-12 bg-brand px-5 py-3 font-display text-lg font-semibold italic text-white shadow-xl sm:-left-6">Austria, <span class="text-accent">your way.</span></p>
+{{-- ============ PLANNED AROUND YOU BAND ============ --}}
+<section class="band" aria-label="How we plan your Austria journey">
+    <div class="wrap band-grid">
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="19"/><circle cx="24" cy="24" r="1.5"/><path d="M31 17l-4.5 9.5L17 31l4.5-9.5z"/><path d="M24 3v4M24 41v4M3 24h4M41 24h4"/></svg></span><h3>Custom Itineraries</h3><p>Self drive, escorted or by coach: every route is tailored to your dates, pace and interests.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 42V15l16-8 16 8v27"/><path d="M4 42h40"/><path d="M19 42V31h10v11"/><path d="M15 21h4M29 21h4M15 26h4M29 26h4"/><path d="M24 2.5v4"/></svg></span><h3>Handpicked Stays</h3><p>Hotels chosen for their location and character, with the insight of local experts.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 33a16 16 0 0 1 32 0z"/><path d="M5 38h38"/><path d="M24 13v4"/><path d="M20.5 12h7"/><path d="M13 33a11 11 0 0 1 6-9.5"/></svg></span><h3>Personal Contact</h3><p>A real person who knows your plans and answers your questions before and during your trip.</p></div>
+        <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 5v38"/><path d="M24 9h13l4 4-4 4H24z"/><path d="M24 21H11l-4 4 4 4h13z"/><path d="M24 33h11l3 3-3 3H24"/><path d="M18 43h12"/></svg></span><h3>Three Ways to Travel</h3><p>Self drive, escorted or coach. Choose the style that suits you and we plan the rest.</p></div>
+    </div>
+</section>
+
+{{-- ============ WHY TRAVEL WITH US ============ --}}
+<section class="sec why">
+    <div class="wrap why-grid">
+        <div class="why-media rv">
+            <figure class="why-main"><img src="{{ $w('schonbrunn', '-1280') }}" alt="Schönbrunn Palace and its gardens under fresh snow" loading="lazy"></figure>
+            <figure class="why-inset"><img src="{{ $w('kitzbuhel', '-768') }}" alt="A snowy Tyrolean old town street with horse-drawn carriages" loading="lazy"></figure>
+            <p class="why-badge"><b>Self drive</b><b>Escorted</b><b>Coach</b><span>Tours of Austria, tailored to you</span></p>
         </div>
-        <div>
-            <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Why book with {{ $site['brand_name'] ?? 'GoAustriaTours' }}</p>
-            <h2 id="journey-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Every Austrian Journey,<br><em class="text-accent-text">Feel Uniquely Yours.</em></h2>
-            <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">Discover Austria through thoughtfully crafted journeys shaped around your travel style and interests. From majestic Alpine landscapes and picturesque villages to grand imperial cities and authentic local experiences, every detail is designed to make your journey unforgettable.</p>
-            <ol class="mt-10 max-w-xl border-t border-accent/40">
-                @foreach([['Fully Bespoke Itineraries', 'Tailored to your interests, pace and travel style.'], ['Handpicked Austrian Stays', 'Boutique properties, Alpine retreats and grand hotels.'], ['Dedicated Travel Expertise & Personal Support', 'Personal support from planning to your return home.']] as $n => [$t, $s])
-                    <li class="flex items-start gap-6 border-b border-line py-6">
-                        <span class="font-display text-5xl font-semibold leading-none text-accent" aria-hidden="true">0{{ $n + 1 }}</span>
-                        <div><h3 class="text-2xl">{{ $t }}</h3><p class="mt-1.5 text-muted">{{ $s }}</p></div>
-                    </li>
-                @endforeach
-            </ol>
-            <x-button class="mt-10 !px-8 !py-3.5 uppercase tracking-wider" @click="$store.modal.show({})">Plan My Journey</x-button>
+        <div class="why-copy rv">
+            <p class="eyebrow dark">Why travel with {{ $brand }}</p>
+            <h2 class="h">Austria, <em>planned with care</em></h2>
+            <p class="lede">From snow-dusted palaces to lakeside villages and Alpine peaks, we shape every journey around the way you want to travel.</p>
+            <p class="why-p">Whether you would rather take the wheel, travel with a guide or sit back on a comfortable coach, we plan the route, the hotels and the pace together with you. Nothing is fixed until you are happy with it.</p>
+            <p class="why-p">Tell us your dates, your interests and how you like to travel, and a personal travel specialist will come back with an itinerary built around you, with no obligation.</p>
+            <div class="why-cta"><a class="btn" href="{{ route('contact') }}" data-quote>Get a free quote <i aria-hidden="true">&rarr;</i></a></div>
         </div>
     </div>
 </section>
 
-{{-- 3c. FEATURED PACKAGES: every is_featured package in a swipeable carousel (CSS scroll-snap + Alpine arrows), right after "Why book with us" --}}
-@if($featuredPackages->isNotEmpty())
-<section id="featured" class="section relative isolate scroll-mt-24 overflow-hidden bg-ivory" aria-labelledby="featured-title"
-    x-data="{ atStart: true, atEnd: false, progress: 0,
-        update() { const t = $refs.track; const max = t.scrollWidth - t.clientWidth; this.atStart = t.scrollLeft <= 4; this.atEnd = t.scrollLeft + t.clientWidth >= t.scrollWidth - 4; this.progress = max > 0 ? Math.min(1, Math.max(0, t.scrollLeft / max)) : 1 },
-        go(dir) { const t = $refs.track; t.scrollBy({ left: dir * t.clientWidth * 0.85, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) } }"
-    x-init="$nextTick(() => update())" @resize.window.debounce.150ms="update()">
-    <div class="pointer-events-none absolute -right-40 top-0 -z-10 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]" aria-hidden="true"></div>
-    <div class="container-page">
-        <div class="mb-12 flex flex-col gap-8 lg:mb-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-            <div class="max-w-3xl">
-                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Featured packages</p>
-                <h2 id="featured-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Our Featured <em class="text-accent-text">Itineraries.</em></h2>
-                <p class="mt-6 max-w-2xl text-lg leading-relaxed text-brand/85">A handful of itineraries to start from. Each one can be adapted to your dates, pace and interests.</p>
-            </div>
-            <div class="flex shrink-0 gap-3">
-                <button type="button" @click="go(-1)" :disabled="atStart" class="inline-flex size-14 items-center justify-center rounded-full border border-accent/70 bg-transparent text-brand transition duration-300 hover:bg-brand hover:text-white disabled:pointer-events-none disabled:opacity-30" aria-label="Previous packages"><x-icon name="chevron" :stroke="1.3" class="size-5 rotate-90" /></button>
-                <button type="button" @click="go(1)" :disabled="atEnd" class="inline-flex size-14 items-center justify-center rounded-full border border-accent/70 bg-transparent text-brand transition duration-300 hover:bg-brand hover:text-white disabled:pointer-events-none disabled:opacity-30" aria-label="Next packages"><x-icon name="chevron" :stroke="1.3" class="size-5 -rotate-90" /></button>
-            </div>
-        </div>
-
-        <div x-ref="track" @scroll.passive.throttle.100ms="update()" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Featured Austria tour packages"
-            class="-mx-[15px] flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth px-[15px] pb-8 pt-1 [scrollbar-width:none] md:-mx-[60px] md:px-[60px] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
-            @foreach($featuredPackages as $p)
-                <div class="w-[85%] shrink-0 snap-start sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]" role="group" aria-roledescription="slide" aria-label="{{ $loop->iteration }} of {{ $featuredPackages->count() }}">
-                    <x-package-card :package="$p" />
-                </div>
-            @endforeach
-        </div>
-
-        <div class="mt-6 flex items-center gap-8">
-            <div class="relative h-px flex-1 bg-line" aria-hidden="true"><span class="absolute inset-y-[-1px] left-0 h-[3px] w-1/4 bg-accent transition-[left] duration-200" :style="`left: ${progress * 75}%`"></span></div>
-            <a href="{{ route('packages.index') }}" class="shrink-0 border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-brand transition hover:text-accent-text">View all packages <span aria-hidden="true">&rarr;</span></a>
-        </div>
-    </div>
-</section>
-@endif
-
-{{-- 4. TOUR TYPES (Ways to travel): one compact row of three cards --}}
-<section class="section bg-soft-white" aria-labelledby="types-title">
-    <div class="container-page">
-        <div class="mx-auto mb-10 max-w-3xl text-center lg:mb-12">
-            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Ways to travel<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
-            <h2 id="types-title" class="mt-4 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Choose How You <em class="text-accent-text">See Austria.</em></h2>
-            <p class="mt-4 text-lg lg:text-xl text-brand/85">Three ways to explore. Not sure which suits you? Ask us.</p>
-        </div>
-        <div class="grid gap-6 md:grid-cols-3 lg:gap-8">
-            @foreach($tourTypes as $t)
-                <article class="group relative flex flex-col bg-white shadow-[0_20px_50px_-30px_rgb(10_42_64/0.45)] transition duration-500 hover:-translate-y-1 hover:shadow-[0_30px_60px_-28px_rgb(10_42_64/0.55)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-                    <div class="relative aspect-[16/11] overflow-hidden bg-brand-dark">
-                        <img src="{{ $t->image ? asset('storage/'.$t->image) : asset('images/tours/'.$t->slug.'.webp') }}" alt="{{ $t->image_alt ?: $t->name.' tours of Austria' }}" width="960" height="660" loading="lazy" class="photo-grade h-full w-full object-cover transition duration-[1200ms] ease-out group-hover:scale-105 motion-reduce:transition-none">
-                        <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/85 via-brand-dark/10 to-transparent" aria-hidden="true"></div>
-                        <span class="pointer-events-none absolute inset-3 border border-accent/0 transition duration-500 group-hover:border-accent/70" aria-hidden="true"></span>
-                        <span class="absolute left-5 top-4 font-display text-lg italic text-white/90" aria-hidden="true">{{ ['I', 'II', 'III', 'IV', 'V'][$loop->index] ?? $loop->iteration }}</span>
-                        <h3 class="absolute inset-x-0 bottom-0 p-5 text-3xl !text-white"><a href="{{ route('tours.show', $t->slug) }}" class="after:absolute after:inset-0">{{ $t->name }} <em class="text-accent">Tours</em></a></h3>
-                    </div>
-                    <div class="flex flex-1 flex-col border-t-2 border-accent p-5 sm:p-6">
-                        @if($t->tagline)<p class="text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">{{ $t->tagline }}</p>@endif
-                        <p class="mt-3 text-base leading-relaxed text-brand/85">{{ $t->summary }}</p>
-                        <div class="relative z-10 mt-auto flex items-center justify-between gap-4 pt-5">
-                            <x-button @click="$store.modal.show({})" aria-label="Enquire about {{ $t->name }} tours">Enquire</x-button>
-                            <a href="{{ route('tours.show', $t->slug) }}" class="text-xs font-semibold uppercase tracking-[0.2em] text-brand underline decoration-accent decoration-2 underline-offset-8 hover:text-accent-text" aria-label="Discover {{ $t->name }} tours">Discover <span aria-hidden="true">&rarr;</span></a>
-                        </div>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-    </div>
-</section>
-
-{{-- 7. HOW IT WORKS: photo background under a deep navy veil, gold glows and an inset frame; three framed steps with Roman numerals --}}
-<section id="how-it-works" class="section relative isolate scroll-mt-0 overflow-hidden bg-brand-dark text-white" aria-labelledby="how-title">
-    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-        <img src="{{ asset('images/gallery/grossglockner.webp') }}" alt="" width="1600" height="1200" loading="lazy" class="photo-grade h-full w-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/90 via-brand-dark/65 to-brand-dark/90"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(15_59_89/0.85)_0%,transparent_65%)]"></div>
-        <div class="absolute -left-40 bottom-0 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.14),transparent)]"></div>
-        <div class="absolute -right-40 top-0 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]"></div>
-    </div>
-    <span class="pointer-events-none absolute inset-4 -z-10 hidden border border-accent/30 sm:block lg:inset-8" aria-hidden="true"></span>
-    <div class="container-page">
-        <div class="mx-auto mb-16 max-w-4xl text-center lg:mb-24">
-            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>How it works<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
-            <h2 id="how-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">Three Simple Steps to <em class="text-accent">Your Journey.</em></h2>
-            <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/90">From first idea to the moment you arrive, we handle the details so you can enjoy the anticipation.</p>
-        </div>
-
-        <ol class="grid gap-14 md:grid-cols-3 md:gap-8 lg:gap-12">
-            @foreach([
-                ['I', 'mail', 'Tell us your plans', 'Share when, how and with whom you would like to travel. A few questions is all it takes.'],
-                ['II', 'guide', 'Receive your personal quote', 'A local expert designs a tailored itinerary and price around your wishes.'],
-                ['III', 'calendar', 'Travel with confidence', 'We confirm every detail and look after you from arrival to departure.'],
-            ] as [$num, $ic, $t, $d])
-                <li class="group relative">
-                    <div class="relative h-full border border-white/20 bg-brand-dark/60 px-7 pb-10 pt-14 text-center shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] transition duration-500 hover:-translate-y-1 hover:border-accent/60 sm:px-9 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-                        <span class="pointer-events-none absolute inset-2 border border-accent/0 transition duration-500 group-hover:border-accent/30" aria-hidden="true"></span>
-                        {{-- icon badge straddles the top edge of the frame --}}
-                        <span class="absolute left-1/2 top-0 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-accent bg-brand-dark text-accent shadow-[0_0_0_6px_rgb(10_42_64/0.9)]" aria-hidden="true"><x-icon :name="$ic" :stroke="1.2" class="size-7" /></span>
-                        <p class="font-display text-6xl italic leading-none text-accent/90 sm:text-7xl" aria-hidden="true">{{ $num }}</p>
-                        <span class="mx-auto mt-5 block h-px w-12 bg-accent/70 transition-all duration-500 group-hover:w-24" aria-hidden="true"></span>
-                        <h3 class="mt-6 text-2xl !text-white sm:text-3xl">{{ $t }}</h3>
-                        <p class="mx-auto mt-4 max-w-xs leading-relaxed text-white/90">{{ $d }}</p>
-                    </div>
-                    @unless($loop->last)
-                        <span class="absolute -right-[1.15rem] top-1/2 hidden -translate-y-1/2 text-[9px] text-accent md:block lg:-right-[1.65rem]" aria-hidden="true">&#9670;</span>
-                    @endunless
-                </li>
-            @endforeach
-        </ol>
-
-        <div class="mt-16 flex flex-col items-center gap-4 text-center lg:mt-24">
-            <x-button class="!px-9 !py-4 uppercase tracking-wider" @click="$store.modal.show({})">Begin Planning</x-button>
-            <p class="text-sm text-white/90">No obligation. A personal reply from a local expert.</p>
-        </div>
-    </div>
-</section>
-
-{{-- 5. CURATED PACKAGES (6 per page, arrow + number pagination, ajax: resources/js/curated.js) --}}
-@if($curatedPackages->isNotEmpty())
-<section id="curated" class="section scroll-mt-24 bg-soft-white" aria-labelledby="curated-title">
-    <div class="container-page">
-        <div class="mb-10 flex flex-col gap-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
+{{-- ============ TOP-RATED TOURS (filter + pager) ============ --}}
+<section class="sec tint" id="tours" data-tours>
+    <div class="wrap">
+        <div class="tours-head rv">
             <div>
-                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Curated packages</p>
-                <h2 id="curated-title" class="mt-4 text-[32px] sm:text-[44px] lg:text-[56px]">Journeys We Have <em class="text-accent-text">Thoughtfully Curated.</em></h2>
-                <p class="mt-5 max-w-xl text-brand">Itineraries that balance the sights worth seeing with time to enjoy them. Each one is a starting point we adapt to you.</p>
+                <p class="eyebrow dark">Handpicked journeys</p>
+                <h2 class="h">Our Top-Rated <em>Austrian Tours</em></h2>
+                <p class="lede">Hand-built journeys through the cities, lakes and Alps, in every season.</p>
             </div>
-            <a href="{{ route('packages.index') }}" class="inline-flex h-11 shrink-0 items-center justify-center self-start bg-cta px-9 text-xs font-medium uppercase tracking-[0.12em] text-brand transition hover:bg-cta-dark lg:self-auto">Explore Trips</a>
+            <div class="tours-filter">
+                <div class="chips" role="group" aria-label="Filter by destination">
+                    <button type="button" class="chip on" data-dest="">All packages</button>
+                    @foreach($destinations as $d)<button type="button" class="chip" data-dest="{{ $d->slug }}">{{ $d->name }}</button>@endforeach
+                </div>
+                <p class="count" data-count aria-live="polite">Showing 1&ndash;{{ min(6, $featured->count()) }} of {{ $featured->count() }} tours</p>
+            </div>
         </div>
-        <div id="curated-list" data-endpoint="{{ route('packages.curated') }}" aria-live="polite">
-            @include('partials.curated-packages', ['packages' => $curatedPackages])
+        <div class="grid" data-grid>
+            @foreach($featured as $f)
+                <div class="cell" data-dest="{{ $f->dest }}">@include('pages.partials.package-card', ['f' => $f])</div>
+            @endforeach
+        </div>
+        <nav class="pager" data-pager aria-label="Pagination"></nav>
+        <div class="tours-cta"><a class="btn" href="{{ route('contact') }}" data-quote>Get a free quote <i aria-hidden="true">&rarr;</i></a><a class="link" href="{{ route('packages.index') }}">View all packages</a></div>
+    </div>
+</section>
+
+{{-- ============ THE DIFFERENCE (real counts only) ============ --}}
+<section class="sec diff">
+    <div class="diff-bg" aria-hidden="true"><img src="{{ $w('steinernes-meer', '-1280') }}" alt="" loading="lazy"></div>
+    <div class="wrap diff-grid">
+        <div class="diff-copy rv">
+            <p class="eyebrow light">The {{ $brand }} difference</p>
+            <h2 class="h light">Why travel <em>with us?</em></h2>
+            <p class="lede light">We plan Austria for travellers who would rather be looked after than left to work it out alone.</p>
+            <ul class="diff-points">
+                <li>Routes shaped around your dates, pace and interests</li>
+                <li>Handpicked hotels and local Austria expertise</li>
+                <li>One personal contact from first enquiry to your return home</li>
+            </ul>
+            <div class="diff-cta"><a class="btn" href="{{ route('contact') }}" data-quote>Get a free quote <i aria-hidden="true">&rarr;</i></a><a class="link" href="{{ route('about') }}">Meet the team</a></div>
+        </div>
+        <div class="stats rv">
+            <div class="stat"><b data-n="{{ $packages->count() }}">0</b><div><strong>Journeys</strong><span>Itineraries to choose from, each open to change before you book.</span></div></div>
+            <div class="stat"><b data-n="{{ $destinations->count() }}">0</b><div><strong>Regions of Austria</strong><span>From imperial Vienna to the high peaks of Tyrol.</span></div></div>
+            <div class="stat"><b data-n="{{ $tourTypes->count() }}">0</b><div><strong>Ways to travel</strong><span>Self drive, escorted or by coach.</span></div></div>
+        </div>
+    </div>
+</section>
+
+{{-- ============ TOP DESTINATIONS ============ --}}
+@php
+    $destImg = ['vienna-salzburg' => 'hero-salzburg', 'tyrol' => 'hero-montafon'];
+    $destTag = ['vienna-salzburg' => 'Imperial palaces and Baroque music', 'tyrol' => 'Alpine valleys, lakes and peaks'];
+    $destSixth = ['vienna-salzburg' => 'Melk', 'tyrol' => 'Achensee'];   // both occur in real package itineraries
+    $bespokePlaces = ['Vienna', 'Salzburg', 'Hallstatt', 'Innsbruck', 'Zell am See', 'Graz'];
+@endphp
+<section class="sec" id="destinations">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">Where to go</p>
+            <h2 class="h">Explore Top <em>Destinations</em></h2>
+            <p class="lede">The imperial cities, the high Alps, or a route entirely your own.</p>
+        </div>
+        <div class="dgrid three">
+            @foreach($destinations->take(6) as $d)
+                @php
+                    $pl = collect($navPlaces[$d->slug] ?? [])->map(fn ($x) => $x[1])->when(isset($destSixth[$d->slug]), fn ($c) => $c->push($destSixth[$d->slug]))->unique()->take(6);
+                    $tagline = $destTag[$d->slug] ?? \Illuminate\Support\Str::limit((string) $d->summary, 38);
+                    $n = $pkgs->where('dest', $d->slug)->count();
+                    $di = $destImg[$d->slug] ?? $winter[($loop->index * 2) % count($winter)];
+                @endphp
+                <article class="dtile rv">
+                    <div class="dt-photo">
+                        <img src="{{ $w($di, '-1280') }}" alt="" loading="lazy">
+                        @if($n)<p class="dt-kick">{{ $n }} {{ $n === 1 ? 'journey' : 'journeys' }}</p>@endif
+                        <div class="dt-title">
+                            <h3>{{ $d->name }}</h3>
+                            @if($tagline)<p>{{ $tagline }}</p>@endif
+                        </div>
+                    </div>
+                    <div class="dt-body">
+                        @if($pl->isNotEmpty())
+                            <ul class="dt-places">@foreach($pl as $x)<li><a href="{{ route('packages.index', ['q' => $x]) }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>{{ $x }}</a></li>@endforeach</ul>
+                        @endif
+                        <div class="dt-foot">
+                            <a class="dt-explore" href="{{ route('packages.index', ['destination' => $d->slug]) }}">Explore</a>
+                            <a class="btn sm" href="{{ route('contact') }}" data-quote data-interest="{{ $d->name }}">Enquire now</a>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+            @if($destinations->take(6)->count() < 3)
+                <article class="dtile rv">
+                    <div class="dt-photo">
+                        <img src="{{ $w('hallstatt', '-1280') }}" alt="" loading="lazy">
+                        <p class="dt-kick">Bespoke</p>
+                        <div class="dt-title">
+                            <h3>Your Own Route</h3>
+                            <p>Mix any of these. Tell us your plan.</p>
+                        </div>
+                    </div>
+                    <div class="dt-body">
+                        <ul class="dt-places">@foreach($bespokePlaces as $x)<li><a href="{{ route('packages.index', ['q' => $x]) }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>{{ $x }}</a></li>@endforeach</ul>
+                        <div class="dt-foot">
+                            <a class="dt-explore" href="{{ route('packages.index') }}">Explore</a>
+                            <a class="btn sm" href="{{ route('contact') }}" data-quote data-interest="a custom route through Austria">Plan my route</a>
+                        </div>
+                    </div>
+                </article>
+            @endif
+        </div>
+        <p class="dest-foot"><a class="link" href="{{ route('packages.index') }}">View all destinations &rarr;</a></p>
+    </div>
+</section>
+
+{{-- ============ POPULAR PACKAGES ============ --}}
+@if($popular->isNotEmpty())
+<section class="sec tint">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">Handpicked itineraries</p>
+            <h2 class="h oneline">Austria, <em>Perfectly Planned</em></h2>
+            <p class="lede">More of our most-loved itineraries, each one open to change before you book.</p>
+        </div>
+        <div class="grid">@foreach($popular as $f)<div class="cell">@include('pages.partials.package-card', ['f' => $f])</div>@endforeach</div>
+    </div>
+</section>
+@endif
+
+{{-- ============ CTA ============ --}}
+<section class="sec cta2" id="plan">
+    <div class="cta2-bg" aria-hidden="true"><img src="{{ $w('hero-montafon', '-1280') }}" alt="" loading="lazy"></div>
+    <div class="wrap center rv">
+        <p class="eyebrow light">Complimentary &middot; No obligation</p>
+        <h2 class="h light">Tell Us Your Dream. <em>We Will Plan the Rest.</em></h2>
+        <p class="lede light">Share when you would like to travel and how you like to see a country, and a personal travel specialist will design your Austria itinerary.</p>
+        <div class="cta2-btns">
+            <a class="btn" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a>
+            @if($phone)<a class="cta2-call" href="tel:{{ $tel }}">Or call {{ $phone }}</a>@endif
+        </div>
+    </div>
+</section>
+
+{{-- ============ TRAVEL YOUR WAY ============ --}}
+<section class="sec" id="ways">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">Choose your style</p>
+            <h2 class="h oneline">Your Journey. <em>Your Way.</em></h2>
+            <p class="lede">Drive at your own pace, travel with a guide, or ride in comfort. Every style is planned around you.</p>
+        </div>
+        @php $wayImg = ['self-drive' => 'way-self-drive', 'escorted' => 'way-escorted', 'coach' => 'way-coach']; @endphp
+        <div class="ways">
+            @foreach($tourTypes->take(3) as $t)
+                @php $tn = $pkgs->filter(fn ($f) => $f->p->tourType?->id === $t->id)->count(); @endphp
+                <a class="way rv" href="{{ route('tours.show', $t->slug) }}">
+                    <img src="{{ $w($wayImg[$t->slug] ?? $winter[($loop->index + 3) % count($winter)], '-768') }}" alt="" loading="lazy">
+                    @if($tn)<span class="wcount">{{ $tn }} {{ $tn === 1 ? 'journey' : 'journeys' }}</span>@endif
+                    <div class="wbody">
+                        <h3>{{ $t->name }}</h3>
+                        <p>{{ \Illuminate\Support\Str::limit($t->tagline ?: $t->summary, 80) }}</p>
+                        <span class="wgo">Explore {{ $t->name }} <i aria-hidden="true">&rarr;</i></span>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- ============ THE COLLECTION ============ --}}
+@php
+    $gallery = [
+        ['hallstatt', 'Salzkammergut', 'Hallstatt in Winter', 'g-a'],
+        ['zellamsee', 'Salzburgerland', 'Zell am See & Kaprun', 'g-b'],
+        ['xmas-salzburg', 'Salzburg', 'Advent Markets', 'g-c'],
+        ['kitzbuhel', 'Tyrol', 'Kitzbühel Old Town', 'g-d'],
+        ['untersberg', 'Salzburg', 'Untersberg Views', 'g-e'],
+        ['tauplitz', 'Styria', 'Tauplitz & the Grimming', 'g-f'],
+        ['schonbrunn', 'Vienna', 'Schönbrunn Palace', 'g-g'],
+    ];
+@endphp
+<section class="sec tint" id="gallery">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">The Austria gallery</p>
+            <h2 class="h">Austria&rsquo;s Finest Places, <em>Beautifully Curated</em></h2>
+            <p class="lede">Snow-covered villages, frozen lakes and high Alpine views: the places our guests ask for first.</p>
+        </div>
+        <div class="gal">
+            @foreach($gallery as $g)
+                <a class="gi {{ $g[3] }} rv" href="{{ route('packages.index', ['q' => explode(' ', $g[2])[0]]) }}">
+                    <img src="{{ $w($g[0], '-1280') }}" alt="{{ $g[2] }}, {{ $g[1] }}" loading="lazy">
+                    <span class="gl">{{ $g[1] }}</span>
+                    <div class="gt"><h3>{{ $g[2] }}</h3><i aria-hidden="true">&rarr;</i></div>
+                </a>
+            @endforeach
+        </div>
+        <p class="center"><a class="btn" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a></p>
+    </div>
+</section>
+
+{{-- ============ TESTIMONIALS ============ --}}
+@if($testimonials->isNotEmpty())
+<section class="sec" id="stories">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">Guest reviews</p>
+            <h2 class="h oneline">Guest <em>Stories</em></h2>
+            <p class="lede">Words from travellers who let us shape their trip to Austria.</p>
+        </div>
+        <div class="reviews tcards" data-reviews>
+            <div class="rtrack">
+                @foreach($testimonials as $t)
+                    @php $ini = collect(preg_split('/\s+/', trim($t->name)))->filter()->take(2)->map(fn ($x) => mb_strtoupper(mb_substr($x, 0, 1)))->implode(''); @endphp
+                    <figure class="rev">
+                        <span class="qi" aria-hidden="true"><svg viewBox="0 0 48 36" fill="currentColor"><path d="M0 36V19C0 8 6 1.5 17 0l1.6 5C13 6.6 10.5 10 10.5 15H19v21H0zm27 0V19C27 8 33 1.5 44 0l1.600 5C40 6.600 37.500 10 37.500 15H46v21H27z"/></svg></span>
+                        <blockquote>{{ $t->quote }}</blockquote>
+                        <figcaption><span class="av" aria-hidden="true">{{ $ini }}</span><span class="who"><b>{{ $t->name }}</b>@if($t->location)<small>{{ $t->location }}</small>@endif</span></figcaption>
+                    </figure>
+                @endforeach
+            </div>
+            @if($testimonials->count() > 3)
+                <div class="rnav"><button type="button" data-prev aria-label="Previous story">&larr;</button><button type="button" data-next aria-label="Next story">&rarr;</button></div>
+            @endif
         </div>
     </div>
 </section>
 @endif
-{{-- 5b. TOP DESTINATIONS (bento of trip cards: text overlaid on the photo, places on one line with diamond separators). Navy background with a repeating edelweiss pattern overlay so the photos stay the star. --}}
-<section class="section relative isolate overflow-hidden bg-brand-dark text-white" aria-labelledby="destinations-title">
-    {{-- Background overlay: a quiet repeating pattern of small edelweiss flowers and diamonds (Austria's national flower), like luxury wallpaper. Static, very low contrast, decorative only. --}}
-    <div class="pointer-events-none absolute inset-0 -z-10 text-accent [mask-image:linear-gradient(to_bottom,transparent,#000_14%,#000_86%,transparent)]" aria-hidden="true">
-        <div class="absolute left-1/2 top-[-6rem] h-[34rem] w-[60rem] max-w-full -translate-x-1/2 bg-[radial-gradient(closest-side,rgb(15_59_89/0.7),transparent)]"></div>
-        <svg class="absolute inset-0 h-full w-full opacity-[0.17]" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="austria-motif" width="150" height="150" patternUnits="userSpaceOnUse" patternTransform="translate(20 10)"><g fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><path d="M41.4 37.5Q47.1 41.0 52.5 37.5Q47.1 34.0 41.4 37.5ZM40.3 40.3Q41.8 46.7 48.1 48.1Q46.7 41.8 40.3 40.3ZM37.5 41.4Q34.0 47.1 37.5 52.5Q41.0 47.1 37.5 41.4ZM34.7 40.3Q28.3 41.8 26.9 48.1Q33.2 46.7 34.7 40.3ZM33.6 37.5Q27.9 34.0 22.5 37.5Q27.9 41.0 33.6 37.5ZM34.7 34.7Q33.2 28.3 26.9 26.9Q28.3 33.2 34.7 34.7ZM37.5 33.6Q41.0 27.9 37.5 22.5Q34.0 27.9 37.5 33.6ZM40.3 34.7Q46.7 33.2 48.1 26.9Q41.8 28.3 40.3 34.7Z"/><circle cx="37.5" cy="37.5" r="2.4" fill="currentColor" stroke="none"/><path d="M116.4 112.5Q122.1 116.0 127.5 112.5Q122.1 109.0 116.4 112.5ZM115.3 115.3Q116.8 121.7 123.1 123.1Q121.7 116.8 115.3 115.3ZM112.5 116.4Q109.0 122.1 112.5 127.5Q116.0 122.1 112.5 116.4ZM109.7 115.3Q103.3 116.8 101.9 123.1Q108.2 121.7 109.7 115.3ZM108.6 112.5Q102.9 109.0 97.5 112.5Q102.9 116.0 108.6 112.5ZM109.7 109.7Q108.2 103.3 101.9 101.9Q103.3 108.2 109.7 109.7ZM112.5 108.6Q116.0 102.9 112.5 97.5Q109.0 102.9 112.5 108.6ZM115.3 109.7Q121.7 108.2 123.1 101.9Q116.8 103.3 115.3 109.7Z"/><circle cx="112.5" cy="112.5" r="2.4" fill="currentColor" stroke="none"/><path d="M112.5 34.5L115.5 37.5L112.5 40.5L109.5 37.5Z" fill="currentColor" stroke="none"/><path d="M37.5 109.5L40.5 112.5L37.5 115.5L34.5 112.5Z" fill="currentColor" stroke="none"/></g></pattern></defs><rect width="100%" height="100%" fill="url(#austria-motif)"/></svg>
-    </div>
-    <div class="container-page">
-        <div class="mx-auto mb-12 max-w-3xl text-center lg:mb-16">
-            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Top destinations<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
-            <h2 id="destinations-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">From Alpine Peaks<br><em class="text-accent">To Imperial Streets.</em></h2>
-            <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/90">Six ways to move through the country, from palaces on the Danube to lakeside villages and high Alpine passes. Each one is a starting point we shape around you.</p>
+
+{{-- ============ MOMENTS ============ --}}
+<section class="sec tint" id="moments">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">Featured journeys</p>
+            <h2 class="h oneline">Moments Worth <em>Travelling For</em></h2>
+            <p class="lede">Journeys built around the places you will remember longest.</p>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:auto-rows-[20rem] lg:gap-6">
-            @foreach([
-                ['The Grand Austrian Journey', 'hero/hallstatt.webp', ['Vienna', 'Wachau', 'Salzburg', 'Hallstatt', 'Gosau', 'Innsbruck']],
-                ['Imperial & Alpine', 'packages/tyrol-private-escorted.webp', ['Vienna', 'Melk', 'Linz', 'Salzburg', 'Zell am See', 'Innsbruck']],
-                ['Lakeside Austria Escape', 'packages/alpine-lakes-self-drive.webp', ['Salzburg', 'St. Gilgen', 'St. Wolfgang', 'Hallstatt', 'Gosau', 'Bad Ischl']],
-                ['Danube & Vineyards', 'packages/classic-austria-by-coach.webp', ['Vienna', 'Krems', 'Dürnstein', 'Melk', 'Linz', 'Salzburg']],
-                ['The Alpine Discovery', 'packages/alpine-highlights-by-coach.webp', ['Innsbruck', 'Seefeld', 'Ötztal', 'Zell am See', 'Kaprun', 'Salzburg']],
-                ['Castles & Countryside', 'hero/salzburg.webp', ['Vienna', 'Graz', 'Klagenfurt', 'Villach', 'Innsbruck', 'Salzburg']],
-            ] as $n => [$title, $img, $places])
-                {{-- Bento layout: the first journey is the large feature (2 columns x 2 rows from lg). Photo fills the card, text sits on a navy gradient. --}}
-                @php $feature = $n === 0; @endphp
-                <article class="group relative isolate flex min-h-[20rem] flex-col justify-end overflow-hidden border border-white/15 bg-brand-dark text-white shadow-[0_30px_60px_-25px_rgb(0_0_0/0.8)] transition duration-500 hover:border-accent/60 motion-reduce:transition-none {{ $feature ? 'sm:col-span-2 sm:min-h-[26rem] lg:row-span-2' : '' }}">
-                    <img src="{{ asset('images/'.$img) }}" alt="" width="800" height="600" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover {{ $feature ? 'object-[50%_35%]' : '' }} transition duration-[1600ms] ease-out group-hover:scale-105 motion-reduce:transition-none">
-                    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark via-brand-dark/55 to-brand-dark/5" aria-hidden="true"></div>
-                    <span class="pointer-events-none absolute inset-3 border border-accent/0 transition duration-500 group-hover:border-accent/60" aria-hidden="true"></span>
-                    <span class="absolute left-6 top-5 font-display text-lg italic text-white/90" aria-hidden="true">0{{ $n + 1 }}</span>
-                    <span class="absolute right-5 top-4 inline-flex size-10 items-center justify-center rounded-full border border-white/40 text-white transition duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-brand" aria-hidden="true">&nearr;</span>
-                    <div class="p-6 {{ $feature ? 'sm:p-10' : 'sm:p-7' }}">
-                        @if($feature)<p class="mb-3 flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent [text-shadow:0_1px_10px_rgb(0_0_0/0.7)]"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>Featured journey</p>@endif
-                        <h3 class="leading-tight !text-white {{ $feature ? 'text-[32px] sm:text-[44px] lg:text-[56px]' : 'text-3xl' }}"><a href="{{ route('packages.index') }}" class="after:absolute after:inset-0">{{ $title }}</a></h3>
-                        <ul class="mt-4 flex flex-wrap items-center gap-y-1 text-sm text-white/85 {{ $feature ? 'sm:text-base' : '' }}" aria-label="Places on {{ $title }}">
-                            @foreach($places as $place)
-                                <li class="flex items-center">{{ $place }}@unless($loop->last)<span class="px-2.5 text-[7px] text-accent" aria-hidden="true">&#9670;</span>@endunless</li>
-                            @endforeach
-                        </ul>
-                        @if($feature)<span class="mt-7 inline-flex items-center gap-3 border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-white" aria-hidden="true">Explore this journey <span class="text-accent transition group-hover:translate-x-1">&rarr;</span></span>@endif
+        <div class="mom">
+            @foreach($pkgs->take(6) as $f)
+                <article class="mc rv">
+                    <img src="{{ $w($winter[($loop->index + 4) % count($winter)], '-768') }}" alt="" loading="lazy">
+                    @if($f->p->tourType)<span class="mt">{{ $f->p->tourType->name }}</span>@endif
+                    <div class="mb">
+                        @if($f->p->destination)<p class="mk">{{ $f->p->destination->name }}</p>@endif
+                        <h3><a href="{{ route('packages.show', $f->p) }}">{{ $f->p->title }}</a></h3>
+                        <p class="mm">@if($f->p->nights){{ $f->p->nights }} nights<span aria-hidden="true"> &middot; </span>@endif{{ $f->price ? 'From '.$f->price : 'Price on request' }}</p>
+                        <div class="mact">
+                            <a class="mview" href="{{ route('packages.show', $f->p) }}">View journey</a>
+                            <a class="btn sm" href="{{ route('packages.show', $f->p) }}#quote" data-quote data-package-id="{{ $f->p->id }}" data-package="{{ $f->p->title }}">Enquire</a>
+                        </div>
                     </div>
                 </article>
             @endforeach
         </div>
-        <div class="mt-12 text-center lg:mt-16">
-            <x-button :href="route('packages.index')" class="!px-9 !py-4 uppercase tracking-wider">Explore trips</x-button>
-        </div>
     </div>
 </section>
 
-{{-- 7b. MEET YOUR PLANNER: shows only when a name and bio are set in Admin > Settings > Planner (never invented) --}}
-@if(! empty($site['planner_name']) && ! empty($site['planner_bio']))
-<section class="section bg-sand" aria-labelledby="planner-title">
-    <div class="container-page grid items-center gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-        <div class="mx-auto w-full max-w-sm">
-            @if(! empty($site['planner_photo']))
-                <img src="{{ asset('storage/'.$site['planner_photo']) }}" alt="{{ $site['planner_name'] }}" width="640" height="800" loading="lazy" class="aspect-[4/5] w-full rounded-sm object-cover shadow-card">
-            @else
-                <div class="flex aspect-[4/5] w-full items-center justify-center rounded-sm bg-brand font-display text-7xl text-accent shadow-card" aria-hidden="true">{{ \Illuminate\Support\Str::of($site['planner_name'])->explode(' ')->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('') }}</div>
-            @endif
-        </div>
-        <div>
-            <p class="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink"><span class="h-px w-8 bg-secondary"></span>Meet your planner</p>
-            <h2 id="planner-title" class="mt-4 text-[32px] sm:text-[44px]">{{ $site['planner_name'] }}</h2>
-            @if(! empty($site['planner_role']))<p class="mt-2 text-sm font-medium uppercase tracking-wider text-accent-text">{{ $site['planner_role'] }}</p>@endif
-            <div class="mt-6 max-w-xl space-y-4 text-muted">
-                @foreach(preg_split('/\R{2,}/', trim($site['planner_bio'])) as $para)<p>{{ $para }}</p>@endforeach
-            </div>
-            <x-button class="mt-8" @click="$store.modal.show({})">Plan My Journey</x-button>
-        </div>
-    </div>
-</section>
-@endif
-
-{{-- 8. GUEST STORIES: one large pull-quote, the rest smaller beneath it. No stars or third-party marks (not verified reviews). --}}
-@if($testimonials->isNotEmpty())
-@php $lead = $testimonials->first(); $others = $testimonials->slice(1); @endphp
-<section id="guest-stories" class="section relative isolate scroll-mt-0 overflow-hidden bg-ivory" aria-labelledby="reviews-title">
-    <p class="pointer-events-none absolute -left-6 -top-10 -z-10 select-none font-display text-[26rem] italic leading-none text-accent/15 lg:text-[40rem]" aria-hidden="true">&ldquo;</p>
-    <div class="container-page">
-        <div class="mx-auto max-w-4xl text-center">
-            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Guest stories<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
-            <h2 id="reviews-title" class="sr-only">What our travellers say</h2>
-            <figure class="mt-10">
-                <blockquote class="font-display text-3xl italic leading-[1.25] text-brand sm:text-4xl lg:text-[3.25rem]">&ldquo;{{ $lead->quote }}&rdquo;</blockquote>
-                <figcaption class="mt-8 flex items-center justify-center gap-4 text-sm uppercase tracking-[0.2em] text-brand/85">
-                    <span class="h-px w-8 bg-accent" aria-hidden="true"></span>
-                    <span><strong class="font-semibold text-brand">{{ $lead->name }}</strong>@if($lead->location)<span class="text-accent" aria-hidden="true"> &#9670; </span>{{ $lead->location }}@endif</span>
-                    <span class="h-px w-8 bg-accent" aria-hidden="true"></span>
-                </figcaption>
-            </figure>
-        </div>
-        @if($others->isNotEmpty())
-        <div class="mx-auto mt-16 grid max-w-5xl gap-x-12 gap-y-10 border-t border-accent/40 pt-12 md:grid-cols-2 lg:mt-20 lg:pt-14">
-            @foreach($others as $t)
-                <figure class="flex flex-col {{ $loop->first ? '' : 'md:border-l md:border-line md:pl-12' }}">
-                    <span class="font-display text-5xl leading-none text-accent" aria-hidden="true">&ldquo;</span>
-                    <blockquote class="-mt-2 flex-1 font-display text-2xl italic leading-snug text-brand">{{ $t->quote }}</blockquote>
-                    <figcaption class="mt-6 text-[14px] uppercase tracking-[0.2em] text-brand/85"><strong class="font-semibold text-brand">{{ $t->name }}</strong>@if($t->location)<span class="text-accent" aria-hidden="true"> &#9670; </span>{{ $t->location }}@endif</figcaption>
-                </figure>
-            @endforeach
-        </div>
-        @endif
-    </div>
-</section>
-@endif
-
-{{-- 8b. GALLERY (6 destinations + Alpine.js lightbox: Esc closes, arrows/swipe navigate, focus is trapped) --}}
-@php
-    // [file slug, title, photo description (alt + lightbox caption), short tagline shown on the tile]
-    $gallery = [
-        ['hallstatt', 'Hallstatt', 'A lakeside village in the Salzkammergut', 'Lakeside serenity'],
-        ['innsbruck', 'Innsbruck', 'The Inn river and the Nordkette Alps', 'Alpine beauty'],
-        ['salzburg', 'Salzburg', 'The old town beneath Hohensalzburg Fortress', 'Baroque charm'],
-        ['wachau', 'Wachau', 'Melk Abbey above the Danube', 'Vineyard escapes'],
-        ['vienna', 'Vienna', 'Schönbrunn Palace and its imperial gardens', 'Imperial elegance'],
-        ['grossglockner', 'Grossglockner', 'Hairpin bends on the High Alpine Road', 'Mountain drives'],
-    ];
-    $galleryItems = array_map(fn ($g) => ['src' => asset('images/gallery/'.$g[0].'.webp'), 'title' => $g[1], 'caption' => $g[2]], $gallery);
-@endphp
-<section id="gallery" class="section relative isolate scroll-mt-24 overflow-hidden bg-brand-dark text-white" aria-labelledby="gallery-title"
-    x-data="{ open: false, i: 0, active: 0, items: @js($galleryItems), tx: 0,
-        show(n) { this.i = n; this.open = true },
-        close() { this.open = false },
-        next() { this.i = (this.i + 1) % this.items.length },
-        prev() { this.i = (this.i - 1 + this.items.length) % this.items.length } }"
-    @keydown.escape.window="close()" @keydown.arrow-right.window="open && next()" @keydown.arrow-left.window="open && prev()">
-    <div class="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(15_59_89)_0%,transparent_60%)]" aria-hidden="true"></div>
-    <div class="container-page">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-2xl">
-                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>The gallery</p>
-                <h2 id="gallery-title" class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">Austria, <em class="text-accent">Frame By Frame.</em></h2>
-            </div>
-            <p class="max-w-md text-lg leading-relaxed text-white/90">A few of the places our journeys pass through. Tap a photo to see it larger.</p>
-        </div>
-
-        {{-- Desktop: cinematic accordion. The hovered/focused panel opens wide; click (or a second tap) opens the lightbox. --}}
-        <div class="mt-14 hidden h-[36rem] gap-3 lg:flex xl:h-[40rem]">
-            @foreach($gallery as $n => [$slug, $title, $caption, $tagline])
-                <button type="button" @mouseenter="active = {{ $n }}" @focus="active = {{ $n }}" @click="active === {{ $n }} ? show({{ $n }}) : active = {{ $n }}"
-                    aria-label="Open photo: {{ $title }}"
-                    class="group relative isolate min-w-0 overflow-hidden bg-brand text-left transition-[flex-grow] duration-[800ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-                    :class="active === {{ $n }} ? 'grow-[6]' : 'grow'" style="flex-basis: 0">
-                    <img src="{{ asset('images/gallery/'.$slug.'.webp') }}" alt="{{ $caption }}" width="1600" height="1200" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover transition duration-[1400ms] ease-out" :class="active === {{ $n }} ? 'scale-100' : 'scale-110 brightness-75'">
-                    <span class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/90 via-brand-dark/10 to-brand-dark/30" aria-hidden="true"></span>
-                    <span class="pointer-events-none absolute inset-4 border border-accent/0 transition duration-700" :class="active === {{ $n }} && '!border-accent/70'" aria-hidden="true"></span>
-                    <span class="absolute left-6 top-6 font-display text-lg italic text-white/90" aria-hidden="true">0{{ $n + 1 }}</span>
-                    {{-- collapsed: vertical name --}}
-                    <span class="absolute bottom-8 left-1/2 -translate-x-1/2 font-display text-2xl font-semibold uppercase tracking-[0.2em] text-white/90 transition-opacity duration-500 [writing-mode:vertical-rl] rotate-180" :class="active === {{ $n }} ? 'opacity-0' : 'opacity-100'" aria-hidden="true">{{ $title }}</span>
-                    {{-- expanded: full caption --}}
-                    <span class="absolute inset-x-0 bottom-0 block p-9 opacity-0 transition-opacity duration-500" :class="active === {{ $n }} && '!opacity-100 delay-300'">
-                        <span class="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>{{ $tagline }}</span>
-                        <span class="mt-3 block whitespace-nowrap font-display text-5xl font-semibold leading-none text-white">{{ $title }}</span>
-                        <span class="mt-3 block max-w-sm text-white/90">{{ $caption }}</span>
-                        <span class="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.25em] text-white">View photo <x-icon name="search" :stroke="1.4" class="size-4 text-accent" /></span>
-                    </span>
-                </button>
-            @endforeach
-        </div>
-
-        {{-- Mobile / tablet: swipeable tall cards --}}
-        <div class="-mx-[15px] mt-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-[15px] pb-4 md:-mx-[60px] md:px-[60px] lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" tabindex="0" aria-label="Gallery photos, scroll sideways">
-            @foreach($gallery as $n => [$slug, $title, $caption, $tagline])
-                <button type="button" @click="show({{ $n }})" aria-label="Open photo: {{ $title }}" class="group relative isolate aspect-[3/4] w-[78%] max-w-sm shrink-0 snap-center overflow-hidden bg-brand text-left sm:w-[46%]">
-                    <img src="{{ asset('images/gallery/'.$slug.($n === 0 || $n === 5 ? '' : '-thumb').'.webp') }}" alt="{{ $caption }}" width="800" height="1067" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover">
-                    <span class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/90 via-brand-dark/10 to-transparent" aria-hidden="true"></span>
-                    <span class="pointer-events-none absolute inset-3 border border-accent/50" aria-hidden="true"></span>
-                    <span class="absolute left-5 top-5 font-display text-base italic text-white/90" aria-hidden="true">0{{ $n + 1 }}</span>
-                    <span class="absolute inset-x-0 bottom-0 block p-6">
-                        <span class="flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.22em] text-accent"><span class="h-px w-6 bg-accent" aria-hidden="true"></span>{{ $tagline }}</span>
-                        <span class="mt-2 block font-display text-3xl font-semibold leading-tight text-white">{{ $title }}</span>
-                    </span>
-                </button>
-            @endforeach
-        </div>
-    </div>
-
-    {{-- Lightbox --}}
-    <div x-show="open" x-cloak x-trap.noscroll="open" x-transition.opacity.duration.200ms
-        class="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/90 p-4 sm:p-8" role="dialog" aria-modal="true" aria-label="Photo gallery"
-        @click.self="close()" @touchstart.passive="tx = $event.changedTouches[0].clientX"
-        @touchend.passive="let d = $event.changedTouches[0].clientX - tx; if (Math.abs(d) > 50) { d < 0 ? next() : prev() }">
-        <p class="absolute left-4 top-4 text-sm text-white/85 sm:left-8 sm:top-6" aria-live="polite"><span x-text="i + 1"></span> / <span x-text="items.length"></span></p>
-        <button type="button" @click="close()" class="absolute right-3 top-3 rounded-full p-3 text-white/90 hover:bg-white/10 hover:text-white sm:right-6 sm:top-5" aria-label="Close gallery"><x-icon name="close" :stroke="1.5" class="size-7" /></button>
-
-        <button type="button" @click="prev()" class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-3 text-white/90 hover:bg-white/10 hover:text-white sm:left-6" aria-label="Previous photo"><x-icon name="chevron" :stroke="1.5" class="size-8 rotate-90" /></button>
-        <button type="button" @click="next()" class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-3 text-white/90 hover:bg-white/10 hover:text-white sm:right-6" aria-label="Next photo"><x-icon name="chevron" :stroke="1.5" class="size-8 -rotate-90" /></button>
-
-        <figure class="flex max-h-full max-w-5xl flex-col items-center" @click.self="close()">
-            <img :src="items[i].src" :alt="items[i].caption" class="max-h-[75vh] w-auto max-w-full rounded-md object-contain shadow-2xl">
-            <figcaption class="mt-4 text-center text-white">
-                <span class="block font-display text-2xl" x-text="items[i].title"></span>
-                <span class="block text-sm text-white/90" x-text="items[i].caption"></span>
-            </figcaption>
-        </figure>
-    </div>
-</section>
-
-{{-- 8e. JOURNAL: editorial layout, one lead story + two supporting stories --}}
+{{-- ============ JOURNAL ============ --}}
 @if($posts->isNotEmpty())
-@php $lead = $posts->first(); $others = $posts->slice(1); @endphp
-<section class="section bg-ivory" aria-labelledby="journal-title">
-    <div class="container-page">
-        <div class="mb-12 flex flex-col gap-6 lg:mb-16 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-3xl">
-                <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>The Journal</p>
-                <h2 id="journal-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Austria travel stories and tips</h2>
-                <p class="mt-5 max-w-xl text-lg leading-relaxed text-brand/85">Ideas, routes and practical advice for planning your trip.</p>
-            </div>
-            <a href="{{ route('journal.index') }}" class="shrink-0 self-start border-b-2 border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em] text-brand transition hover:text-accent-text lg:self-auto">Read the journal <span aria-hidden="true">&rarr;</span></a>
+<section class="sec" id="journal">
+    <div class="wrap">
+        <div class="head rv">
+            <p class="eyebrow dark">Stories and tips</p>
+            <h2 class="h oneline">Austria Travel <em>Journal</em></h2>
+            <p class="lede">Ideas, advice and winter inspiration for planning your trip.</p>
         </div>
-
-        <div class="grid gap-8 lg:grid-cols-[7fr_5fr] lg:gap-10">
-            {{-- Lead story --}}
-            <article class="group relative isolate flex min-h-[26rem] flex-col justify-end overflow-hidden bg-brand-dark text-white lg:min-h-[36rem]">
-                <img src="{{ $lead->imageUrl() }}" alt="{{ $lead->image_alt }}" width="1200" height="900" loading="lazy" class="photo-grade absolute inset-0 -z-10 h-full w-full object-cover transition duration-[1400ms] ease-out group-hover:scale-105 motion-reduce:transition-none">
-                <div class="absolute inset-0 -z-10 bg-gradient-to-t from-brand-dark/95 via-brand-dark/40 to-transparent" aria-hidden="true"></div>
-                <span class="pointer-events-none absolute inset-4 border border-accent/0 transition duration-500 group-hover:border-accent/70 sm:inset-6" aria-hidden="true"></span>
-                <div class="p-8 sm:p-12">
-                    <p class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.25em] text-accent"><span class="h-px w-8 bg-accent" aria-hidden="true"></span>@if($lead->category)<span>{{ $lead->category }}</span><span aria-hidden="true">&middot;</span>@endif<time datetime="{{ $lead->published_at?->toDateString() }}" class="text-white/90">{{ $lead->published_at?->format('F j, Y') }}</time></p>
-                    <h3 class="mt-4 max-w-xl text-3xl leading-tight !text-white sm:text-4xl lg:text-5xl"><a href="{{ route('journal.show', $lead) }}" class="after:absolute after:inset-0">{{ $lead->title }}</a></h3>
-                    <p class="mt-4 max-w-lg text-white/90">{{ $lead->excerpt }}</p>
-                    <span class="mt-6 inline-flex items-center gap-2 border-b border-accent pb-1 text-xs font-semibold uppercase tracking-[0.25em]" aria-hidden="true">Read article <span>&rarr;</span></span>
-                </div>
-            </article>
-
-            {{-- Supporting stories --}}
-            <div class="grid gap-8 lg:grid-rows-2 lg:gap-10">
-                @foreach($others as $post)
-                    <article class="group relative flex flex-col bg-white shadow-[0_24px_60px_-40px_rgb(10_42_64/0.5)] transition duration-500 hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:flex-row">
-                        <div class="relative aspect-[16/10] overflow-hidden bg-brand-soft sm:aspect-auto sm:w-2/5 sm:shrink-0">
-                            <img src="{{ $post->imageUrl() }}" alt="{{ $post->image_alt }}" width="600" height="600" loading="lazy" class="photo-grade h-full w-full object-cover transition duration-[1200ms] ease-out group-hover:scale-105 motion-reduce:transition-none">
-                        </div>
-                        <div class="flex flex-1 flex-col border-t-2 border-accent p-6 sm:border-l-0 sm:border-t-0 sm:p-7 lg:border-t-2">
-                            <p class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent-text">@if($post->category)<span>{{ $post->category }}</span><span aria-hidden="true">&middot;</span>@endif<time datetime="{{ $post->published_at?->toDateString() }}" class="font-medium text-brand/60">{{ $post->published_at?->format('M j, Y') }}</time></p>
-                            <h3 class="mt-3 text-2xl leading-tight"><a href="{{ route('journal.show', $post) }}" class="after:absolute after:inset-0">{{ $post->title }}</a></h3>
-                            <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-brand/85">{{ $post->excerpt }}</p>
-                            <span class="mt-auto pt-5 text-xs font-semibold uppercase tracking-[0.25em] text-brand" aria-hidden="true">Read article <span class="text-accent-text">&rarr;</span></span>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+        <div class="jr">
+            @foreach($posts as $post)
+                <article class="jc rv">
+                    <a class="jimg" href="{{ route('journal.show', $post) }}" tabindex="-1" aria-hidden="true"><img src="{{ $post->imageUrl() }}" alt="{{ $post->image_alt }}" loading="lazy" width="800" height="600"></a>
+                    <div class="jb">
+                        <p class="jmeta">@if($post->category)<span>{{ $post->category }}</span><i aria-hidden="true">&middot;</i>@endif<time datetime="{{ $post->published_at?->toDateString() }}">{{ $post->published_at?->format('M j, Y') }}</time><i aria-hidden="true">&middot;</i><span>{{ $post->readingMinutes() }} min read</span></p>
+                        <h3><a href="{{ route('journal.show', $post) }}">{{ $post->title }}</a></h3>
+                        <p class="jx">{{ $post->excerpt }}</p>
+                        <a class="jmore" href="{{ route('journal.show', $post) }}">Read article <i aria-hidden="true">&rarr;</i></a>
+                    </div>
+                </article>
+            @endforeach
         </div>
+        <p class="center"><a class="btn" href="{{ route('journal.index') }}">Read the journal <i aria-hidden="true">&rarr;</i></a></p>
     </div>
 </section>
 @endif
 
-{{-- 9. FAQ: heading + "still have a question" card on the left, accordion on the right --}}
-@if($faqs->isNotEmpty())
-<section class="section relative isolate overflow-hidden bg-soft-white" aria-labelledby="faq-title">
-    <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-        <div class="absolute -right-40 -top-40 size-[34rem] bg-[radial-gradient(closest-side,rgb(219_161_44/0.1),transparent)]"></div>
-        <p class="absolute -left-6 top-4 select-none font-display text-[22rem] font-semibold italic leading-none text-brand/[0.03] lg:text-[30rem]">?</p>
+</main>
+
+{{-- ============ FOOTER ============ --}}
+<section class="fcta">
+    <div class="wrap center">
+        <p class="fcta-t">Ready to Plan Your Perfect Austria Journey?</p>
+        <a class="btn" href="{{ route('contact') }}" data-quote>Get your free quote <i aria-hidden="true">&rarr;</i></a>
+        <p class="fcta-s">Need help deciding? Speak directly with our Austria travel specialists.</p>
+        @if($phone)<a class="fcta-p" href="tel:{{ $tel }}">{{ $phone }}</a>@endif
     </div>
-    <div class="container-page grid gap-12 lg:grid-cols-[4fr_8fr] lg:gap-24">
-        <div class="lg:sticky lg:top-28 lg:self-start">
-            <p class="flex items-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>FAQ</p>
-            <h2 id="faq-title" class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">Questions, <em class="text-accent-text">answered.</em></h2>
-            <p class="mt-6 text-lg leading-relaxed text-brand/85">Everything you may wish to know before planning your journey to Austria.</p>
-            <div class="mt-10 border border-accent/50 bg-white p-7 shadow-[0_24px_60px_-40px_rgb(10_42_64/0.5)]">
-                <p class="font-display text-2xl font-semibold text-brand">Still have a question?</p>
-                <p class="mt-2 text-sm leading-relaxed text-brand/85">Ask us anything. A member of our team will reply personally.</p>
-                <x-button class="mt-5 !px-6 !py-3 uppercase tracking-wider" @click="$store.modal.show({})">Ask Our Team</x-button>
+</section>
+<footer class="foot">
+    <div class="wrap foot-grid">
+        <div class="fc fc-contact">
+            @if($phone)<div class="fci"><span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span><div><h4>Call Now</h4><a href="tel:{{ $tel }}">{{ $phone }}</a></div></div>@endif
+            @if(! empty($site['email']))<div class="fci"><span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><h4>Email</h4><a href="mailto:{{ $site['email'] }}">{{ $site['email'] }}</a></div></div>@endif
+            @if(! empty($site['address']))<div class="fci"><span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><h4>Address</h4><p>{!! nl2br(e($site['address'])) !!}</p></div></div>@endif
+            @if(! $phone && empty($site['email']) && empty($site['address']))<div class="fci"><span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><h4>Get in touch</h4><a href="{{ route('contact') }}" data-quote>Send us an enquiry</a></div></div>@endif
+        </div>
+        <div class="fc"><h4>Destinations</h4>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach<a href="{{ route('packages.index') }}">All packages</a></div>
+        <div class="fc"><h4>Travel Styles</h4>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] }}</a>@endforeach</div>
+        <div class="fc fc-brand">
+            <img src="{{ $img('logo-white.webp') }}" alt="{{ $brand }}" width="500" height="167" loading="lazy">
+            <p>Thoughtfully crafted Austria journeys by self drive, escorted tour and coach. Discover Austria beautifully with {{ $brand }}.</p>
+        </div>
+    </div>
+    <div class="foot-bar">
+        <div class="wrap foot-bar-in">
+            <p class="copy">&copy; {{ date('Y') }} {{ $brand }}. All rights reserved.</p>
+            <nav class="foot-legal" aria-label="Company"><a href="{{ route('about') }}">About us</a><a href="{{ route('journal.index') }}">Journal</a><a href="{{ route('contact') }}">Contact us</a><a href="{{ route('terms') }}">Terms &amp; Conditions</a><a href="{{ route('privacy') }}">Privacy Policy</a><a href="{{ route('photo-credits') }}">Photo credits</a></nav>
+            <div class="foot-soc">
+                @if(! empty($site['social_facebook']))<a href="{{ $site['social_facebook'] }}" rel="noopener" target="_blank" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7.5H16l.5-3h-3V8.6c0-.9.3-1.5 1.6-1.5H16.6V4.4A20 20 0 0 0 14.3 4.3c-2.3 0-3.8 1.4-3.8 3.9v2.3H8v3h2.5V21h3z"/></svg></a>@endif
+                @if(! empty($site['social_instagram']))<a href="{{ $site['social_instagram'] }}" rel="noopener" target="_blank" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.8" cy="7.2" r="0.8" fill="currentColor"/></svg></a>@endif
+                @if(! empty($site['social_youtube']))<a href="{{ $site['social_youtube'] }}" rel="noopener" target="_blank" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg></a>@endif
             </div>
         </div>
-        <div class="border-t border-accent/50">@foreach($faqs as $f)<x-faq-item :question="$f->question" :number="sprintf('%02d', $loop->iteration)">{{ $f->answer }}</x-faq-item>@endforeach</div>
     </div>
-</section>
-@endif
+</footer>
 
-{{-- 10. FINAL CTA: video background. Drop an MP4 (and optionally a WebM) at public/videos/austria-cta.mp4 / .webm; until then the still photo shows.
-     The video is only fetched when the section scrolls into view, and never for reduced-motion or data-saver visitors. --}}
-@php
-    $ctaVideo = file_exists(public_path('videos/austria-cta.mp4')) ? asset('videos/austria-cta.mp4') : null;
-    $ctaWebm = file_exists(public_path('videos/austria-cta.webm')) ? asset('videos/austria-cta.webm') : null;
-@endphp
-<section class="section relative isolate flex min-h-[32rem] items-center overflow-hidden bg-brand-dark text-center text-white lg:min-h-[40rem]"
-    @if($ctaVideo)
-    x-data="{ play: false }"
-    x-init="if (! matchMedia('(prefers-reduced-motion: reduce)').matches && ! (navigator.connection && navigator.connection.saveData)) { new IntersectionObserver((e, o) => { if (e[0].isIntersecting) { play = true; o.disconnect() } }, { rootMargin: '300px' }).observe($el) }"
-    @endif>
-    <div class="absolute inset-0 -z-10" aria-hidden="true">
-        <img src="{{ asset('images/hero/hallstatt.webp') }}" alt="" width="1920" height="747" loading="lazy" class="photo-grade h-full w-full object-cover">
-        @if($ctaVideo)
-            <template x-if="play">
-                <video autoplay muted loop playsinline preload="none" poster="{{ asset('images/hero/hallstatt.webp') }}" class="absolute inset-0 h-full w-full object-cover">
-                    @if($ctaWebm)<source src="{{ $ctaWebm }}" type="video/webm">@endif
-                    <source src="{{ $ctaVideo }}" type="video/mp4">
-                </video>
-            </template>
-        @endif
-        <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/80 via-brand-dark/55 to-brand-dark/85"></div>
-    </div>
-    <span class="pointer-events-none absolute inset-4 -z-10 border border-accent/40 sm:inset-8" aria-hidden="true"></span>
-    <div class="container-page max-w-3xl">
-        <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent"><span class="h-px w-10 bg-accent/70" aria-hidden="true"></span>Your Austrian journey<span class="h-px w-10 bg-accent/70" aria-hidden="true"></span></p>
-        <h2 class="mt-5 text-[32px] leading-[1.05] !text-white sm:text-[44px] lg:text-[56px]">{{ $page->section('cta_title', 'Ready to see Austria?') }}</h2>
-        <p class="mx-auto mt-5 max-w-xl text-lg text-white/90">{{ $page->section('cta_text') }}</p>
-        <div class="mt-10 flex flex-wrap justify-center gap-4">
-            <x-button :href="route('contact')" @click.prevent="$store.modal.show({})" class="!px-8 !py-3.5 uppercase tracking-wider">Plan My Journey</x-button>
-            @if(! empty($site['phone']))
-                <x-button variant="light" :href="'tel:'.preg_replace('/[^\d+]/', '', ($site['phone_tel'] ?? '') ?: $site['phone'])" class="!px-8 !py-3.5">Call {{ $site['phone'] }}</x-button>
-            @endif
-        </div>
-    </div>
-</section>
-@endsection
+@include('pages.partials.study-modal')
+
+{{-- sticky consult bar --}}
+<div class="consult">
+    <p>@if($phone && ! str_contains($phone, '[CONFIRM'))Consult with our Travel Specialists at <a href="tel:{{ $tel }}">{{ $phone }}</a>@else Talk to our Austria travel specialists @endif</p>
+    <a class="rq" href="{{ route('contact') }}" data-quote>Request a quote <i aria-hidden="true">&rarr;</i></a>
+</div>
+</body>
+</html>

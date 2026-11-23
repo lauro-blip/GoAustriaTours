@@ -29,6 +29,11 @@
         <input type="hidden" name="package_id" value="" x-bind:value="$store.modal.context.package_id ?? ''" data-modal-package>
     @endif
 
+    @if($formName === 'header-modal')
+        {{-- set by the "By Traveler" menu items (who is travelling); only the modal reads the modal context --}}
+        <input type="hidden" name="traveler" value="" x-bind:value="$store.modal.context.traveler ?? ''">
+    @endif
+
     {{-- Honeypot: humans never see or fill this. --}}
     <div class="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
         <label>Leave this field empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>

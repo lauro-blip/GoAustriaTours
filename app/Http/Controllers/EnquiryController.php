@@ -43,6 +43,7 @@ class EnquiryController extends Controller
             'travel_date' => ['nullable', 'string', 'max:80'],
             'second_quote' => ['nullable', Rule::in(['Yes', 'No'])],
             'special_request' => ['nullable', 'string', 'max:2000'],
+            'traveler' => ['nullable', Rule::in(array_keys(config('goaustria.traveler_types', [])))],   // set by the "By Traveler" menu
             'season' => ['nullable', 'string', 'max:20'],
             'group_size' => ['nullable', 'string', 'max:10'],
             'nights' => ['nullable', 'string', 'max:10'],
@@ -102,7 +103,7 @@ class EnquiryController extends Controller
             'phone_e164' => $phone,
             'travel_date' => $this->clean($data['travel_date'] ?? null),
             'second_quote' => $data['second_quote'] ?? null,
-            'special_request' => $this->clean($data['special_request'] ?? null),
+            'special_request' => $this->clean(trim((($data['traveler'] ?? null) ? 'Travelling as: '.config('goaustria.traveler_types.'.$data['traveler'].'.label').PHP_EOL : '').($data['special_request'] ?? '')) ?: null, 2200),
             'quiz_answers' => $answers ?: null,
             // Consent evidence (chargeback / compliance)
             'consent_given' => true,

@@ -11,7 +11,7 @@
 @section('content')
 <section class="section">
     <div class="container-page">
-        <x-section-heading tag="h1" title="Austria tour packages" subtitle="Filter by tour type or destination." />
+        <x-section-heading tag="h1" title="Austria tour packages" subtitle="Filter by tour type, destination or travel style." />
 
         <form method="GET" action="{{ route('packages.index') }}" class="mb-10 flex flex-wrap items-end justify-center gap-4">
             <x-form-field name="tour_type" type="select" label="Tour type" id="flt" :value="$activeTourType?->slug">
@@ -22,8 +22,24 @@
                 <option value="">All destinations</option>
                 @foreach($destinations as $d)<option value="{{ $d->slug }}" @selected($activeDestination?->id === $d->id)>{{ $d->name }}</option>@endforeach
             </x-form-field>
+            <x-form-field name="style" type="select" label="Travel style" id="flt">
+                <option value="">All travel styles</option>
+                @foreach(config('goaustria.travel_styles') as $slug => $st)<option value="{{ $slug }}" @selected(($activeStyle['slug'] ?? null) === $slug)>{{ $st['name'] }}</option>@endforeach
+            </x-form-field>
             <x-button type="submit" variant="secondary">Filter</x-button>
         </form>
+
+        @if($activeCollection)
+            <p class="mb-8 text-center text-brand">Showing <strong>{{ $activeCollection['name'] }}</strong>: {{ $activeCollection['text'] }} <a class="underline decoration-accent decoration-2 underline-offset-4" href="{{ route('packages.index') }}">Show all trips</a></p>
+        @endif
+
+        @if($activeStyle)
+            <p class="mb-8 text-center text-brand">Showing <strong>{{ $activeStyle['name'] }}</strong> journeys: {{ $activeStyle['text'] }} <a class="underline decoration-accent decoration-2 underline-offset-4" href="{{ route('packages.index') }}">Show all trips</a></p>
+        @endif
+
+        @if($searchTerm !== '')
+            <p class="mb-8 text-center text-brand">Showing trips that include <strong>{{ $searchTerm }}</strong>. <a class="underline decoration-accent decoration-2 underline-offset-4" href="{{ route('packages.index') }}">Show all trips</a></p>
+        @endif
 
         @forelse($packages as $p)
             @if($loop->first)<div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">@endif

@@ -38,3 +38,16 @@ Rules for adding images: use only images free for commercial use with no licence
 | Logo and favicon | Admin > Settings (text wordmark "GoAustriaTours" now) |
 
 Gallery (`public/images/gallery/{slug}.webp` full size + `{slug}-thumb.webp`): the same Commons photos credited above, re-cropped. vienna = schonbrunn (Martin Falbisoner, CC BY-SA 4.0), salzburg (Uoaei1, CC BY-SA 4.0), hallstatt (David Kernan, CC BY 4.0), innsbruck = tyrol package photo (Luftschiffhafen, CC BY-SA 4.0), wachau = Melk photo (Uoaei1, CC BY-SA 4.0), grossglockner = alpine-highlights photo (Dimitry Anikin, CC0).
+| winter/hallstatt.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Hallstatt_winter.jpg | Thomas Fabian | CC BY-SA 2.0 (resized, WebP) |
+| winter/schonbrunn.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:01_Schloss_Sch%C3%B6nbrunn,_Winter_2023.jpg | Michellethewise | CC0 (resized, WebP) |
+| winter/salzburg.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:First_snow_in_Salzburg.JPG | Wald1siedel | CC BY-SA 3.0 (resized, WebP) |
+| winter/zellamsee.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Zell_am_See_im_Winter_01.JPG | Wald1siedel | CC BY-SA 4.0 (resized, WebP) |
+| winter/kitzbuhel.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Winter_snow_in_Kitzb%C3%BChel.jpg | Valerii Tkachenko | CC BY 2.0 (resized, WebP) |
+| winter/tauplitz.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Tauplitz_with_Grimming_(24025523011).jpg | Bernd Thaller | CC BY 2.0 (resized, WebP) |
+| winter/xmas-salzburg.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Christmas_Market_Salzburg_Austria_.jpg | Salzburger Nockerl | CC BY-SA 4.0 (resized, WebP) |
+| winter/untersberg.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Untersberg_in_winter_of_2023-25.jpg | Renek78 | CC0 (resized, WebP) |
+| winter/steinernes-meer.webp | Home page (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Zeller_See_Zell_am_See_Steinernes_Meer.JPG | Wald1siedel | CC BY-SA 3.0 (resized, WebP) |
+| winter/hero-wagrain.webp | Home hero slideshow (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Wagrain_salzburg.jpg | Arne Müseler | CC BY-SA 3.0 de (resized, WebP) |
+| winter/hero-salzburg.webp | Home hero slideshow (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Panorama_%C3%BCber_Kapitelplatz_in_Salzburg_2022-02-05.jpg | Strubbl | CC BY-SA 4.0 (resized, WebP) |
+| winter/hero-montafon.webp | Home hero slideshow (credited on /photo-credits) | https://commons.wikimedia.org/wiki/File:Beautiful_place_in_montafon_(25265594591).jpg | Yesiamsebi | CC BY 2.0 (resized, WebP) |
+| winter/way-self-drive.webp, way-escorted.webp, way-coach.webp | Home "Your Journey. Your Way." boxes (noted on /photo-credits) | AI-generated illustrations (gpt_image_2_6, Nov 2026), not real photographs; the coach photo has the GoAustriaTours logo composited on. Replace with real photography before going live and do not present as real trips. | n/a |

@@ -44,7 +44,7 @@ class JournalTest extends TestCase
     public function test_home_shows_journal_section(): void
     {
         $this->get('/')->assertOk()
-            ->assertSee('Austria travel stories and tips')
+            ->assertSee('Austria Travel')
             ->assertSee('/journal/self-drive-or-coach-how-to-choose', false);
     }
 

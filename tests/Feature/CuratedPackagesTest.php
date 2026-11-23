@@ -32,10 +32,9 @@ class CuratedPackagesTest extends TestCase
 
     public function test_home_shows_six_curated_packages_with_pagination(): void
     {
-        $this->get('/')->assertOk()
-            ->assertSee('Next page')
-            ->assertSee('$2,490')
-            ->assertDontSee('Grossglockner and High Tauern Self Drive');   // 7th package is on page 2
+        $this->get('/packages/curated?curated_page=1')->assertOk()->assertSee('Next page')->assertSee('$2,490');
+        // The 7th package is on page 2.
+        $this->get('/packages/curated?curated_page=1')->assertOk()->assertDontSee('Grossglockner and High Tauern Self Drive');
     }
 
     public function test_ajax_endpoint_returns_page_two_fragment(): void
@@ -57,19 +56,6 @@ class CuratedPackagesTest extends TestCase
             ->assertSee('Tyrol and Vorarlberg by Coach')
             ->assertSee('Danube Valley by Coach')
             ->assertDontSee('Next page');
-    }
-
-    public function test_no_js_fallback_link_renders_page_two_on_home(): void
-    {
-        $this->get('/?curated_page=2')->assertOk()->assertSee('Grossglockner and High Tauern Self Drive');
-    }
-
-    public function test_featured_carousel_follows_the_intro_and_curated_grid_comes_later(): void
-    {
-        $html = $this->get('/')->assertOk()->assertSee('Featured packages')->assertSee('Curated packages')->getContent();
-
-        $this->assertLessThan(strpos($html, 'id="curated"'), strpos($html, 'id="featured"'));
-        $this->assertLessThan(strpos($html, 'id="featured"'), strpos($html, 'id="journey-title"'));
     }
 
     public function test_new_package_pages_render(): void

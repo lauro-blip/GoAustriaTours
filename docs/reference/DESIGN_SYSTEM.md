@@ -13,8 +13,8 @@ Hand-built with Tailwind CSS v4. Every brand value lives in **one place**: the `
 | `--color-quiz` | #DBA12C | quiz card border and focus ring |
 | `--color-ivory` / `soft-white` / `sand` | #F8F7F3 / #FFFEFA / #DBD4CC | page background, header surface, alternate section background |
 | `--color-ink` / `muted` / `line` | #0F3B59 / #3E251E / #E5E1DA | text and headings, paragraph (Alt Text) colour, borders |
-| `--font-display` | Cormorant Garamond 600/700 (+ italics) | headings (bold by default) |
-| `--font-sans` | DM Sans (variable) | body |
+| `--font-display` | Apoc Revelations LT (licensed: files NOT in the repo yet), Cormorant Garamond fallback | headings |
+| `--font-sans` | Helvetica (system font, Helvetica Neue / Arial fallback) | body |
 | `--radius-card`, `--shadow-card` | 1rem, soft shadow | cards |
 
 Tailwind generates utilities from them: `bg-brand`, `text-muted`, `font-display`, `border-quiz`.

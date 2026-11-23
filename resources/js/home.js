@@ -27,7 +27,7 @@ $$('[data-tours]').forEach((sec) => {
     const count = $('[data-count]', sec);
     const grid = $('[data-grid]', sec);
     const mqm = matchMedia('(max-width: 699px)');
-    const perPage = () => (mqm.matches ? 999 : 6);
+    const perPage = () => 6;
     let dest = '';
     let page = 1;
     const render = () => {

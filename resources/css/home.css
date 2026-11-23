@@ -1043,9 +1043,34 @@ html:has(.t3) { scroll-padding-top:96px }
     .t3 .car-ui.on-dark .car-dots button::before { background: rgba(255, 255, 255, 0.35); }
     .t3 .car-ui.on-dark .car-dots button[aria-current="true"]::before { background: var(--accent); }
     .t3 .car-ui.on-dark .car-count { color: #fff; }
-    .t3 [data-pager] { display: none; }
 }
 
 /* Performance: skip rendering work for sections far below the fold until they are near the viewport. */
 .t3 main > .sec, .t3 main > .band, .t3 main > .cta2 { content-visibility: auto; contain-intrinsic-size: auto 720px; }
 
+/* ---- Package cards on mobile: compact 30/70 row (photo left; days/nights, title, route, details, price, enquire right) ---- */
+.t3 .pc .mdur { display: none; }
+@media (max-width: 699px) {
+    .t3 [data-pager] { display: flex; margin-top: 22px; }
+    .t3 .grid { gap: 12px; }
+    .t3 .pc { flex-direction: row; height: auto; transform: none; }
+    .t3 .pc:hover { transform: none; box-shadow: none; }
+    .t3 .pc::after { display: none; }
+    .t3 .pc .ph { flex: 0 0 30%; aspect-ratio: auto; min-height: 150px; }
+    .t3 .pc .ph::after, .t3 .pc .tag, .t3 .pc .dur { display: none; }
+    .t3 .pc .ph img { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .t3 .pc .pb { flex: 1; min-width: 0; padding: 13px 14px 12px; }
+    .t3 .pc .kick, .t3 .pc .sum { display: none; }
+    .t3 .pc .mdur { display: block; margin: 0; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; color: var(--accent-d); text-transform: uppercase; }
+    .t3 .pc .mdur b { font-weight: 700; }
+    .t3 .pc h3 { font-size: 1.08rem; line-height: 1.22; margin: 5px 0 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .t3 .pc .route { font-size: 0.78rem; line-height: 1.4; padding: 0; border: 0; margin: 0 0 10px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .t3 .pc .route span { display: inline; margin: 0 5px 0 0; font-size: 0.75rem; letter-spacing: 0.12em; }
+    .t3 .pc .pfoot { margin-top: auto; padding-top: 10px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px 10px; }
+    .t3 .pc .price small { font-size: 0.75rem; letter-spacing: 0.14em; }
+    .t3 .pc .price b { font-size: 1.3rem; margin-top: 2px; }
+    .t3 .pc .price span { font-size: 0.75rem; }
+    .t3 .pc .btns { display: contents; }
+    .t3 .pc .more { grid-column: 2; grid-row: 1; font-size: 0.75rem; }
+    .t3 .pc .btns .btn { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: center; text-align: center; padding: 10px 12px; font-size: 0.75rem; }
+}

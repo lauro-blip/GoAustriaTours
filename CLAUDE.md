@@ -59,7 +59,7 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - **Brand palette (use first on any new design/study):** Yale Blue `#0F3B59`, Cool Steel `#7D929E`, Dust Grey `#DBD4CC`, Goldenrod `#DBA12C`, Dark Coffee `#3E251E` (body text); derived: dark navy `#0A2A40`, bronze `#7A5505` for small gold text on light backgrounds. Gold buttons carry NAVY text. Mood reference: The Fairway Club (warm cream surfaces, deep colour, elegant serif lockups). Used by the home page.
 
 ## Conversion features (CRO)
-- **Consult bar** (bottom of every page except package, contact, thank-you): phone number + "Request a quote" (opens the popup). Pages that need their own bottom bar or a form pass `noStickyBar`.
+- **Consult bar** (bottom of every page except package, contact, thank-you): phone number + "Request a quote" (opens the popup). On mobile it shows only a phone icon (when a real phone is set) + the Request a quote button. Pages that need their own bottom bar or a form pass `noStickyBar`.
 - **Google Ads message match:** `/?tour=self-drive|escorted|coach` (must be a real active `TourType` slug; anything else is ignored, never echoed) re-words the hero eyebrow, tagline (from `TourType->tagline`), sr-only H1 and the page title. Canonical stays on the clean URL. Use these URLs as the ad group Final URLs. The tour slug is also sent to GoHighLevel as the tag `interest: <slug>`.
 - **GoHighLevel follow-up:** every contact gets the tag `nurture: new-lead` (workflow trigger). Workflow itself lives in GoHighLevel: `docs/reference/GHL_FOLLOW_UP.md`.
 - **Response promise** (Admin > Trust & tracking > `response_promise`): shown under the quiz and on the thank-you page only when set; never invent one.
@@ -71,7 +71,7 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - Settings are read with `Setting::get('key')` (cached; flushed on write). Public views receive `$site` (settings; `[CONFIRM` values blanked) from a view composer; `layouts.site` also gets the nav data.
 - New simple admin list: extend `Admin\CrudController` (model, routeName, title, columns, fields, rules) and add a `$crud(...)` line in `routes/admin.php`.
 - Public brand colours/fonts live ONLY in the variables at the top of `.t3` in `resources/css/home.css`; the admin has its own tokens in `app.css` (`@theme`).
-- Typography: section headings (`.h`, `.pk-h`) are 44px on desktop (768px and up) and 32px on mobile and body text is Inter weight 300 (set on `.t3`; hero sub is 400 for readability on photos). Change them only at the end of `home.css` / `inner.css`.
+- Typography: section headings (`.h`, `.pk-h`) are 44px on desktop (768px and up) and 32px on mobile and body text is Inter weight 300 (set on `.t3`; hero sub is 400 for readability on photos). Change them only at the end of `home.css` / `inner.css`. `fitHeadings()` in `home.js` keeps each `.h` on ONE line by shrinking it from that size (never below 20px; if it still does not fit it wraps, balanced).
 - Never use `@if` directly after a word with no space in Blade (it is not parsed). Never nest `<noscript>`.
 - Uploaded images go through `ImageService` (validated, WebP, 480/960/1600 widths). Alt text is required.
 

@@ -155,6 +155,12 @@
                 <p class="lede">Hand-built journeys through the cities, lakes and Alps, in every season.</p>
             </div>
             <div class="tours-filter">
+                <label class="tsel"><span class="sr-only">Filter by destination</span>
+                    <select data-dest-select>
+                        <option value="">All packages</option>
+                        @foreach($destinations as $d)<option value="{{ $d->slug }}">{{ $d->name }}</option>@endforeach
+                    </select>
+                </label>
                 <div class="chips" role="group" aria-label="Filter by destination">
                     <button type="button" class="chip on" data-dest="">All packages</button>
                     @foreach($destinations as $d)<button type="button" class="chip" data-dest="{{ $d->slug }}">{{ $d->name }}</button>@endforeach

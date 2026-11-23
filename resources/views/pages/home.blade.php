@@ -585,8 +585,10 @@
 
 {{-- sticky consult bar --}}
 <div class="consult">
+    <div class="consult-in">
     <p>@if($phone && ! str_contains($phone, '[CONFIRM'))Consult with our Travel Specialists at <a href="tel:{{ $tel }}">{{ $phone }}</a>@else Talk to our Austria travel specialists @endif</p>
     <a class="rq" href="{{ route('contact') }}" data-quote>Request a quote <i aria-hidden="true">&rarr;</i></a>
+    </div>
 </div>
 </body>
 </html>

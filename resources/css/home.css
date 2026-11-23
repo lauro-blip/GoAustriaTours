@@ -913,3 +913,8 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .cta2-btns { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px 32px; margin-top: 36px; }
 .t3 .cta2-call { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.6); padding-bottom: 3px; transition: color 0.2s, border-color 0.2s; }
 .t3 .cta2-call:hover { color: var(--accent); border-color: var(--accent); }
+
+/* consult bar: content aligned to the 1390px page width */
+.t3 .consult { padding: 10px 0; }
+.t3 .consult-in { width: 100%; max-width: 1390px; margin: 0 auto; padding: 0 60px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+@media (max-width: 767px) { .t3 .consult-in { padding: 0 15px; gap: 12px; } }

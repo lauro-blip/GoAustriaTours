@@ -26,18 +26,18 @@ class CroFeaturesTest extends TestCase
     }
 
     // ---- sticky mobile bar
-    public function test_sticky_bar_is_on_public_pages_but_not_where_a_form_or_own_bar_exists(): void
+    public function test_consult_bar_is_on_public_pages_but_not_where_a_form_or_own_bar_exists(): void
     {
         Setting::put('phone', '+1 800 555 0199');
         Setting::put('phone_tel', '+18005550199');
 
-        $this->get('/')->assertOk()->assertSee('Request a quote')->assertSee('+1 800 555 0199', false);
-        $this->get('/journal')->assertOk()->assertSee('Call us on +1 800 555 0199', false);
-        $this->get('/contact')->assertOk()->assertDontSee('Call us on +1 800 555 0199', false);
-        $this->get('/packages/imperial-austria-self-drive')->assertOk()->assertDontSee('Call us on +1 800 555 0199', false);
+        $this->get('/')->assertOk()->assertSee('Request a quote')->assertSee('Consult with our Travel Specialists', false);
+        $this->get('/journal')->assertOk()->assertSee('Consult with our Travel Specialists', false);
+        $this->get('/contact')->assertOk()->assertDontSee('Consult with our Travel Specialists', false);
+        $this->get('/packages/imperial-austria-self-drive')->assertOk()->assertDontSee('Consult with our Travel Specialists', false);
     }
 
-    public function test_sticky_bar_without_a_phone_has_no_call_button(): void
+    public function test_consult_bar_without_a_phone_has_no_call_number(): void
     {
         $this->get('/')->assertOk()->assertDontSee('Consult with our Travel Specialists', false);
     }

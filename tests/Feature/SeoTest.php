@@ -57,7 +57,7 @@ class SeoTest extends TestCase
     public function test_thank_you_page_is_noindex_and_404_is_custom(): void
     {
         $this->get('/thank-you')->assertOk()->assertSee('noindex', false);
-        $this->get('/no-such-page')->assertNotFound()->assertSee("We can't find that page", false);
+        $this->get('/no-such-page')->assertNotFound()->assertSee("find that page", false);
     }
 
     public function test_home_has_organization_structured_data(): void

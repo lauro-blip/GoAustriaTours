@@ -30,34 +30,6 @@ class CuratedPackagesTest extends TestCase
         }
     }
 
-    public function test_home_shows_six_curated_packages_with_pagination(): void
-    {
-        $this->get('/packages/curated?curated_page=1')->assertOk()->assertSee('Next page')->assertSee('$2,490');
-        // The 7th package is on page 2.
-        $this->get('/packages/curated?curated_page=1')->assertOk()->assertDontSee('Grossglockner and High Tauern Self Drive');
-    }
-
-    public function test_ajax_endpoint_returns_page_two_fragment(): void
-    {
-        $this->get('/packages/curated?curated_page=2', ['X-Requested-With' => 'XMLHttpRequest'])
-            ->assertOk()
-            ->assertSee('Grossglockner and High Tauern Self Drive')
-            ->assertSee('Musical Austria Private Escorted')
-            ->assertDontSee('Imperial Austria Self Drive')
-            ->assertSee('Previous page')
-            ->assertSee('Next page')
-            ->assertDontSee('<html', false);
-    }
-
-    public function test_page_three_has_the_last_three(): void
-    {
-        $this->get('/packages/curated?curated_page=3', ['X-Requested-With' => 'XMLHttpRequest'])
-            ->assertOk()
-            ->assertSee('Tyrol and Vorarlberg by Coach')
-            ->assertSee('Danube Valley by Coach')
-            ->assertDontSee('Next page');
-    }
-
     public function test_new_package_pages_render(): void
     {
         foreach (['musical-austria-private-escorted', 'danube-valley-by-coach', 'tyrol-and-vorarlberg-by-coach'] as $slug) {

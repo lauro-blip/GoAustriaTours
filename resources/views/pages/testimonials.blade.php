@@ -1,4 +1,11 @@
-@extends('layouts.app', [
+@php
+    $bTitle = 'Guest Stories';
+    $bEyebrow = 'In their own words';
+    $bLead = 'Words from travellers who let us shape their trip to Austria.';
+    $bImage = asset('images/winter/steinernes-meer-1280.webp');
+    $bCrumbs = [['Guest stories', null]];
+@endphp
+@extends('layouts.site', [
     'metaTitle' => 'Guest Stories | What Our Travellers Say | '.($site['brand_name'] ?? ''),
     'metaDescription' => 'Read what travellers say about their journeys through Austria.',
     'canonical' => route('testimonials'),
@@ -9,29 +16,27 @@
 @endpush
 
 @section('content')
-<section class="section relative isolate overflow-hidden bg-ivory">
-    <p class="pointer-events-none absolute -left-6 -top-10 -z-10 select-none font-display text-[26rem] italic leading-none text-accent/15 lg:text-[40rem]" aria-hidden="true">&ldquo;</p>
-    <div class="container-page">
-        <div class="mx-auto max-w-3xl text-center">
-            <p class="flex items-center justify-center gap-3 text-[14px] font-semibold uppercase tracking-[0.3em] text-accent-text"><span class="h-px w-10 bg-accent" aria-hidden="true"></span>Guest stories<span class="h-px w-10 bg-accent" aria-hidden="true"></span></p>
-            <h1 class="mt-5 text-[32px] leading-[1.05] sm:text-[44px] lg:text-[56px]">What Our <em class="text-accent-text">Travellers Say.</em></h1>
-        </div>
+@include('pages.partials.banner')
 
+<section class="sec">
+    <div class="wrap">
         @forelse($stories as $t)
-            @if($loop->first)<div class="mx-auto mt-14 grid max-w-5xl gap-x-12 gap-y-14 md:grid-cols-2">@endif
-            <figure class="flex flex-col border-t border-accent/40 pt-8">
-                <span class="font-display text-6xl leading-none text-accent" aria-hidden="true">&ldquo;</span>
-                <blockquote class="-mt-2 flex-1 font-display text-2xl italic leading-snug text-brand sm:text-3xl">{{ $t->quote }}</blockquote>
-                <figcaption class="mt-6 text-[14px] uppercase tracking-[0.2em] text-brand/85"><strong class="font-semibold text-brand">{{ $t->name }}</strong>@if($t->location)<span class="text-accent" aria-hidden="true"> &#9670; </span>{{ $t->location }}@endif</figcaption>
+            @if($loop->first)<div class="tgrid tcards">@endif
+            @php $ini = collect(preg_split('/\s+/', trim($t->name)))->filter()->take(2)->map(fn ($x) => mb_strtoupper(mb_substr($x, 0, 1)))->implode(''); @endphp
+            <figure class="rev">
+                <span class="qi" aria-hidden="true"><svg viewBox="0 0 48 36" fill="currentColor"><path d="M0 36V19C0 8 6 1.5 17 0l1.6 5C13 6.6 10.5 10 10.5 15H19v21H0zm27 0V19C27 8 33 1.5 44 0l1.6 5C40 6.6 37.5 10 37.5 15H46v21H27z"/></svg></span>
+                <blockquote>{{ $t->quote }}</blockquote>
+                <figcaption><span class="av" aria-hidden="true">{{ $ini }}</span><span class="who"><b>{{ $t->name }}</b>@if($t->location)<small>{{ $t->location }}</small>@endif</span></figcaption>
             </figure>
             @if($loop->last)</div>@endif
         @empty
-            <p class="mt-12 text-center text-muted">Guest stories are coming soon.</p>
+            <p class="empty">Guest stories are coming soon.</p>
         @endforelse
 
-        <div class="mt-16 text-center">
-            <p class="font-display text-2xl italic text-brand">Your Austria, planned around you.</p>
-            <x-button class="mt-6 !px-9 !py-4 uppercase tracking-wider" @click="$store.modal.show({})">Plan My Journey</x-button>
+        <div class="ctabox">
+            <h2>Your Austria, planned around you.</h2>
+            <p>Tell us how you like to travel and we will plan the rest.</p>
+            <a class="btn" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a>
         </div>
     </div>
 </section>

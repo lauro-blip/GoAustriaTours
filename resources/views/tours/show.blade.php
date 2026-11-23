@@ -1,4 +1,14 @@
-@extends('layouts.app', [
+@php
+    $wayImg = ['self-drive' => 'way-self-drive', 'escorted' => 'way-escorted', 'coach' => 'way-coach'];
+    $bTitle = $tourType->name.' tours of Austria';
+    $bEyebrow = $tourType->tagline;
+    $bLead = $tourType->summary;
+    $bImage = asset('images/winter/'.($wayImg[$tourType->slug] ?? 'hero-wagrain').'-1280.webp');
+    $bCrumbs = [['Tours', route('packages.index')], [$tourType->name, null]];
+    $visited = collect($packages)->flatMap(fn ($p) => \App\Support\Places::forPackage($p))->unique('key')->values()->all();
+    if (! count($visited)) { $visited = \App\Support\Places::inText(strip_tags((string) $tourType->body).' '.$tourType->summary); }
+@endphp
+@extends('layouts.site', [
     'metaTitle' => $tourType->meta_title ?: $tourType->name.' tours of Austria | '.($site['brand_name'] ?? ''),
     'metaDescription' => $tourType->meta_description,
     'canonical' => route('tours.show', $tourType),
@@ -9,27 +19,32 @@
 @endpush
 
 @section('content')
-<section class="bg-brand text-white">
-    <div class="container-page grid gap-10 py-12 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{{ $tourType->tagline }}</p>
-            <h1 class="mt-3 text-5xl sm:text-6xl !text-white">{{ $tourType->name }} tours of Austria</h1>
-            <p class="mt-5 max-w-xl text-lg text-white/90">{{ $tourType->summary }}</p>
+@include('pages.partials.banner')
+
+<section class="sec">
+    <div class="wrap pk">
+        <div class="pk-main">
+            @if(trim(strip_tags((string) $tourType->body)) !== '' && ! str_contains((string) $tourType->body, '[CONFIRM'))<div class="prose">{!! $tourType->body !!}</div>@endif
+            @if($packages->isNotEmpty())
+                <h2 class="pk-h">{{ $tourType->name }} journeys</h2>
+                <div class="grid g2">@foreach($packages as $p)<div class="cell">@include('pages.partials.package-card', ['f' => \App\Support\Places::card($p)])</div>@endforeach</div>
+            @endif
         </div>
-        <div class="rounded-2xl border-4 border-quiz bg-white p-6 text-ink">
-            <h2 class="font-sans text-lg font-extrabold uppercase tracking-wider text-brand text-center">Get a free {{ $tourType->name }} quote</h2>
-            <div class="mt-4"><x-enquiry-form form-name="package-quote" uid="tour" :extended="true" /></div>
-        </div>
+        <aside class="pk-side" aria-label="Get a free quote">
+            <div class="pk-card">
+                <h2>Get a free {{ $tourType->name }} quote</h2>
+                @include('pages.partials.quote-form', ['formName' => 'package-quote', 'uid' => 'tour', 'button' => 'Request my quote'])
+            </div>
+        </aside>
     </div>
 </section>
 
-<section class="section">
-    <div class="container-page">
-        <div class="prose-content max-w-3xl mx-auto">{!! $tourType->body !!}</div>
-        @if($packages->isNotEmpty())
-            <h2 class="mt-12 mb-8 text-center text-[32px]">{{ $tourType->name }} packages</h2>
-            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">@foreach($packages as $p)<x-package-card :package="$p" />@endforeach</div>
-        @endif
+@if(count($visited))
+<section class="sec tint">
+    <div class="wrap">
+        <div class="head"><p class="eyebrow dark">Where {{ $tourType->name }} tours go</p><h2 class="h">Places on these journeys</h2></div>
+        @include('pages.partials.place-cards', ['places' => $visited])
     </div>
 </section>
+@endif
 @endsection

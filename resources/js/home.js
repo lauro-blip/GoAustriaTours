@@ -6,6 +6,8 @@ import '@fontsource-variable/jetbrains-mono';
 import '../css/home.css';
 import { initQuiz } from './study-quiz';
 import { initQuoteModal } from './study-modal';
+import { initInlineForms } from './inline-forms';
+import '../css/inner.css';
 
 document.documentElement.classList.add('tp3-js');
 const $ = (s, r = document) => r.querySelector(s);
@@ -82,6 +84,7 @@ $$('[data-reviews]').forEach((box) => {
 
 initQuiz();
 initQuoteModal();
+initInlineForms();
 
 // counters + reveal
 const io = new IntersectionObserver((entries) => {

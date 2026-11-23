@@ -1,12 +1,16 @@
-@extends('layouts.app', ['metaTitle' => 'Page not found', 'noindex' => true])
+@php
+    $bTitle = "We can't find that page";
+    $bEyebrow = 'Error 404';
+    $bLead = 'It may have moved. Try one of our journeys instead.';
+    $bImage = asset('images/winter/hero-montafon-1280.webp');
+@endphp
+@extends('layouts.site', ['metaTitle' => 'Page not found', 'noindex' => true])
 
 @section('content')
-<section class="section">
-    <div class="container-page max-w-2xl text-center">
-        <p class="font-display text-8xl text-accent">404</p>
-        <h1 class="mt-2 text-5xl">We can't find that page</h1>
-        <p class="mt-4 text-muted">It may have moved. Try our tours instead.</p>
-        <div class="mt-8 flex justify-center gap-4"><x-button :href="route('home')">Home</x-button><x-button variant="outline" :href="route('packages.index')">Packages</x-button></div>
+@include('pages.partials.banner', ['bClass' => 'slim'])
+<section class="sec">
+    <div class="wrap narrow center">
+        <p><a class="btn" href="{{ route('home') }}">Home <i aria-hidden="true">&rarr;</i></a> &nbsp; <a class="link" href="{{ route('packages.index') }}">Browse journeys</a></p>
     </div>
 </section>
 @endsection

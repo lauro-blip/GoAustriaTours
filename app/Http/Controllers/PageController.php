@@ -28,21 +28,9 @@ class PageController extends Controller
         ]);
     }
 
-    /** Curated packages (every published package), 6 per page ('curated_page' query param). Used by the home page and the ajax endpoint. */
-    public static function curatedPackages()
-    {
-        return Package::published()->with(['tourType', 'destination'])
-            ->paginate(6, ['*'], 'curated_page')->withPath(route('home'));
-    }
-
-    public function curated()
-    {
-        return view('partials.curated-packages', ['packages' => static::curatedPackages()]);
-    }
-
     public function about()
     {
-        return view('pages.simple', ['page' => Page::slug('about') ?? abort(404)]);
+        return view('pages.simple', ['page' => Page::slug('about') ?? abort(404), 'tourTypes' => TourType::active()->get()]);
     }
 
     /** Every active guest story (the home page shows them as a pull-quote section). */

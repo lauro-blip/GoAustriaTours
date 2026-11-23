@@ -1,21 +1,43 @@
-@extends('layouts.app', ['noStickyBar' => true, 'metaTitle' => $page->meta_title, 'metaDescription' => $page->meta_description, 'noindex' => $page->noindex])
+@php
+    $bTitle = $page->title;
+    $bEyebrow = 'Get in touch';
+    $bLead = 'Tell us about the trip you have in mind and a personal travel specialist will reply with a free, no-obligation quote.';
+    $bImage = asset('images/winter/hero-montafon-1280.webp');
+    $bCrumbs = [['Contact', null]];
+    $cPhone = trim((string) ($site['phone'] ?? ''));
+    $cTel = preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $cPhone));
+    $cEmail = trim((string) ($site['email'] ?? ''));
+    $cAddr = trim((string) ($site['address'] ?? ''));
+    $cMap = $cAddr !== '' ? 'https://www.openstreetmap.org/search?query='.urlencode(str_replace("\n", ', ', $cAddr)) : null;
+@endphp
+@extends('layouts.site', ['noStickyBar' => true, 'metaTitle' => $page->meta_title, 'metaDescription' => $page->meta_description, 'noindex' => $page->noindex])
 
 @section('content')
-<section class="section">
-    <div class="container-page grid gap-12 lg:grid-cols-2">
-        <div>
-            <h1 class="text-5xl">{{ $page->title }}</h1>
-            <div class="prose-content mt-6">{!! $page->body !!}</div>
-            <ul class="mt-6 space-y-3 text-sm">
-                <li><strong>Phone:</strong> <a class="underline" href="tel:{{ $site['phone_tel'] ?? '' }}">{{ $site['phone'] ?? '' }}</a></li>
-                <li><strong>Email:</strong> <a class="underline" href="mailto:{{ $site['email'] ?? '' }}">{{ $site['email'] ?? '' }}</a></li>
-                <li><strong>Address:</strong> {{ $site['address'] ?? '' }}</li>
+@include('pages.partials.banner')
+
+<section class="sec">
+    <div class="wrap ct">
+        <div class="ct-info">
+            <div class="prose">{!! $page->body !!}</div>
+            <ul class="ct-list">
+                @if($cPhone !== '')<li><span class="ci">PH</span><div><h3>Call us</h3><a href="tel:{{ $cTel }}">{{ $cPhone }}</a></div></li>@endif
+                @if($cEmail !== '')<li><span class="ci">EM</span><div><h3>Email</h3><a href="mailto:{{ $cEmail }}">{{ $cEmail }}</a></div></li>@endif
+                @if($cAddr !== '')<li><span class="ci">PN</span><div><h3>Address</h3><p>{!! nl2br(e($cAddr)) !!}</p>@if($cMap)<a class="ct-map" href="{{ $cMap }}" target="_blank" rel="noopener">View on map</a>@endif</div></li>@endif
             </ul>
+            <div class="ct-steps">
+                <h3>What happens next</h3>
+                <ol>
+                    <li><b>1</b><span>You tell us your dates and how you like to travel.</span></li>
+                    <li><b>2</b><span>A travel specialist plans a route around you.</span></li>
+                    <li><b>3</b><span>You receive a free quote with no obligation.</span></li>
+                </ol>
+            </div>
+            <p class="ct-note">Prefer to start with a few quick questions? <a href="{{ route('home') }}#hero-quiz">Use the trip planner on the home page</a>.</p>
         </div>
-        <x-card class="p-6 sm:p-8">
-            <h2 class="text-3xl">Send us your enquiry</h2>
-            <div class="mt-5"><x-enquiry-form form-name="contact" :extended="true" button="Send Enquiry" /></div>
-        </x-card>
+        <div class="pk-card ct-form">
+            <h2>Send us your enquiry</h2>
+            @include('pages.partials.quote-form', ['formName' => 'contact', 'uid' => 'contact', 'button' => 'Send enquiry'])
+        </div>
     </div>
 </section>
 @endsection

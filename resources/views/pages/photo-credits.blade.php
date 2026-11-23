@@ -1,6 +1,8 @@
-@extends('layouts.app', ['metaTitle' => 'Photo credits | '.($site['brand_name'] ?? ''), 'metaDescription' => 'Credits and licences for the photographs used on this website.'])
-
 @php
+    $bTitle = 'Photo credits';
+    $bEyebrow = 'Thank you';
+    $bImage = asset('images/winter/hero-salzburg-1280.webp');
+    $bCrumbs = [['Photo credits', null]];
     $by4 = ['CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/'];
     $bysa4 = ['CC BY-SA 4.0', 'https://creativecommons.org/licenses/by-sa/4.0/'];
     $cc0 = ['CC0 (public domain)', 'https://creativecommons.org/publicdomain/zero/1.0/'];
@@ -32,22 +34,23 @@
         ['Beautiful place in Montafon', 'Yesiamsebi', $by2, 'https://commons.wikimedia.org/wiki/File:Beautiful_place_in_montafon_(25265594591).jpg'],
     ];
 @endphp
+@extends('layouts.site', ['metaTitle' => 'Photo credits | '.($site['brand_name'] ?? ''), 'metaDescription' => 'Credits and licences for the photographs used on this website.'])
 
 @section('content')
-<section class="section">
-    <div class="container-page max-w-4xl">
-        <h1 class="text-5xl">Photo credits</h1>
-        <p class="mt-5 max-w-2xl text-muted">Many of the photographs on this site are shared on Wikimedia Commons by their photographers. We have resized, cropped and compressed them for the web. Thank you to everyone listed below. The three images in the "Your Journey. Your Way." boxes on the home page are AI-generated illustrations, not photographs.</p>
-        <div class="mt-10 overflow-x-auto">
-            <table class="w-full min-w-[34rem] text-left text-sm">
+@include('pages.partials.banner', ['bClass' => 'slim'])
+<section class="sec">
+    <div class="wrap narrow">
+        <p class="prose-lead">Many of the photographs on this site are shared on Wikimedia Commons by their photographers. We have resized, cropped and compressed them for the web. Thank you to everyone listed below. The three images in the "Your Journey. Your Way." boxes on the home page are AI-generated illustrations, not photographs.</p>
+        <div class="tablewrap">
+            <table class="credits">
                 <caption class="sr-only">Photographs, photographers and licences</caption>
-                <thead><tr class="border-b border-line text-xs uppercase tracking-wider text-muted"><th scope="col" class="py-3 pr-4 font-semibold">Photograph</th><th scope="col" class="py-3 pr-4 font-semibold">Photographer</th><th scope="col" class="py-3 font-semibold">Licence</th></tr></thead>
-                <tbody class="divide-y divide-line">
+                <thead><tr><th scope="col">Photograph</th><th scope="col">Photographer</th><th scope="col">Licence</th></tr></thead>
+                <tbody>
                     @foreach($credits as [$title, $author, $licence, $url])
                         <tr>
-                            <td class="py-3.5 pr-4"><a href="{{ $url }}" class="text-brand underline underline-offset-4" rel="noopener" target="_blank">{{ $title }}</a></td>
-                            <td class="py-3.5 pr-4">{{ $author }}</td>
-                            <td class="py-3.5"><a href="{{ $licence[1] }}" class="underline underline-offset-4" rel="noopener" target="_blank">{{ $licence[0] }}</a></td>
+                            <td><a href="{{ $url }}" rel="noopener" target="_blank">{{ $title }}</a></td>
+                            <td>{{ $author }}</td>
+                            <td><a href="{{ $licence[1] }}" rel="noopener" target="_blank">{{ $licence[0] }}</a></td>
                         </tr>
                     @endforeach
                 </tbody>

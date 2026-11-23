@@ -19,7 +19,6 @@ Route::get('/thank-you', [PageController::class, 'thankYou'])->name('thank-you')
 
 Route::get('/journal', [JournalController::class, 'index'])->name('journal.index');
 Route::get('/journal/{post:slug}', [JournalController::class, 'show'])->name('journal.show');
-Route::get('/packages/curated', [PageController::class, 'curated'])->name('packages.curated');
 Route::get('/packages', [PackageController::class, 'index'])->name('packages.index');
 Route::get('/packages/{package:slug}', [PackageController::class, 'show'])->name('packages.show');
 Route::get('/tours/{tourType:slug}', [TourTypeController::class, 'show'])->name('tours.show');

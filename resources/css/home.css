@@ -961,3 +961,56 @@ html:has(.t3) { scroll-padding-top:96px }
 /* "Where to?" strip (v4): the requested glass values */
 .t3 .hero > .strip { background: rgba(10, 42, 64, 0.4); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 0 solid rgba(255, 255, 255, 0.12); border-radius: 0; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
 @media (max-width: 767px) { .t3 .hero > .strip { background: rgba(10, 42, 64, 0.7); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+
+/* mega menus (v2): centred panel under the header, gold top edge, richer cards, promo column */
+@media (min-width: 1100px) {
+    .t3 .nav > li { position: static; }
+    .t3 .nav > li:nth-child(5) { position: relative; }
+    .t3 .mega { left: 50%; top: 100%; width: min(1180px, calc(100vw - 40px)); margin-top: -1px; border-top: 3px solid var(--accent); box-shadow: 0 40px 80px -30px rgba(10, 42, 64, 0.55); transform: translate(-50%, 10px); transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.25s; }
+    .t3 .nav li:hover > .mega, .t3 .nav li:focus-within > .mega { transform: translate(-50%, 0); }
+    .t3 .nav > li:nth-child(n) > .mega { left: 50%; width: min(1180px, calc(100vw - 40px)); }
+    .t3 .mega::before { content: ''; position: absolute; left: 0; right: 0; top: -44px; height: 44px; }
+}
+.t3 .mega-in { grid-template-columns: 1.55fr 1fr 0.8fr; gap: 40px; padding: 36px 40px 38px; align-items: start; }
+.t3 .mega-in.tt { grid-template-columns: 2.4fr 0.8fr; }
+.t3 .mega-in.one { grid-template-columns: 1fr; }
+.t3 .mega h5 { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; color: var(--accent-d); margin-bottom: 18px; }
+.t3 .mega-cards { gap: 16px; }
+.t3 .mega-cards a { aspect-ratio: 16 / 11; box-shadow: 0 1px 0 rgba(10, 42, 64, 0.06); }
+.t3 .mega-cards a::after { background: linear-gradient(to top, rgba(10, 42, 64, 0.85), rgba(10, 42, 64, 0.1) 62%); }
+.t3 .mega-cards a span { left: 18px; right: 18px; bottom: 14px; display: grid; gap: 2px; }
+.t3 .mega-cards a span b { font-family: var(--head); font-weight: 500; font-size: 1.2rem; line-height: 1.2; }
+.t3 .mega-cards a span small { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.9; }
+.t3 .mega-cards a:hover img { transform: scale(1.07); }
+.t3 .mega-cards.c3 a { aspect-ratio: 4 / 5; }
+.t3 .mega-list { columns: 2; column-gap: 22px; list-style: none; margin: 0; padding: 0; }
+.t3 .mega-list li { break-inside: avoid; }
+.t3 .mega-list a { display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 0.92rem; font-weight: 500; color: var(--navy); transition: color 0.2s, transform 0.2s; }
+.t3 .mega-list a::before { content: ''; width: 5px; height: 5px; background: var(--accent); transform: rotate(45deg); flex: none; }
+.t3 .mega-list a:hover { color: var(--accent-d); transform: translateX(3px); }
+.t3 .mega .more { margin-top: 18px; padding-bottom: 3px; border-bottom: 1px solid var(--accent-d); font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em; }
+.t3 .mega-promo { background: var(--dark); color: #fff; padding: 28px 26px; border-top: 3px solid var(--accent); }
+.t3 .mega-promo .mp-k { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.t3 .mega-promo h5 { font-family: var(--head); font-size: 1.35rem; letter-spacing: 0; text-transform: none; font-weight: 500; color: #fff; line-height: 1.25; margin-bottom: 10px; }
+.t3 .mega-promo p:not(.mp-k) { font-size: 0.9rem; line-height: 1.6; color: rgba(255, 255, 255, 0.85); margin-bottom: 18px; }
+.t3 .mega-cards a.txt { background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--accent); padding: 22px 22px 20px; gap: 8px; box-shadow: none; transition: background 0.25s, border-color 0.25s, transform 0.25s; }
+.t3 .mega-cards a.txt b { font-weight: 500; font-size: 1.2rem; }
+.t3 .mega-cards a.txt em { line-height: 1.55; }
+.t3 .mega-cards a.txt u { margin-top: 6px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.16em; }
+.t3 .mega-cards a.txt u i { font-style: normal; transition: transform 0.25s; }
+.t3 .mega-cards a.txt:hover { background: var(--navy); border-color: var(--navy); border-top-color: var(--accent); transform: translateY(-3px); }
+.t3 .mega-cards a.txt:hover b { color: #fff; }
+.t3 .mega-cards a.txt:hover em { color: rgba(255, 255, 255, 0.85); }
+.t3 .mega-cards a.txt:hover u { color: var(--accent); }
+.t3 .mega-cards a.txt:hover u i { transform: translateX(4px); }
+.t3 .drop { border-top: 3px solid var(--accent); box-shadow: 0 30px 60px -28px rgba(10, 42, 64, 0.5); padding: 12px 0; min-width: 260px; }
+.t3 .drop a { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; font-size: 0.92rem; transition: background 0.2s, padding 0.2s, color 0.2s; }
+.t3 .drop a:hover { padding-left: 30px; }
+.t3 .drop::before { content: ''; position: absolute; left: 0; right: 0; top: -30px; height: 30px; }
+/* mega menus (v2.1): balance the columns */
+.t3 .mega-in { grid-template-columns: 1.2fr 1.4fr 0.95fr; }
+.t3 .mega-in .mega-cards:not(.c3) a { aspect-ratio: 4 / 5; }
+.t3 .mega-list { column-gap: 28px; }
+.t3 .mega-list a { font-size: 0.9rem; line-height: 1.35; }
+.t3 .mega-cards.c3 a.txt { aspect-ratio: auto; }
+.t3 .mega-in.one .mega-cards.c3 { gap: 18px; }

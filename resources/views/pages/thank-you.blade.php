@@ -1,4 +1,12 @@
-@extends('layouts.app', ['metaTitle' => 'Thank you | '.($site['brand_name'] ?? ''), 'noindex' => true, 'noStickyBar' => true])
+@php
+    $bTitle = 'Thank you, we have your enquiry';
+    $bEyebrow = 'Enquiry received';
+    $bLead = 'A personal travel specialist will be in touch with your free quote soon.';
+    $bImage = asset('images/winter/hero-wagrain-1280.webp');
+    $tPhone = trim((string) ($site['phone'] ?? ''));
+    $tTel = preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $tPhone));
+@endphp
+@extends('layouts.site', ['metaTitle' => 'Thank you | '.($site['brand_name'] ?? ''), 'noindex' => true, 'noStickyBar' => true])
 
 @push('tracking')
 @if(! empty($site['google_ads_id']) && ! empty($site['google_ads_conversion_label']))
@@ -18,13 +26,18 @@
 @endpush
 
 @section('content')
-<section class="section">
-    <div class="container-page max-w-2xl text-center">
-        <x-icon name="check" class="mx-auto size-14 rounded-full bg-brand-soft p-3 text-brand" />
-        <h1 class="mt-6 text-5xl">Thank you, we have your enquiry</h1>
-        <p class="mt-4 text-lg text-muted">A local Austria expert will be in touch with your free quote soon. In a hurry? Call <a class="underline text-brand" href="tel:{{ $site['phone_tel'] ?? '' }}">{{ $site['phone'] ?? '' }}</a>.</p>
-        @if(! empty($site['response_promise']))<p class="mt-4 text-lg font-medium text-brand">{{ $site['response_promise'] }}</p>@endif
-        <div class="mt-8"><x-button :href="route('home')">Back to home</x-button></div>
+@include('pages.partials.banner', ['bClass' => 'slim'])
+
+<section class="sec">
+    <div class="wrap narrow center thanks">
+        @if($tPhone !== '')<p class="lede">In a hurry? Call <a href="tel:{{ $tTel }}">{{ $tPhone }}</a>.</p>@endif
+        @if(! empty($site['response_promise']))<p class="promise">{{ $site['response_promise'] }}</p>@endif
+        <div class="steps">
+            <div><b>1</b><h3>We read your request</h3><p>A travel specialist reads what you told us about your dates and the way you like to travel.</p></div>
+            <div><b>2</b><h3>We plan your route</h3><p>We shape an itinerary around you, from the route to the hotels and the pace.</p></div>
+            <div><b>3</b><h3>You decide</h3><p>Your quote is free and comes with no obligation. Nothing is fixed until you are happy.</p></div>
+        </div>
+        <p><a class="btn" href="{{ route('home') }}">Back to home <i aria-hidden="true">&rarr;</i></a></p>
     </div>
 </section>
 @endsection

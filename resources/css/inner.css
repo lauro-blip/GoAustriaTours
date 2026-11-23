@@ -64,7 +64,7 @@
 .t3 .pk { display: grid; gap: 48px; grid-template-columns: minmax(0, 1fr); }
 @media (min-width: 1000px) { .t3 .pk { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 56px; } }
 .t3 .pk-main > * + .pk-h { margin-top: 56px; }
-.t3 .pk-h { font-family: var(--head); font-weight: 500; font-size: clamp(1.5rem, 2.4vw, 1.9rem); color: var(--navy); margin-bottom: 22px; padding-bottom: 14px; position: relative; }
+.t3 .pk-h { font-family: var(--head); font-weight: 500; font-size: 32px; color: var(--navy); margin-bottom: 22px; padding-bottom: 14px; position: relative; }
 .t3 .pk-h::after { content: ''; position: absolute; left: 0; bottom: 0; width: 44px; height: 3px; background: var(--accent); }
 .t3 .pk-main .prose + .pk-h, .t3 .pk-main .prose + .grid { margin-top: 56px; }
 .t3 .pk-hl { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: 1fr; }
@@ -183,4 +183,5 @@
 .t3 .ct-steps ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 .t3 .ct-steps li { display: flex; gap: 14px; align-items: flex-start; font-size: 0.95rem; line-height: 1.55; color: var(--ink); }
 .t3 .ct-steps b { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent); font-family: var(--mono); font-size: 0.75rem; color: var(--accent-d); }
-
+.t3 .pk-h { font-size: 32px; }
+@media (min-width: 768px) { .t3 .pk-h { font-size: 44px; } }

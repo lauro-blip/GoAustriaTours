@@ -1022,13 +1022,13 @@ html:has(.t3) { scroll-padding-top:96px }
 
 /* ---- Mobile carousels (js/carousel.js adds .is-car and the .car-ui controls under 700px) ---- */
 @media (max-width: 699px) {
-    .t3 .is-car { display: flex !important; flex-wrap: nowrap; gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; margin-left: -15px; margin-right: -15px; padding: 2px 15px 6px; scroll-padding-left: 15px; grid-template-columns: none; }
+    .t3 .is-car { display: flex !important; flex-wrap: nowrap; gap: 12px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; margin-left: -15px; margin-right: -15px; padding: 2px 36px 6px; scroll-padding-left: 36px; scroll-padding-right: 36px; grid-template-columns: none; }
     .t3 .is-car::-webkit-scrollbar { display: none; }
-    .t3 .is-car > * { flex: 0 0 84%; min-width: 0; scroll-snap-align: start; margin: 0; }
+    /* centred slide with a ~24px sliver of the neighbours showing on both sides */
+    .t3 .is-car > * { flex: 0 0 100%; min-width: 0; scroll-snap-align: center; scroll-snap-stop: always; margin: 0; }
     .t3 .is-car > [hidden] { display: none; }
     .t3 .is-car .rv, .t3 .is-car.rv { opacity: 1; transform: none; }
-    .t3 .is-car.band-grid > * { flex-basis: 78%; }
-    .t3 .is-car.stats > * { flex-basis: 86%; }
+    .t3 .is-car.gal > * { height: 260px; }
     .t3 .car-ui { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
     .t3 .car-ui[hidden] { display: none; }
     .t3 .car-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--navy); background: transparent; color: var(--navy); font-size: 1.05rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
@@ -1074,3 +1074,11 @@ html:has(.t3) { scroll-padding-top:96px }
     .t3 .pc .more { grid-column: 2; grid-row: 1; font-size: 0.75rem; }
     .t3 .pc .btns .btn { grid-column: 1 / -1; grid-row: 2; width: 100%; justify-content: center; text-align: center; padding: 10px 12px; font-size: 0.75rem; }
 }
+
+/* ---- Typography: one heading size (32px) for section headings, light (300) body text ---- */
+.t3 { font-weight: 300; }
+.t3 .h, .t3 .h.oneline, .t3 .pk-h { font-size: 32px; line-height: 1.2; }
+.t3 .h.oneline { white-space: normal; }
+.t3 .h.oneline em { display: block; }
+@media (min-width: 768px) { .t3 .h, .t3 .h.oneline, .t3 .pk-h { font-size: 44px; } }
+.t3 .hero .sub { font-weight: 400; }

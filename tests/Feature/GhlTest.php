@@ -39,6 +39,24 @@ class GhlTest extends TestCase
         ]);
     }
 
+    public function test_google_ads_value_track_parameters_are_captured_and_sent(): void
+    {
+        $ids = $this->fieldIds();
+        $touch = ['utm_source' => 'google', 'utm_medium' => 'cpc', 'utm_campaign' => 'c1', 'utm_term' => 't', 'utm_content' => 'ad1', 'gclid' => 'GCL',
+            'utm_device' => 'm', 'utm_adposition' => '1t2', 'utm_adcreative' => '555'];
+        $e = $this->enquiry('contact', ['tracking_first' => $touch, 'tracking_last' => $touch]);
+        $sent = collect((new GhlPayload)->build($e, $ids)['contact']['customFields'])->pluck('field_value', 'id');
+
+        foreach (GhlFields::LAST_TOUCH_PLAIN as $key => $name) {
+            $this->assertSame($touch[$key], $sent[$ids[$name]] ?? null, $name);
+        }
+
+        $captured = \App\Support\Tracking::fromRequest(\Illuminate\Http\Request::create('/?utm_source=google&utm_device=m&utm_adposition=1t2&utm_adcreative=555&gclid=GCL'));
+        $this->assertSame('m', $captured['utm_device']);
+        $this->assertSame('1t2', $captured['utm_adposition']);
+        $this->assertSame('555', $captured['utm_adcreative']);
+    }
+
     /** @return array<string, array{0:string}> */
     public static function formTypes(): array
     {

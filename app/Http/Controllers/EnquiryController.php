@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SyncEnquiryToGhl;
+use App\Jobs\SyncEnquiryToSheet;
 use App\Mail\NewEnquiryMail;
 use App\Models\Enquiry;
 use App\Models\Package;
@@ -116,6 +117,7 @@ class EnquiryController extends Controller
             'tracking_first' => $first ?: null,
             'tracking_last' => $last ?: null,
             'ghl_status' => SyncEnquiryToGhl::enabled() ? 'pending' : 'disabled',
+            'sheet_status' => SyncEnquiryToSheet::enabled() ? 'pending' : 'disabled',
         ]);
 
         $recipients = array_filter(array_map('trim', explode(',', (string) Setting::get('notification_emails', ''))));
@@ -125,6 +127,9 @@ class EnquiryController extends Controller
 
         if (SyncEnquiryToGhl::enabled()) {
             SyncEnquiryToGhl::dispatch($enquiry->id)->afterCommit();
+        }
+        if (SyncEnquiryToSheet::enabled()) {
+            SyncEnquiryToSheet::dispatch($enquiry->id)->afterCommit();
         }
 
         return redirect()->route('thank-you')->with('enquiry_form', $enquiry->form_name);

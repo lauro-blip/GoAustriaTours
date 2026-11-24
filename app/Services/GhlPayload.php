@@ -50,6 +50,10 @@ class GhlPayload
             }
         }
 
+        foreach (GhlFields::LAST_TOUCH_PLAIN as $key => $name) {
+            $values[$name] = $last[$key] ?? null;
+        }
+
         $customFields = [];
         $missing = [];
         foreach ($values as $name => $value) {

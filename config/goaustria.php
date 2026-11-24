@@ -78,6 +78,13 @@ return [
         'verify_url' => 'https://www.google.com/recaptcha/api/siteverify',
     ],
 
+    // Optional Google Sheet log of every submission (Apps Script web app, see docs/reference/GOOGLE_SHEET.md).
+    // Values saved in Admin > Google Sheet override these.
+    'sheets' => [
+        'url' => env('GOOGLE_SHEET_WEBHOOK_URL'),
+        'secret' => env('GOOGLE_SHEET_SECRET'),
+    ],
+
     'ghl' => [
         'token' => env('GHL_API_TOKEN'),
         'location_id' => env('GHL_LOCATION_ID'),

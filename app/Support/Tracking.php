@@ -10,7 +10,8 @@ class Tracking
     public const FIRST_COOKIE = 'ga_first_touch';
     public const LAST_COOKIE = 'ga_last_touch';
 
-    public const KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid'];
+    public const KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid',
+        'utm_device', 'utm_adposition', 'utm_adcreative'];
 
     public static function fromRequest(Request $request): array
     {

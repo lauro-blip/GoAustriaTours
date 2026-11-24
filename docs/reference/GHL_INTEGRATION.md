@@ -23,9 +23,11 @@ Contact: first name, last name, name, email, phone (E.164), source `Website: <fo
 Tags (added, never replacing staff tags): brand name, `source: <utm_source or direct>`, `package: <name>` (if any), `form: <form name>`.
 
 Custom fields (defined in ONE place: `app/Support/GhlFields.php`, matched by **exact name**):
-- Enquiry: Preferred Travel Date, Second Quote Preference, Special Request, Package, Form Name, Quiz Answers (Full), Consent Given, Consent Timestamp, Consent Text Version
+- Enquiry: Preferred Travel Date, Second Quote Preference, Special request, Package, Form Name, Quiz - All Answers, Consent Given, Consent Timestamp, Consent Text Version
 - One field per quiz step, e.g. `Quiz - Destination`, `Quiz - Season`, `Quiz - Travel Style`, `Quiz - Group Size`, `Quiz - Nights`, `Quiz - Flights Booked`, `Quiz - Budget`, `Quiz - Likelihood` (follows whatever steps exist in the admin quiz editor; re-run `ghl:setup` after adding a step)
-- Tracking, each as **First** and **Last**: UTM Source, UTM Medium, UTM Campaign, UTM Term, UTM Content, GCLID, GBRAID, WBRAID, Referrer, Landing Page URL (e.g. `UTM Source First`, `UTM Source Last`)
+- Tracking, each as **first** and **last**: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `gclid`, `gbraid`, `wbraid`, `referrer`, `landing_page` (named `utm_source_first`, `utm_source_last` and so on: these are the names the GoHighLevel account already uses, because GHL derives a unique field key from the name and refuses a second field with the same key)
+
+- Latest-touch copies in the plain fields the account already uses (so existing workflows and reports keep working): `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `utm_gclid` (the gclid), plus the Google Ads ValueTrack parameters `utm_device`, `utm_adposition`, `utm_adcreative` (capture them by adding `&utm_device={device}&utm_adposition={adposition}&utm_adcreative={creative}` to the ad's final URL suffix).
 
 Every form (hero quiz, header modal, package quote, ask a question, contact) sends the tracking fields plus its form name.
 

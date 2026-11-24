@@ -18,6 +18,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('enquiries/{enquiry}', [Admin\EnquiryController::class, 'update'])->name('enquiries.update');
         Route::delete('enquiries/{enquiry}', [Admin\EnquiryController::class, 'destroy'])->name('enquiries.destroy');
         Route::post('enquiries/{enquiry}/ghl-retry', [Admin\EnquiryController::class, 'retryGhl'])->name('enquiries.ghl-retry');
+        Route::post('enquiries/{enquiry}/sheet-retry', [Admin\EnquiryController::class, 'retrySheet'])->name('enquiries.sheet-retry');
 
         // Simple CRUD lists (index/create/store/edit/update/destroy + move up/down)
         $crud = function (string $uri, string $controller) {
@@ -63,6 +64,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('ghl', [Admin\GhlController::class, 'edit'])->name('ghl.edit');
         Route::put('ghl', [Admin\GhlController::class, 'update'])->name('ghl.update');
         Route::post('ghl/test', [Admin\GhlController::class, 'test'])->middleware('throttle:10,1')->name('ghl.test');
+        Route::get('sheets', [Admin\SheetsController::class, 'edit'])->name('sheets.edit');
+        Route::put('sheets', [Admin\SheetsController::class, 'update'])->name('sheets.update');
+        Route::post('sheets/test', [Admin\SheetsController::class, 'test'])->middleware('throttle:10,1')->name('sheets.test');
         Route::get('media', [Admin\MediaController::class, 'index'])->name('media.index');
         Route::post('media', [Admin\MediaController::class, 'store'])->name('media.store');
         Route::delete('media/{media}', [Admin\MediaController::class, 'destroy'])->name('media.destroy');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SyncEnquiryToGhl;
+use App\Jobs\SyncEnquiryToSheet;
 use App\Models\Enquiry;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -63,6 +64,17 @@ class EnquiryController extends Controller
         SyncEnquiryToGhl::dispatch($enquiry->id);
 
         return back()->with('status', 'GoHighLevel sync queued.');
+    }
+
+    public function retrySheet(Enquiry $enquiry)
+    {
+        if (! SyncEnquiryToSheet::enabled()) {
+            return back()->withErrors(['ghl' => 'The Google Sheet log is off. Add the web app URL and secret in Admin > Google Sheet first.']);
+        }
+        $enquiry->update(['sheet_status' => 'pending', 'sheet_error' => null]);
+        SyncEnquiryToSheet::dispatch($enquiry->id);
+
+        return back()->with('status', 'Google Sheet sync queued.');
     }
 
     public function export(Request $request): StreamedResponse

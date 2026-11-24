@@ -12,7 +12,7 @@ class Enquiry extends Model
     protected $guarded = [];
     protected $casts = [
         'quiz_answers' => 'array', 'tracking_first' => 'array', 'tracking_last' => 'array',
-        'consent_given' => 'boolean', 'consented_at' => 'datetime', 'ghl_synced_at' => 'datetime',
+        'consent_given' => 'boolean', 'consented_at' => 'datetime', 'ghl_synced_at' => 'datetime', 'sheet_synced_at' => 'datetime',
     ];
 
     public function package(): BelongsTo { return $this->belongsTo(Package::class); }

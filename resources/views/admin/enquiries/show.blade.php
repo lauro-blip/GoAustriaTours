@@ -49,6 +49,9 @@
         <h3 class="mt-5 text-xl">GoHighLevel</h3>
         <dl>{!! $row('Sync status', $enquiry->ghl_status) !!}{!! $row('Contact ID', $enquiry->ghl_contact_id) !!}{!! $row('Last error', $enquiry->ghl_error) !!}{!! $row('Synced at', $enquiry->ghl_synced_at) !!}</dl>
         <form method="POST" action="{{ route('admin.enquiries.ghl-retry', $enquiry) }}" class="mt-3">@csrf<x-button type="submit" variant="outline">Retry GoHighLevel sync</x-button></form>
+        <h3 class="mt-5 text-xl">Google Sheet</h3>
+        <dl>{!! $row('Sheet status', $enquiry->sheet_status) !!}{!! $row('Last error', $enquiry->sheet_error) !!}{!! $row('Added at', $enquiry->sheet_synced_at?->format('Y-m-d H:i')) !!}</dl>
+        <form method="POST" action="{{ route('admin.enquiries.sheet-retry', $enquiry) }}" class="mt-3">@csrf<x-button type="submit" variant="outline">Send to Google Sheet again</x-button></form>
     </section>
 </div>
 @endsection

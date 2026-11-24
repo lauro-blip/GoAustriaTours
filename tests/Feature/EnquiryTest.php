@@ -27,7 +27,7 @@ class EnquiryTest extends TestCase
         return array_merge([
             'form_name' => 'contact', 'page_url' => 'http://localhost/contact',
             'first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com',
-            'country' => 'US', 'phone' => '2024561111', 'travel_date' => 'June 2027',
+            'country' => 'US', 'phone' => '2024561111', 'travel_date' => now()->addMonths(8)->format('Y-m-d'),
             'second_quote' => 'No', 'special_request' => 'Window seat please',
             'consent' => '1', 'g-recaptcha-response' => 'token',
         ], $overrides);
@@ -112,6 +112,29 @@ class EnquiryTest extends TestCase
 
         $this->post('/enquiry', $this->payload(['website' => 'http://spam.example']))->assertRedirect(route('thank-you'));
         $this->assertSame(0, Enquiry::count());
+    }
+
+    public function test_travel_date_is_saved_in_a_readable_form_and_must_be_a_real_future_date(): void
+    {
+        Http::fake([self::VERIFY_URL => Http::response(['success' => true])]);
+
+        $future = now()->addMonths(8);
+        $this->post('/enquiry', $this->payload(['travel_date' => $future->format('Y-m-d')]))->assertSessionHasNoErrors();
+        $this->assertSame($future->format('F j, Y'), Enquiry::firstOrFail()->travel_date);
+
+        foreach (['2020-01-01', 'June 2027', '2999-01-01', '2027-02-30'] as $bad) {
+            $this->post('/enquiry', $this->payload(['travel_date' => $bad, 'email' => 'x'.md5($bad).'@example.com']))->assertSessionHasErrors('travel_date');
+        }
+        $this->assertSame(1, Enquiry::count());
+
+        $this->post('/enquiry', $this->payload(['travel_date' => '', 'email' => 'blank@example.com']))->assertSessionHasNoErrors();
+    }
+
+    public function test_forms_use_a_date_picker_for_the_travel_date(): void
+    {
+        $html = $this->get('/contact')->assertOk()->getContent();
+        $this->assertMatchesRegularExpression('/<input type="date" name="travel_date"[^>]*min="\d{4}-\d{2}-\d{2}"/', $html);
+        $this->assertStringContainsString('type="date" name="travel_date"', $this->get('/')->getContent());
     }
 
     public function test_phone_is_required(): void

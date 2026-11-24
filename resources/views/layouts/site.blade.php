@@ -189,9 +189,9 @@
 {{-- ============ FOOTER ============ --}}
 <section class="fcta">
     <div class="wrap center">
-        <p class="fcta-t">Ready to Plan Your Perfect Austria Journey?</p>
-        <a class="btn" href="{{ route('contact') }}" data-quote>Get your free quote <i aria-hidden="true">&rarr;</i></a>
-        <p class="fcta-s">Need help deciding? Speak directly with our Austria travel specialists.</p>
+        <p class="fcta-t">{{ $ctaTitle ?? 'Ready to Plan Your Perfect Austria Journey?' }}</p>
+        <a class="btn" href="{{ route('contact') }}" data-quote @if(! empty($ctaPackage)) data-package-id="{{ $ctaPackage->id }}" data-package="{{ $ctaPackage->title }}" @endif @if(! empty($ctaInterest)) data-interest="{{ $ctaInterest }}" @endif>Get your free quote <i aria-hidden="true">&rarr;</i></a>
+        <p class="fcta-s">{{ $ctaText ?? 'Need help deciding? Speak directly with our Austria travel specialists.' }}</p>
         @if($phone)<a class="fcta-p" href="tel:{{ $tel }}">{{ $phone }}</a>@endif
     </div>
 </section>

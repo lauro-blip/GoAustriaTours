@@ -5,6 +5,7 @@
     $bEyebrow = ($activeDestination || $activeTourType || $activeStyle || $activeCollection || $searchTerm !== '') ? 'Journeys' : 'Our journeys';
     $bImage = asset('images/winter/'.($activeDestination ? ($activeDestination->slug === 'tyrol' ? 'hero-montafon' : 'hero-salzburg') : 'hero-wagrain').'-1280.webp');
     $bCrumbs = [['Journeys', null]];
+    $bActions = view('pages.partials.cta-actions', ['caLabel' => 'Help me choose', 'site' => $site])->render();
     $shown = \App\Support\Places::inText(($activeDestination?->summary ?? '').' '.$searchTerm);
     if ($activeDestination) {
         $shown = collect(config('goaustria.nav_places.'.$activeDestination->slug, []))->flatMap(fn ($pl) => \App\Support\Places::inText($pl[1]))->unique('key')->values()->all();
@@ -14,6 +15,8 @@
     'metaTitle' => 'Austria Tour Packages | '.($site['brand_name'] ?? ''),
     'metaDescription' => 'Browse self drive, escorted and coach tour packages in Austria.',
     'canonical' => route('packages.index'),
+    'ctaTitle' => 'Not sure which journey is right for you?',
+    'ctaText' => 'Tell us your dates and how you like to travel. A specialist will suggest the best fit and send a free quote.',
 ])
 
 @push('jsonld')
@@ -49,6 +52,8 @@
         @endforelse
     </div>
 </section>
+
+@include('pages.partials.cta-strip', ['csTitle' => 'Cannot see the right journey?', 'csText' => 'Every itinerary can be changed, and we can build one from scratch. Tell us what you have in mind.', 'csButton' => 'Plan my own journey'])
 
 @if(count($shown))
 <section class="sec tint">

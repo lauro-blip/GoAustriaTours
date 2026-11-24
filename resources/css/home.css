@@ -1214,3 +1214,7 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .mobile .sub-l a { display: block; padding: 10px 0 10px 16px; color: rgba(255, 255, 255, 0.82); font-size: 0.95rem; text-transform: none; letter-spacing: 0; font-weight: 400; border: 0; }
 .t3 .mobile .sub-l > div > a:first-child { color: var(--accent); }
 .t3 .mobile .sub.open .sub-l > div { padding-bottom: 8px; }
+
+/* date fields */
+.t3 .qf input[type=date], .t3 .qm input[type=date] { min-height: 46px; appearance: none; -webkit-appearance: none; }
+.t3 .qf small.hint, .t3 .qm small.hint { display: block; margin-top: 5px; font-family: var(--body); font-size: 0.78rem; letter-spacing: 0; text-transform: none; color: var(--muted); font-weight: 400; }

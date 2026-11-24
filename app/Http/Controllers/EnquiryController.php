@@ -42,7 +42,7 @@ class EnquiryController extends Controller
             'email' => ['required', 'email:rfc', 'max:190'],
             'country' => ['required', Rule::in(array_keys(Countries::LIST))],
             'phone' => ['required', 'string', 'max:30'],
-            'travel_date' => ['nullable', 'string', 'max:80'],
+            'travel_date' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:today', 'before_or_equal:+3 years'],
             'second_quote' => ['nullable', Rule::in(['Yes', 'No'])],
             'special_request' => ['nullable', 'string', 'max:2000'],
             'traveler' => ['nullable', Rule::in(array_keys(config('goaustria.traveler_types', [])))],   // set by the "By Traveler" menu
@@ -57,6 +57,9 @@ class EnquiryController extends Controller
         ], [
             'consent.accepted' => 'Please tick the consent box to continue.',
             'email.email' => 'Please enter a valid email address.',
+            'travel_date.date_format' => 'Please choose your travel date from the calendar.',
+            'travel_date.after_or_equal' => 'Please choose today or a later date.',
+            'travel_date.before_or_equal' => 'Please choose a date within the next three years.',
         ]);
 
         $fail = fn (array $errors) => back()->withInput()->withErrors($errors)->with('error_form', $request->input('form_name'));
@@ -105,7 +108,7 @@ class EnquiryController extends Controller
             'email' => mb_strtolower(trim($data['email'])),
             'country_code' => $phone ? Countries::LIST[$data['country']][0] : null,
             'phone_e164' => $phone,
-            'travel_date' => $this->clean($data['travel_date'] ?? null),
+            'travel_date' => filled($data['travel_date'] ?? null) ? \Illuminate\Support\Carbon::createFromFormat('Y-m-d', $data['travel_date'])->format('F j, Y') : null,
             'second_quote' => $data['second_quote'] ?? null,
             'special_request' => $this->clean(trim((($data['traveler'] ?? null) ? 'Travelling as: '.config('goaustria.traveler_types.'.$data['traveler'].'.label').PHP_EOL : '').($data['special_request'] ?? '')) ?: null, 2200),
             'quiz_answers' => $answers ?: null,

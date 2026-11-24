@@ -39,19 +39,33 @@ class InnerPagesTest extends TestCase
         $this->assertStringContainsString('Plan your journey', $html);
     }
 
-    public function test_package_page_has_facts_verified_places_timeline_and_both_forms(): void
+    public function test_package_page_converts_without_a_sidebar_form(): void
     {
         $html = $this->get('/packages/imperial-austria-self-drive')->assertOk()
             ->assertSee('Places on this journey')
             ->assertSee('Historic Centre of the City of Salzburg is a UNESCO World Heritage Site', false)
-            ->assertSee('Day by day')
-            ->assertSee('name="form_name" value="package-quote"', false)
-            ->assertSee('name="form_name" value="ask-question"', false)
+            ->assertSee('Your itinerary')
+            ->assertSee('How it works')
+            ->assertSee('You may also like')
+            ->assertSee('Ready to plan Imperial Austria Self Drive?')
+            ->assertDontSee('name="form_name" value="package-quote"', false)
+            ->assertDontSee('name="form_name" value="ask-question"', false)
             ->getContent();
 
+        $this->assertStringContainsString('data-pnav', $html);
+        $this->assertStringContainsString('class="cstrip"', $html);
+        $this->assertGreaterThanOrEqual(5, substr_count($html, 'data-package-id="'));
         $this->assertStringContainsString('openstreetmap.org', $html);
-        $this->assertStringContainsString('data-package-id', $html);
         $this->assertStringContainsString('application/ld+json', $html);
+    }
+
+    public function test_tour_type_page_has_no_sidebar_form_and_a_contextual_cta(): void
+    {
+        $html = $this->get('/tours/self-drive')->assertOk()
+            ->assertDontSee('name="form_name" value="package-quote"', false)
+            ->assertSee('Ready to plan your Self Drive tour?')
+            ->getContent();
+        $this->assertStringContainsString('data-interest="Self Drive tour"', $html);
     }
 
     public function test_package_filters_and_search_still_work_on_the_new_pages(): void

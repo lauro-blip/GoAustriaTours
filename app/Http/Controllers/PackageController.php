@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Destination;
 use App\Models\Package;
+use App\Models\Testimonial;
 use App\Models\TourType;
+use App\Support\Places;
 use Illuminate\Http\Request;
 
 class PackageController extends Controller
@@ -47,6 +49,15 @@ class PackageController extends Controller
         abort_unless($package->is_published, 404);
         $package->load(['tourType', 'destination', 'images']);
 
-        return view('packages.show', ['package' => $package]);
+        // "You may also like": same region first, then same style.
+        $related = Package::published()->with(['tourType', 'destination'])->where('id', '!=', $package->id)->get()
+            ->sortByDesc(fn ($p) => ($p->destination_id === $package->destination_id ? 2 : 0) + ($p->tour_type_id === $package->tour_type_id ? 1 : 0))
+            ->take(3)->values()->map(fn ($p) => Places::card($p));
+
+        return view('packages.show', [
+            'package' => $package,
+            'related' => $related,
+            'stories' => Testimonial::where('is_active', true)->orderBy('sort_order')->take(3)->get(),
+        ]);
     }
 }

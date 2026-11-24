@@ -21,7 +21,7 @@
         <label>Country<select name="country" autocomplete="country">@foreach(\App\Support\Countries::options() as $iso => [$dial, $label])<option value="{{ $iso }}" @selected(($qfFailed ? old('country', 'US') : 'US') === $iso)>{{ $iso }} {{ $dial }}</option>@endforeach</select></label>
         <label>Phone<input type="tel" name="phone" value="{{ $qfFailed ? old('phone') : '' }}" required inputmode="tel" autocomplete="tel" data-phone>@if($qfErr('phone'))<em class="err">{{ $qfErr('phone') }}</em>@endif</label>
         @unless($qfShort)
-        <label class="wide">When would you like to travel?<input name="travel_date" value="{{ $qfFailed ? old('travel_date') : '' }}" placeholder="e.g. December 2026"></label>
+        <label class="wide">Preferred travel date<input type="date" name="travel_date" value="{{ $qfFailed ? old('travel_date') : '' }}" min="{{ now()->format('Y-m-d') }}" max="{{ now()->addYears(3)->format('Y-m-d') }}" data-date>@if($qfErr('travel_date'))<em class="err">{{ $qfErr('travel_date') }}</em>@else<small class="hint">An approximate date is fine.</small>@endif</label>
         @endunless
         <label class="wide">{{ $qfShort ? 'Your question' : 'Anything we should know? (optional)' }}<textarea name="special_request" rows="{{ $qfShort ? 3 : 4 }}" @if($qfShort) required @endif>{{ $qfFailed ? old('special_request') : '' }}</textarea></label>
     </div>

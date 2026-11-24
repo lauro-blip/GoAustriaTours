@@ -117,10 +117,33 @@ $$('.t3 .mobile .sub-t').forEach((btn) => btn.addEventListener('click', () => {
     btn.parentElement.classList.toggle('open', open);
 }));
 
+// Package page: highlight the section being read in the sticky in-page navigation.
+$$('[data-pnav]').forEach((nav) => {
+    const items = $$('a', nav).map((a) => ({ a, el: document.getElementById(a.getAttribute('href').slice(1)) })).filter((x) => x.el);
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const hit = items.find((x) => x.el === e.target);
+        items.forEach((x) => x.a.classList.toggle('on', x === hit));
+        if (hit && nav.scrollWidth > nav.clientWidth) hit.a.scrollIntoView({ inline: 'center', block: 'nearest' });
+    }), { rootMargin: '-35% 0px -55% 0px' });
+    items.forEach((x) => io.observe(x.el));
+});
+
+// Itinerary: expand / collapse every day at once.
+$$('[data-tl-toggle]').forEach((btn) => btn.addEventListener('click', () => {
+    const days = $$('[data-tl] details.day');
+    const collapse = btn.getAttribute('aria-pressed') !== 'true';
+    days.forEach((d) => { d.open = !collapse; });
+    btn.setAttribute('aria-pressed', String(collapse));
+    btn.textContent = collapse ? 'Expand all days' : 'Collapse all days';
+}));
+
 initQuiz();
 initQuoteModal();
 initInlineForms();
 initPhoneFields();
+// Date fields open the calendar on click (Chrome/Edge only open it from the small icon otherwise).
+$$('input[type=date][data-date]').forEach((i) => i.addEventListener('click', () => { try { i.showPicker?.(); } catch (e) { /* already open */ } }));
 initCarousels();
 
 // counters + reveal

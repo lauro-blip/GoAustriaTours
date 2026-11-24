@@ -24,7 +24,7 @@
             <label class="wide">Email<input type="email" name="email" value="{{ $mFailed ? old('email') : '' }}" required autocomplete="email">@if($mErr('email'))<em class="err">{{ $mErr('email') }}</em>@endif</label>
             <label>Country<select name="country" autocomplete="country">@foreach(\App\Support\Countries::options() as $iso => [$dial, $label])<option value="{{ $iso }}" @selected(($mFailed ? old('country', 'US') : 'US') === $iso)>{{ $iso }} {{ $dial }}</option>@endforeach</select></label>
             <label>Phone<input type="tel" name="phone" value="{{ $mFailed ? old('phone') : '' }}" required inputmode="tel" autocomplete="tel" data-phone>@if($mErr('phone'))<em class="err">{{ $mErr('phone') }}</em>@endif</label>
-            <label>When would you like to travel?<input name="travel_date" value="{{ $mFailed ? old('travel_date') : '' }}" placeholder="e.g. December 2026"></label>
+            <label>Preferred travel date<input type="date" name="travel_date" value="{{ $mFailed ? old('travel_date') : '' }}" min="{{ now()->format('Y-m-d') }}" max="{{ now()->addYears(3)->format('Y-m-d') }}" data-date>@if($mErr('travel_date'))<em class="err">{{ $mErr('travel_date') }}</em>@else<small class="hint">An approximate date is fine.</small>@endif</label>
             <label class="wide">Anything we should know? (optional)<textarea name="special_request" rows="3">{{ $mFailed ? old('special_request') : '' }}</textarea></label>
         </div>
         <label class="consent"><input type="checkbox" name="consent" value="1" required><span>{!! \App\Support\Consent::html() !!}</span></label>

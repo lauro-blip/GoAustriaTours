@@ -1,10 +1,29 @@
 @extends('admin.layout')
 @section('title', $title)
 @section('heading', $title)
-@section('actions')<x-button :href="route($routeName.'.create')" variant="secondary">Add new</x-button>@endsection
+@section('actions')<x-button :href="route($routeName.'.create')" variant="secondary">Add new</x-button>
+<div class="space-y-3 md:hidden">
+    @forelse($items as $item)
+        <article class="rounded-xl border border-line bg-white p-4 shadow-sm">
+            @foreach($columns as $label => $attr)
+                @php($v = $item->{$attr})
+                @php($shown = (is_bool($v) || in_array($attr, ['is_active', 'is_published', 'is_featured', 'is_placeholder'], true)) ? ($v ? 'Yes' : 'No') : $v)
+                @if($loop->first)
+                    <h2 class="text-xl font-display text-brand">{{ $shown }}</h2>
+                @elseif(filled($shown))
+                    <p class="mt-1 text-sm"><span class="text-muted">{{ $label }}:</span> {{ \Illuminate\Support\Str::limit((string) $shown, 90) }}</p>
+                @endif
+            @endforeach
+            <div class="mt-4 border-t border-line pt-3">@include('admin.partials.row-actions', ['item' => $item, 'routeName' => $routeName, 'ordered' => $ordered, 'extraActions' => $extraActions])</div>
+        </article>
+    @empty
+        <p class="rounded-xl border border-line bg-white p-6 text-center text-muted">Nothing here yet.</p>
+    @endforelse
+</div>
+@endsection
 
 @section('content')
-<div class="overflow-x-auto rounded-xl border border-line bg-white">
+<div class="hidden overflow-x-auto rounded-xl border border-line bg-white md:block">
     <table class="w-full text-sm">
         <thead class="bg-sand text-left"><tr>
             @foreach($columns as $label => $attr)<th class="p-3">{{ $label }}</th>@endforeach
@@ -19,22 +38,7 @@
                         @if(is_bool($v) || in_array($attr, ['is_active','is_published','is_featured','is_placeholder'], true)) {{ $v ? 'Yes' : 'No' }} @else {{ $v }} @endif
                     </td>
                 @endforeach
-                <td class="p-3">
-                    <div class="flex flex-wrap items-center justify-end gap-2">
-                        @if($ordered)
-                            <form method="POST" action="{{ route($routeName.'.move', [$item->id, 'up']) }}">@csrf<button class="rounded border border-line px-2 py-1" aria-label="Move up" title="Move up">&uarr;</button></form>
-                            <form method="POST" action="{{ route($routeName.'.move', [$item->id, 'down']) }}">@csrf<button class="rounded border border-line px-2 py-1" aria-label="Move down" title="Move down">&darr;</button></form>
-                        @endif
-                        @foreach($extraActions as $a)<a class="rounded border border-line px-3 py-1" href="{{ route($a['route'], $item->id) }}">{{ $a['label'] }}</a>@endforeach
-                        @if($routeName === 'admin.packages')
-                            <form method="POST" action="{{ route('admin.packages.toggle', [$item->id, 'is_published']) }}">@csrf<button class="rounded border border-line px-3 py-1">{{ $item->is_published ? 'Unpublish' : 'Publish' }}</button></form>
-                            <form method="POST" action="{{ route('admin.packages.toggle', [$item->id, 'is_featured']) }}">@csrf<button class="rounded border border-line px-3 py-1">{{ $item->is_featured ? 'Unfeature' : 'Feature' }}</button></form>
-                            <form method="POST" action="{{ route('admin.packages.duplicate', $item->id) }}">@csrf<button class="rounded border border-line px-3 py-1">Duplicate</button></form>
-                        @endif
-                        <a class="rounded bg-brand px-3 py-1 text-white" href="{{ route($routeName.'.edit', $item->id) }}">Edit</a>
-                        <form method="POST" action="{{ route($routeName.'.destroy', $item->id) }}" onsubmit="return confirm('Delete this item?')">@csrf @method('DELETE')<button class="rounded border border-red-300 px-3 py-1 text-red-800">Delete</button></form>
-                    </div>
-                </td>
+                <td class="p-3">@include('admin.partials.row-actions', ['item' => $item, 'routeName' => $routeName, 'ordered' => $ordered, 'extraActions' => $extraActions])</td>
             </tr>
         @empty
             <tr><td colspan="{{ count($columns) + 1 }}" class="p-6 text-center text-muted">Nothing here yet.</td></tr>

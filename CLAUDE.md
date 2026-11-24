@@ -72,6 +72,8 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 ## Admin dashboard
 - `Admin\DashboardController` (7/30/90 day range): needs-attention banner (new enquiries older than 24h, failed GHL / sheet syncs; the inbox has `?stale=1` and `?sync=failed` filters), KPIs with change vs the previous period (Google Ads = gclid or utm_medium cpc), SVG bar chart per day, pipeline by status, breakdowns (source / medium of the latest touch via `DashboardController::sourceLabel`, campaign, form, package), recent enquiries, and a site-health checklist (reCAPTCHA keys, GHL, Sheet, phone, GTM, notification email, `[CONFIRM]` placeholders). Add a new check by adding an entry to `$checks`.
 
+- Admin on mobile: sticky top bar with a closed-by-default menu (`admin/layout.blade.php`); lists render as cards under 768px (`admin/crud/index.blade.php` + `partials/row-actions.blade.php`, `admin/enquiries/index.blade.php`) and as tables above. Grid children that hold tables need `min-w-0` or the page scrolls sideways.
+
 ## Conventions
 - Admin > Settings (`SettingController`, groups in `GROUPS`) and Admin > Trust & tracking (`TrustController extends SettingController`, groups in `TRUST_GROUPS`) share one save/validate routine; add a field to the right `GROUPS` array. Trust & tracking owns phone, phone_tel, email, the planner fields, `established_line`, `trust_mark_N_*`, `review_*` and `gtm_id`.
 - Settings are read with `Setting::get('key')` (cached; flushed on write). Public views receive `$site` (settings; `[CONFIRM` values blanked) from a view composer; `layouts.site` also gets the nav data.

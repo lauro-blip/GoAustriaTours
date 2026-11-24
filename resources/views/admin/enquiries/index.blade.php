@@ -16,7 +16,7 @@
 <p class="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">Showing only {{ request('sync') === 'failed' ? 'enquiries that failed to sync' : 'new enquiries waiting more than 24 hours' }}. <a class="underline" href="{{ route('admin.enquiries.index') }}">Show all</a></p>
 @endif
 
-<div class="overflow-x-auto rounded-xl border border-line bg-white">
+<div class="hidden overflow-x-auto rounded-xl border border-line bg-white md:block">
     <table class="w-full text-sm">
         <thead class="bg-sand text-left"><tr><th class="p-3">Date</th><th class="p-3">Name</th><th class="p-3">Contact</th><th class="p-3">Form / package</th><th class="p-3">Source</th><th class="p-3">Status</th><th class="p-3">Sync</th></tr></thead>
         <tbody>
@@ -39,6 +39,34 @@
         @endforelse
         </tbody>
     </table>
+</div>
+
+<div class="space-y-3 md:hidden">
+    @forelse($enquiries as $e)
+        <a href="{{ route('admin.enquiries.show', $e) }}" class="block rounded-xl border border-line bg-white p-4 shadow-sm active:bg-brand-soft">
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <p class="truncate font-semibold text-brand">{{ $e->full_name }}</p>
+                    <p class="truncate text-sm text-muted">{{ $e->email }}</p>
+                </div>
+                <span class="flex-none rounded-full px-2.5 py-0.5 text-xs capitalize {{ ['new' => 'bg-amber-100 text-amber-900', 'contacted' => 'bg-blue-100 text-blue-900', 'quoted' => 'bg-indigo-100 text-indigo-900', 'won' => 'bg-green-100 text-green-900', 'lost' => 'bg-red-100 text-red-900'][$e->status] ?? 'bg-sand' }}">{{ $e->status }}</span>
+            </div>
+            <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                <div><dt class="text-xs text-muted">Received</dt><dd>{{ $e->created_at->format('d M, H:i') }}</dd></div>
+                <div><dt class="text-xs text-muted">Form</dt><dd>{{ \App\Support\SheetRow::TABS[$e->form_name] ?? $e->form_name }}</dd></div>
+                @if($e->phone_e164)<div><dt class="text-xs text-muted">Phone</dt><dd>{{ $e->phone_e164 }}</dd></div>@endif
+                <div><dt class="text-xs text-muted">Source</dt><dd>{{ \App\Http\Controllers\Admin\DashboardController::sourceLabel($e) }}</dd></div>
+                @if($e->package_name)<div class="col-span-2"><dt class="text-xs text-muted">Package</dt><dd class="truncate">{{ $e->package_name }}</dd></div>@endif
+            </dl>
+            <p class="mt-3 flex flex-wrap gap-1.5 text-xs">
+                @foreach(['CRM' => $e->ghl_status, 'Sheet' => $e->sheet_status] as $sl => $sv)
+                    <span class="rounded-full px-2 py-0.5 {{ ['synced' => 'bg-green-100 text-green-900', 'failed' => 'bg-red-100 text-red-900', 'pending' => 'bg-amber-100 text-amber-900'][$sv] ?? 'bg-sand text-muted' }}">{{ $sl }} {{ $sv === 'disabled' ? 'off' : $sv }}</span>
+                @endforeach
+            </p>
+        </a>
+    @empty
+        <p class="rounded-xl border border-line bg-white p-6 text-center text-muted">No enquiries match.</p>
+    @endforelse
 </div>
 <div class="mt-4">{{ $enquiries->links() }}</div>
 @endsection

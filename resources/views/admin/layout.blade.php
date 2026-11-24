@@ -17,17 +17,17 @@
     ];
 @endphp
 <div class="lg:flex min-h-screen">
-    <aside class="bg-brand-dark text-white lg:w-60 lg:shrink-0">
-        <div class="flex items-center justify-between px-4 py-3 lg:block">
+    <aside class="sticky top-0 z-40 bg-brand-dark text-white lg:static lg:min-h-screen lg:w-60 lg:shrink-0">
+        <div class="flex items-center justify-between px-4 py-2.5 lg:block lg:py-3">
             <a href="{{ route('admin.dashboard') }}" class="font-display text-2xl">Admin</a>
-            <button class="lg:hidden p-2" @click="nav = !nav" :aria-expanded="nav" aria-label="Menu"><x-icon name="menu" /></button>
+            <button class="grid size-11 place-items-center rounded-lg hover:bg-white/10 lg:hidden" @click="nav = !nav" :aria-expanded="nav" aria-controls="admin-nav" aria-label="Menu"><x-icon name="menu" /></button>
         </div>
-        <nav class="px-2 pb-4 lg:block" :class="nav ? 'block' : 'hidden'" aria-label="Admin">
+        <nav id="admin-nav" class="hidden px-2 pb-4 max-lg:absolute max-lg:inset-x-0 max-lg:top-full max-lg:max-h-[calc(100vh-4rem)] max-lg:overflow-y-auto max-lg:bg-brand-dark max-lg:shadow-2xl lg:block" :class="{ '!block': nav }" aria-label="Admin">
             @foreach($links as [$r, $label])
-                <a href="{{ route($r) }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-white/10 {{ request()->routeIs(Str::beforeLast($r, '.').'*') ? 'bg-white/15 font-semibold' : '' }}">{{ $label }}</a>
+                <a href="{{ route($r) }}" class="block rounded-lg px-3 py-3 text-sm hover:bg-white/10 lg:py-2 {{ request()->routeIs(Str::beforeLast($r, '.').'*') ? 'bg-white/15 font-semibold' : '' }}">{{ $label }}</a>
             @endforeach
-            <a href="{{ route('home') }}" target="_blank" rel="noopener" class="mt-3 block rounded-lg px-3 py-2 text-sm text-white/85 hover:bg-white/10">View site &nearr;</a>
-            <form method="POST" action="{{ route('admin.logout') }}">@csrf<button class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm text-white/85 hover:bg-white/10">Log out</button></form>
+            <a href="{{ route('home') }}" target="_blank" rel="noopener" class="mt-3 block rounded-lg px-3 py-3 text-sm text-white/85 hover:bg-white/10 lg:py-2">View site &nearr;</a>
+            <form method="POST" action="{{ route('admin.logout') }}">@csrf<button class="mt-1 w-full rounded-lg px-3 py-3 text-left text-sm text-white/85 hover:bg-white/10 lg:py-2">Log out</button></form>
         </nav>
     </aside>
 

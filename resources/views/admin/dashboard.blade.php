@@ -34,32 +34,32 @@
 @endif
 
 {{-- KPIs --}}
-<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    <div class="rounded-xl border border-line bg-white p-5 shadow-sm">
+<div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+    <div class="rounded-xl border border-line bg-white p-4 shadow-sm sm:p-5">
         <p class="text-sm text-muted">Enquiries, last {{ $range }} days</p>
-        <p class="font-display text-5xl text-brand">{{ $total }}</p>
+        <p class="font-display text-4xl text-brand sm:text-5xl">{{ $total }}</p>
         @if($dTotal)<p class="mt-1 text-sm {{ $dTotalDir === 'up' ? 'text-green-700' : 'text-red-700' }}">{{ $dTotal }}</p>@endif
     </div>
-    <a href="{{ route('admin.enquiries.index', ['status' => 'new']) }}" class="rounded-xl border border-line bg-white p-5 shadow-sm hover:border-brand">
+    <a href="{{ route('admin.enquiries.index', ['status' => 'new']) }}" class="rounded-xl border border-line bg-white p-4 shadow-sm hover:border-brand sm:p-5">
         <p class="text-sm text-muted">New, not yet actioned</p>
-        <p class="font-display text-5xl text-brand">{{ $newCount }}</p>
+        <p class="font-display text-4xl text-brand sm:text-5xl">{{ $newCount }}</p>
         <p class="mt-1 text-sm text-muted">Open the inbox &rarr;</p>
     </a>
-    <div class="rounded-xl border border-line bg-white p-5 shadow-sm">
+    <div class="rounded-xl border border-line bg-white p-4 shadow-sm sm:p-5">
         <p class="text-sm text-muted">From Google Ads</p>
-        <p class="font-display text-5xl text-brand">{{ $paidCount }}</p>
+        <p class="font-display text-4xl text-brand sm:text-5xl">{{ $paidCount }}</p>
         <p class="mt-1 text-sm {{ $dPaid ? ($dPaidDir === 'up' ? 'text-green-700' : 'text-red-700') : 'text-muted' }}">{{ $dPaid ?: ($total ? round($paidCount / $total * 100).'% of enquiries' : 'No enquiries yet') }}</p>
     </div>
-    <div class="rounded-xl border border-line bg-white p-5 shadow-sm">
+    <div class="rounded-xl border border-line bg-white p-4 shadow-sm sm:p-5">
         <p class="text-sm text-muted">Won</p>
-        <p class="font-display text-5xl text-brand">{{ $won }}</p>
+        <p class="font-display text-4xl text-brand sm:text-5xl">{{ $won }}</p>
         <p class="mt-1 text-sm text-muted">{{ $winRate }}% of enquiries in this period</p>
     </div>
 </div>
 
 {{-- chart + status --}}
 <div class="mt-6 grid gap-6 lg:grid-cols-3">
-    <section class="rounded-xl border border-line bg-white p-5 shadow-sm lg:col-span-2" aria-labelledby="chart-h">
+    <section class="min-w-0 rounded-xl border border-line bg-white p-4 shadow-sm sm:p-5 lg:col-span-2" aria-labelledby="chart-h">
         <h2 id="chart-h" class="text-2xl font-display">Enquiries per day</h2>
         @if($total === 0)
             <p class="py-10 text-center text-muted">No enquiries in this period yet.</p>
@@ -71,14 +71,14 @@
                     @php $h = $d['count'] ? max(3, 120 * $d['count'] / $maxDay) : 0; @endphp
                     <rect x="{{ $i * $bw + $bw * 0.15 }}" y="{{ 140 - $h }}" width="{{ $bw * 0.7 }}" height="{{ $h }}" rx="2" fill="#0F3B59"><title>{{ $d['label'] }}: {{ $d['count'] }}</title></rect>
                 @endforeach
-                <text x="0" y="162" font-size="11" fill="#6b6b6b">{{ $days->first()['label'] }}</text>
-                <text x="600" y="162" font-size="11" fill="#6b6b6b" text-anchor="end">{{ $days->last()['label'] }}</text>
-                <text x="600" y="14" font-size="11" fill="#6b6b6b" text-anchor="end">max {{ $maxDay }} / day</text>
+                <text x="0" y="162" font-size="14" fill="#6b6b6b">{{ $days->first()['label'] }}</text>
+                <text x="600" y="162" font-size="14" fill="#6b6b6b" text-anchor="end">{{ $days->last()['label'] }}</text>
+                <text x="600" y="14" font-size="14" fill="#6b6b6b" text-anchor="end">max {{ $maxDay }} / day</text>
             </svg>
         @endif
     </section>
 
-    <section class="rounded-xl border border-line bg-white p-5 shadow-sm" aria-labelledby="funnel-h">
+    <section class="rounded-xl border border-line bg-white p-4 shadow-sm sm:p-5" aria-labelledby="funnel-h">
         <h2 id="funnel-h" class="text-2xl font-display">Pipeline</h2>
         <ul class="mt-3 space-y-3 text-sm">
             @foreach($statuses as $s => $c)
@@ -94,7 +94,7 @@
 {{-- breakdowns --}}
 <div class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
     @foreach([['Where they came from', $bySource, 'Source / medium (latest touch)'], ['Campaigns', $byCampaign, 'utm_campaign'], ['Forms', $byForm, 'Which form was used'], ['Popular journeys', $byPackage, 'Enquiries naming a package']] as [$title, $rows, $hint])
-        <section class="rounded-xl border border-line bg-white p-5 shadow-sm">
+        <section class="rounded-xl border border-line bg-white p-4 shadow-sm sm:p-5">
             <h2 class="text-xl font-display">{{ $title }}</h2>
             <p class="text-xs text-muted">{{ $hint }}</p>
             @if($rows->isEmpty())
@@ -116,18 +116,18 @@
 
 <div class="mt-6 grid gap-6 xl:grid-cols-3">
     {{-- recent --}}
-    <section class="xl:col-span-2" aria-labelledby="recent-h">
+    <section class="min-w-0 xl:col-span-2" aria-labelledby="recent-h">
         <div class="mb-3 flex items-end justify-between"><h2 id="recent-h" class="text-3xl font-display">Recent enquiries</h2><a class="text-sm text-brand underline" href="{{ route('admin.enquiries.index') }}">View all</a></div>
         <div class="overflow-x-auto rounded-xl border border-line bg-white">
             <table class="w-full text-sm">
-                <thead class="bg-sand/60 text-left"><tr><th class="p-3">When</th><th class="p-3">Name</th><th class="p-3">Form</th><th class="p-3">Source</th><th class="p-3">Status</th></tr></thead>
+                <thead class="bg-sand/60 text-left"><tr><th class="p-3">When</th><th class="p-3">Name</th><th class="hidden p-3 sm:table-cell">Form</th><th class="hidden p-3 md:table-cell">Source</th><th class="p-3">Status</th></tr></thead>
                 <tbody>
                 @forelse($recent as $e)
                     <tr class="border-t border-line">
                         <td class="p-3 whitespace-nowrap" title="{{ $e->created_at->format('d M Y H:i') }}">{{ $e->created_at->diffForHumans() }}</td>
                         <td class="p-3"><a class="text-brand underline" href="{{ route('admin.enquiries.show', $e) }}">{{ $e->full_name }}</a><span class="block text-xs text-muted">{{ $e->package_name ?: $e->email }}</span></td>
-                        <td class="p-3">{{ \App\Support\SheetRow::TABS[$e->form_name] ?? $e->form_name }}</td>
-                        <td class="p-3">{{ \App\Http\Controllers\Admin\DashboardController::sourceLabel($e) }}</td>
+                        <td class="hidden p-3 sm:table-cell">{{ \App\Support\SheetRow::TABS[$e->form_name] ?? $e->form_name }}</td>
+                        <td class="hidden p-3 md:table-cell">{{ \App\Http\Controllers\Admin\DashboardController::sourceLabel($e) }}</td>
                         <td class="p-3"><span class="inline-block rounded-full px-2.5 py-0.5 text-xs capitalize {{ ['new' => 'bg-amber-100 text-amber-900', 'contacted' => 'bg-blue-100 text-blue-900', 'quoted' => 'bg-indigo-100 text-indigo-900', 'won' => 'bg-green-100 text-green-900', 'lost' => 'bg-red-100 text-red-900'][$e->status] ?? 'bg-sand' }}">{{ $e->status }}</span></td>
                     </tr>
                 @empty
@@ -139,7 +139,7 @@
     </section>
 
     {{-- setup checklist --}}
-    <section aria-labelledby="setup-h">
+    <section class="min-w-0" aria-labelledby="setup-h">
         <h2 id="setup-h" class="mb-3 text-3xl font-display">Site health</h2>
         <ul class="divide-y divide-line rounded-xl border border-line bg-white text-sm">
             @foreach($checks as $c)

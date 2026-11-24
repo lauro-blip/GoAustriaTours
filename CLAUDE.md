@@ -69,6 +69,9 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - **Optional tracking IDs** (Admin > Trust & tracking): Microsoft Clarity, Google Ads tag (+ conversion label, fired on the thank-you page) and Meta Pixel load only when filled in. Leave Google Ads/Meta blank if GTM handles them.
 - **Images:** hero slides ship as `{name}.webp` (1920), `{name}-1280.webp`, `{name}-768.webp` with `srcset` and an LCP preload; the logos are WebP (`logo-white.webp`, `logo-navy.webp`). Add the 768/1280 variants for any new hero image.
 
+## Admin dashboard
+- `Admin\DashboardController` (7/30/90 day range): needs-attention banner (new enquiries older than 24h, failed GHL / sheet syncs; the inbox has `?stale=1` and `?sync=failed` filters), KPIs with change vs the previous period (Google Ads = gclid or utm_medium cpc), SVG bar chart per day, pipeline by status, breakdowns (source / medium of the latest touch via `DashboardController::sourceLabel`, campaign, form, package), recent enquiries, and a site-health checklist (reCAPTCHA keys, GHL, Sheet, phone, GTM, notification email, `[CONFIRM]` placeholders). Add a new check by adding an entry to `$checks`.
+
 ## Conventions
 - Admin > Settings (`SettingController`, groups in `GROUPS`) and Admin > Trust & tracking (`TrustController extends SettingController`, groups in `TRUST_GROUPS`) share one save/validate routine; add a field to the right `GROUPS` array. Trust & tracking owns phone, phone_tel, email, the planner fields, `established_line`, `trust_mark_N_*`, `review_*` and `gtm_id`.
 - Settings are read with `Setting::get('key')` (cached; flushed on write). Public views receive `$site` (settings; `[CONFIRM` values blanked) from a view composer; `layouts.site` also gets the nav data.

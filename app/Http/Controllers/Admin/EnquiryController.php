@@ -21,6 +21,8 @@ class EnquiryController extends Controller
                     ->orWhere('email', 'like', $term)->orWhere('phone_e164', 'like', $term)->orWhere('package_name', 'like', $term));
             })
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->status))
+            ->when($request->query('sync') === 'failed', fn ($q) => $q->where(fn ($w) => $w->where('ghl_status', 'failed')->orWhere('sheet_status', 'failed')))
+            ->when($request->query('stale') === '1', fn ($q) => $q->where('status', 'new')->where('created_at', '<', now()->subDay()))
             ->when($request->filled('source'), fn ($q) => $q->where(fn ($w) => $w
                 ->where('tracking_first->utm_source', $request->source)->orWhere('tracking_last->utm_source', $request->source)))
             ->when($request->filled('from'), fn ($q) => $q->whereDate('created_at', '>=', $request->from))

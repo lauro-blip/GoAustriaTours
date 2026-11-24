@@ -6,8 +6,11 @@
 <form method="POST" action="{{ $page['action'] }}" enctype="multipart/form-data" class="max-w-3xl space-y-8">
     @csrf @method('PUT')
     @foreach($groups as $group => $keys)
-        <fieldset class="space-y-4 rounded-xl border border-line bg-white p-6">
-            <legend class="px-2 text-2xl font-display">{{ $group }}</legend>
+        <fieldset class="rounded-xl border border-line bg-white p-6">
+            @php $gm = preg_match('/^(.*?)\s*\((.+)\)\s*$/', $group, $m) ? [$m[1], $m[2]] : [$group, null]; @endphp
+            <legend class="float-left w-full p-0 text-2xl font-display">{{ $gm[0] }}</legend>
+            <p class="clear-both mb-4 mt-1 text-sm text-muted">{{ $gm[1] ? ucfirst($gm[1]).'.' : '' }}</p>
+            <div class="space-y-4">
             @foreach($keys as $key => [$label, $type])
                 <div>
                     <label for="s-{{ $key }}" class="mb-1 block text-sm font-medium">{{ $label }}</label>
@@ -23,13 +26,14 @@
                     @endif
                 </div>
             @endforeach
+            </div>
         </fieldset>
     @endforeach
 
     @if($page['ghl'])
     <fieldset class="rounded-xl border border-line bg-white p-6">
-        <legend class="px-2 text-2xl font-display">GoHighLevel</legend>
-        <p class="text-sm">Sync status: <strong>{{ $ghlOn ? 'ON' : 'OFF' }}</strong>. Manage the token and location ID in <a href="{{ route('admin.ghl.edit') }}" class="underline">Admin &gt; GoHighLevel</a>.</p>
+        <legend class="float-left mb-4 w-full p-0 text-2xl font-display">GoHighLevel</legend>
+        <p class="clear-both text-sm">Sync status: <strong>{{ $ghlOn ? 'ON' : 'OFF' }}</strong>. Manage the token and location ID in <a href="{{ route('admin.ghl.edit') }}" class="underline">Admin &gt; GoHighLevel</a>.</p>
     </fieldset>
     @endif
     <x-button type="submit" variant="secondary">Save settings</x-button>

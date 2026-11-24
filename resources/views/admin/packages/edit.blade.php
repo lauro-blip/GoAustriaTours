@@ -5,10 +5,32 @@
 
 @section('content')
 <div class="grid gap-8 xl:grid-cols-[2fr_1fr]">
-    <form method="POST" enctype="multipart/form-data" action="{{ route('admin.packages.update', $item->id) }}" class="space-y-5 rounded-xl border border-line bg-white p-6">
+    @php
+        $sections = [
+            'Basics' => ['title', 'slug', 'tour_type_id', 'destination_id', 'nights', 'price_from', 'currency'],
+            'Description' => ['summary', 'description', 'highlights'],
+            'Itinerary and details' => ['itinerary', 'inclusions', 'exclusions', 'faqs'],
+            'Images' => ['hero_image', 'hero_image_alt', 'social_image'],
+            'Search and visibility' => ['seo_title', 'meta_description', 'is_published', 'is_featured', 'noindex'],
+        ];
+        $byName = collect($fields)->keyBy('name');
+        $short = ['slug', 'tour_type_id', 'destination_id', 'nights', 'price_from', 'currency'];
+    @endphp
+    <form method="POST" enctype="multipart/form-data" action="{{ route('admin.packages.update', $item->id) }}" class="space-y-6">
         @csrf @method('PUT')
-        @foreach($fields as $f)@include('admin.partials.field', ['f' => $f, 'item' => $item])@endforeach
-        <div class="flex gap-3 pt-2"><x-button type="submit" variant="secondary">Save</x-button><x-button :href="route('admin.packages.index')" variant="outline">Back</x-button></div>
+        @foreach($sections as $heading => $names)
+            <section class="rounded-xl border border-line bg-white p-6" aria-labelledby="sec-{{ Str::slug($heading) }}">
+                <h2 id="sec-{{ Str::slug($heading) }}" class="mb-4 text-2xl font-display">{{ $heading }}</h2>
+                <div class="grid gap-5 md:grid-cols-2">
+                    @foreach($names as $n)
+                        @if($byName->has($n))
+                            <div class="{{ in_array($n, $short, true) ? '' : 'md:col-span-2' }}">@include('admin.partials.field', ['f' => $byName[$n], 'item' => $item])</div>
+                        @endif
+                    @endforeach
+                </div>
+            </section>
+        @endforeach
+        <div class="sticky bottom-0 -mx-1 flex gap-3 border-t border-line bg-sand/90 px-1 py-4 backdrop-blur"><x-button type="submit" variant="secondary">Save package</x-button><x-button :href="route('admin.packages.index')" variant="outline">Back</x-button></div>
     </form>
 
     <section class="space-y-4" aria-labelledby="gallery-h">

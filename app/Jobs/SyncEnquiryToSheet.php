@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Enquiry;
 use App\Services\SheetsClient;
 use App\Support\SheetRow;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -18,7 +19,7 @@ use Throwable;
  */
 class SyncEnquiryToSheet implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 5;
 

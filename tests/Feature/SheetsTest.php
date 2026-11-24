@@ -36,6 +36,56 @@ class SheetsTest extends TestCase
         ]);
     }
 
+    private function verifyFake(): void
+    {
+        Http::fake([
+            'www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
+            'script.google.com/*' => Http::response(['ok' => true]),
+        ]);
+    }
+
+    public function test_submitting_a_form_redirects_to_thank_you_and_adds_the_row_to_the_sheet(): void
+    {
+        $this->seed();
+        $this->enable();
+        $this->verifyFake();
+
+        $this->post('/enquiry', [
+            'form_name' => 'hero-quiz', 'page_url' => 'http://localhost/', 'first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com',
+            'country' => 'US', 'phone' => '2025550143', 'consent' => '1', 'g-recaptcha-response' => 'token',
+        ])->assertRedirect(route('thank-you'));
+
+        $e = Enquiry::firstOrFail();
+        $this->assertSame('synced', $e->sheet_status);
+        Http::assertSent(fn (HttpRequest $r) => str_contains($r->url(), 'script.google.com') && $r['tab'] === 'Hero Quiz');
+    }
+
+    public function test_a_failing_sheet_never_breaks_the_thank_you_redirect(): void
+    {
+        $this->seed();
+        $this->enable();
+        Http::fake([
+            'www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
+            'script.google.com/*' => Http::response('boom', 500),
+        ]);
+
+        $this->post('/enquiry', [
+            'form_name' => 'contact', 'page_url' => 'http://localhost/contact', 'first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com',
+            'country' => 'US', 'consent' => '1', 'g-recaptcha-response' => 'token',
+        ])->assertRedirect(route('thank-you'));
+
+        $this->assertSame('failed', Enquiry::firstOrFail()->sheet_status);
+    }
+
+    public function test_both_sync_jobs_can_be_queued_after_commit(): void
+    {
+        \Illuminate\Support\Facades\Queue::fake();
+        SyncEnquiryToSheet::dispatch(1)->afterCommit();
+        \App\Jobs\SyncEnquiryToGhl::dispatch(1)->afterCommit();
+        \Illuminate\Support\Facades\Queue::assertPushed(SyncEnquiryToSheet::class);
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SyncEnquiryToGhl::class);
+    }
+
     public function test_every_form_has_its_own_tab(): void
     {
         $this->assertSame(\App\Http\Controllers\EnquiryController::FORMS, array_keys(SheetRow::TABS));

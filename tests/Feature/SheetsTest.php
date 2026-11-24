@@ -52,7 +52,7 @@ class SheetsTest extends TestCase
 
         $this->post('/enquiry', [
             'form_name' => 'hero-quiz', 'page_url' => 'http://localhost/', 'first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com',
-            'country' => 'US', 'phone' => '2025550143', 'consent' => '1', 'g-recaptcha-response' => 'token',
+            'country' => 'US', 'phone' => '2024561111', 'consent' => '1', 'g-recaptcha-response' => 'token',
         ])->assertRedirect(route('thank-you'));
 
         $e = Enquiry::firstOrFail();
@@ -71,7 +71,7 @@ class SheetsTest extends TestCase
 
         $this->post('/enquiry', [
             'form_name' => 'contact', 'page_url' => 'http://localhost/contact', 'first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com',
-            'country' => 'US', 'consent' => '1', 'g-recaptcha-response' => 'token',
+            'country' => 'US', 'phone' => '2024561111', 'consent' => '1', 'g-recaptcha-response' => 'token',
         ])->assertRedirect(route('thank-you'));
 
         $this->assertSame('failed', Enquiry::firstOrFail()->sheet_status);

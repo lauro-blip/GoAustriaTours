@@ -4,6 +4,7 @@ import { initQuiz } from './study-quiz';
 import { initQuoteModal } from './study-modal';
 import { initCarousels } from './carousel.js';
 import { initInlineForms } from './inline-forms';
+import { initPhoneFields } from './phone.js';
 
 document.documentElement.classList.add('tp3-js');
 const $ = (s, r = document) => r.querySelector(s);
@@ -119,6 +120,7 @@ $$('.t3 .mobile .sub-t').forEach((btn) => btn.addEventListener('click', () => {
 initQuiz();
 initQuoteModal();
 initInlineForms();
+initPhoneFields();
 initCarousels();
 
 // counters + reveal

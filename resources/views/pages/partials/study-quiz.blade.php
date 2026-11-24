@@ -41,7 +41,7 @@
                 <label>Last name<input name="last_name" value="{{ $failed ? old('last_name') : '' }}" required autocomplete="family-name">@if($qe('last_name'))<em class="err">{{ $qe('last_name') }}</em>@endif</label>
                 <label class="wide">Email<input type="email" name="email" value="{{ $failed ? old('email') : '' }}" required autocomplete="email">@if($qe('email'))<em class="err">{{ $qe('email') }}</em>@endif</label>
                 <label>Country<select name="country" autocomplete="country">@foreach(\App\Support\Countries::options() as $iso => [$dial, $label])<option value="{{ $iso }}" @selected(($failed ? old('country', 'US') : 'US') === $iso)>{{ $iso }} {{ $dial }}</option>@endforeach</select></label>
-                <label>Phone (optional)<input type="tel" name="phone" value="{{ $failed ? old('phone') : '' }}" autocomplete="tel-national">@if($qe('phone'))<em class="err">{{ $qe('phone') }}</em>@endif</label>
+                <label>Phone<input type="tel" name="phone" value="{{ $failed ? old('phone') : '' }}" required inputmode="tel" autocomplete="tel" data-phone>@if($qe('phone'))<em class="err">{{ $qe('phone') }}</em>@endif</label>
             </div>
             <label class="consent"><input type="checkbox" name="consent" value="1" required><span>{!! \App\Support\Consent::html() !!}</span></label>
             @if($qe('consent'))<em class="err">{{ $qe('consent') }}</em>@endif

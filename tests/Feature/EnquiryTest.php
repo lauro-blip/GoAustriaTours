@@ -27,7 +27,7 @@ class EnquiryTest extends TestCase
         return array_merge([
             'form_name' => 'contact', 'page_url' => 'http://localhost/contact',
             'first_name' => 'Ada', 'last_name' => 'Lovelace', 'email' => 'ada@example.com',
-            'country' => 'US', 'phone' => '2025550143', 'travel_date' => 'June 2027',
+            'country' => 'US', 'phone' => '2024561111', 'travel_date' => 'June 2027',
             'second_quote' => 'No', 'special_request' => 'Window seat please',
             'consent' => '1', 'g-recaptcha-response' => 'token',
         ], $overrides);
@@ -85,7 +85,7 @@ class EnquiryTest extends TestCase
         $this->assertNotNull($e->ip_address);
         $this->assertSame('PHPUnit-Test-Agent', $e->user_agent);
         $this->assertSame('http://localhost/contact', $e->page_url);
-        $this->assertSame('+12025550143', $e->phone_e164);
+        $this->assertSame('+12024561111', $e->phone_e164);
         $this->assertSame('disabled', $e->ghl_status); // GHL is off in tests
     }
 
@@ -114,20 +114,18 @@ class EnquiryTest extends TestCase
         $this->assertSame(0, Enquiry::count());
     }
 
-    public function test_phone_is_optional(): void
+    public function test_phone_is_required(): void
     {
         Http::fake([self::VERIFY_URL => Http::response(['success' => true])]);
 
-        $this->post('/enquiry', $this->payload(['phone' => '']))->assertSessionHasNoErrors();
-
-        $e = \App\Models\Enquiry::latest('id')->first();
-        $this->assertNull($e->phone_e164);
-        $this->assertNull($e->country_code);
+        $this->post('/enquiry', $this->payload(['phone' => '']))->assertSessionHasErrors('phone');
+        $this->assertSame(0, Enquiry::count());
     }
 
-    public function test_forms_no_longer_ask_for_phone_or_partner_quote(): void
+    public function test_forms_ask_for_a_required_phone_with_the_country_code_helper(): void
     {
-        $this->get('/contact')->assertOk()->assertSee('Phone (optional)')->assertDontSee('second quote from a partner');
+        $html = $this->get('/contact')->assertOk()->assertDontSee('Phone (optional)')->assertDontSee('second quote from a partner')->getContent();
+        $this->assertMatchesRegularExpression('/name="phone"[^>]*required[^>]*data-phone/', $html);
     }
 
     public function test_invalid_phone_number_is_rejected(): void
@@ -136,6 +134,36 @@ class EnquiryTest extends TestCase
 
         $this->post('/enquiry', $this->payload(['phone' => '123']))->assertSessionHasErrors('phone');
         $this->assertSame(0, Enquiry::count());
+    }
+
+    /** @return array<string, array{0:string,1:string}> */
+    public static function dummyNumbers(): array
+    {
+        return [
+            'all fives' => ['US', '5555555555'], 'sequential' => ['US', '1234567890'], 'fictional 555-01xx' => ['US', '2125550123'],
+            'repeated block' => ['US', '2122122122'], 'invalid area code' => ['US', '1235551234'], 'too short' => ['US', '212555'],
+            'wrong country number' => ['GB', '2024561111'], 'letters' => ['US', 'abcdefghij'],
+        ];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('dummyNumbers')]
+    public function test_dummy_and_wrong_country_numbers_are_rejected(string $country, string $phone): void
+    {
+        Http::fake([self::VERIFY_URL => Http::response(['success' => true])]);
+
+        $this->post('/enquiry', $this->payload(['country' => $country, 'phone' => $phone]))->assertSessionHasErrors('phone');
+        $this->assertSame(0, Enquiry::count());
+    }
+
+    public function test_real_numbers_work_with_or_without_the_typed_country_code_and_for_other_countries(): void
+    {
+        Http::fake([self::VERIFY_URL => Http::response(['success' => true])]);
+
+        $this->post('/enquiry', $this->payload(['phone' => '+1 202 456 1111']))->assertSessionHasNoErrors();
+        $this->post('/enquiry', $this->payload(['country' => 'GB', 'phone' => '+44 20 7946 0958', 'email' => 'b@example.com']))->assertSessionHasNoErrors();
+        $this->post('/enquiry', $this->payload(['country' => 'AT', 'phone' => '+43 1 5131122', 'email' => 'c@example.com']))->assertSessionHasNoErrors();
+
+        $this->assertSame(['+12024561111', '+442079460958', '+4315131122'], Enquiry::orderBy('id')->pluck('phone_e164')->all());
     }
 
     public function test_every_page_with_a_form_renders_the_consent_text_unticked(): void

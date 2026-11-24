@@ -18,12 +18,10 @@
         <label>First name<input name="first_name" value="{{ $qfFailed ? old('first_name') : '' }}" required autocomplete="given-name">@if($qfErr('first_name'))<em class="err">{{ $qfErr('first_name') }}</em>@endif</label>
         <label>Last name<input name="last_name" value="{{ $qfFailed ? old('last_name') : '' }}" required autocomplete="family-name">@if($qfErr('last_name'))<em class="err">{{ $qfErr('last_name') }}</em>@endif</label>
         <label class="wide">Email<input type="email" name="email" value="{{ $qfFailed ? old('email') : '' }}" required autocomplete="email">@if($qfErr('email'))<em class="err">{{ $qfErr('email') }}</em>@endif</label>
-        @unless($qfShort)
         <label>Country<select name="country" autocomplete="country">@foreach(\App\Support\Countries::options() as $iso => [$dial, $label])<option value="{{ $iso }}" @selected(($qfFailed ? old('country', 'US') : 'US') === $iso)>{{ $iso }} {{ $dial }}</option>@endforeach</select></label>
-        <label>Phone (optional)<input type="tel" name="phone" value="{{ $qfFailed ? old('phone') : '' }}" autocomplete="tel-national">@if($qfErr('phone'))<em class="err">{{ $qfErr('phone') }}</em>@endif</label>
+        <label>Phone<input type="tel" name="phone" value="{{ $qfFailed ? old('phone') : '' }}" required inputmode="tel" autocomplete="tel" data-phone>@if($qfErr('phone'))<em class="err">{{ $qfErr('phone') }}</em>@endif</label>
+        @unless($qfShort)
         <label class="wide">When would you like to travel?<input name="travel_date" value="{{ $qfFailed ? old('travel_date') : '' }}" placeholder="e.g. December 2026"></label>
-        @else
-        <input type="hidden" name="country" value="US">
         @endunless
         <label class="wide">{{ $qfShort ? 'Your question' : 'Anything we should know? (optional)' }}<textarea name="special_request" rows="{{ $qfShort ? 3 : 4 }}" @if($qfShort) required @endif>{{ $qfFailed ? old('special_request') : '' }}</textarea></label>
     </div>

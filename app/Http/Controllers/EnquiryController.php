@@ -12,6 +12,7 @@ use App\Models\QuizStep;
 use App\Models\Setting;
 use App\Services\RecaptchaVerifier;
 use App\Support\Consent;
+use App\Support\PhoneQuality;
 use App\Support\Countries;
 use App\Support\Tracking;
 use Illuminate\Http\RedirectResponse;
@@ -40,7 +41,7 @@ class EnquiryController extends Controller
             'last_name' => ['required', 'string', 'max:80'],
             'email' => ['required', 'email:rfc', 'max:190'],
             'country' => ['required', Rule::in(array_keys(Countries::LIST))],
-            'phone' => ['nullable', 'string', 'max:30'],   // optional: a phone number is not required to get a quote
+            'phone' => ['required', 'string', 'max:30'],
             'travel_date' => ['nullable', 'string', 'max:80'],
             'second_quote' => ['nullable', Rule::in(['Yes', 'No'])],
             'special_request' => ['nullable', 'string', 'max:2000'],
@@ -65,20 +66,22 @@ class EnquiryController extends Controller
             return $fail(['g-recaptcha-response' => 'Please confirm you are not a robot and try again.']);
         }
 
-        // Phone is optional. When given, it must be valid for the chosen country and is stored as E.164.
+        // Phone is required: it must be a real number for the chosen country (libphonenumber), and not an obvious placeholder.
         $phone = null;
-        if (filled($data['phone'] ?? null)) {
-            try {
-                $util = PhoneNumberUtil::getInstance();
-                $parsed = $util->parse($data['phone'], $data['country']);
-                if ($util->isValidNumber($parsed)) {
-                    $phone = $util->format($parsed, PhoneNumberFormat::E164);
-                }
-            } catch (NumberParseException) {
+        $phoneError = 'Please enter a valid phone number for the selected country.';
+        try {
+            $util = PhoneNumberUtil::getInstance();
+            $parsed = $util->parse($data['phone'], $data['country']);
+            $dial = (int) ltrim(Countries::LIST[$data['country']][0], '+');
+            if (! $util->isValidNumber($parsed) || $parsed->getCountryCode() !== $dial) {
+                return $fail(['phone' => $phoneError]);
             }
-            if (! $phone) {
-                return $fail(['phone' => 'Please enter a valid phone number for the selected country, or leave it blank.']);
+            if (PhoneQuality::isPlaceholder((string) $parsed->getNationalNumber(), $dial)) {
+                return $fail(['phone' => 'That looks like a placeholder number. Please enter the real phone number we can reach you on.']);
             }
+            $phone = $util->format($parsed, PhoneNumberFormat::E164);
+        } catch (NumberParseException) {
+            return $fail(['phone' => $phoneError]);
         }
 
         $package = ! empty($data['package_id']) ? Package::find($data['package_id']) : null;

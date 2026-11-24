@@ -55,7 +55,7 @@
         <a class="logo" href="{{ route('home') }}" aria-label="{{ $brand }}"><img class="on-dark" src="{{ $img('logo-white.webp') }}" alt="{{ $brand }}" width="500" height="167"><img class="on-light" loading="lazy" src="{{ $img('logo-navy.webp') }}" alt="" width="500" height="167"></a>
         <ul class="nav" aria-label="Main">
             <li><a @class(['on' => request()->routeIs('home')]) href="{{ route('home') }}">Home</a></li>
-            <li><button type="button">Destinations <i class="caret"></i></button>
+            <li><button type="button" @class(['on' => request()->routeIs('packages.index') && (request()->filled('destination') || request()->filled('q'))])>Destinations <i class="caret"></i></button>
                 <div class="mega">
                     <div class="mega-in">
                         <div>
@@ -63,7 +63,7 @@
                             <div class="mega-cards">
                                 @foreach($destinations as $d)
                                     @php $dn = $pkgCounts['dest'][$d->slug] ?? 0; @endphp
-                                    <a href="{{ route('packages.index', ['destination' => $d->slug]) }}"><img src="{{ $w($winter[$loop->index % count($winter)], '-768') }}" alt="" loading="lazy"><span><b>{{ $d->name }}</b>@if($dn)<small>{{ $dn }} {{ $dn === 1 ? 'journey' : 'journeys' }}</small>@endif</span></a>
+                                    <a href="{{ route('packages.index', ['destination' => $d->slug]) }}"><img src="{{ $w(['vienna-salzburg' => 'hero-salzburg', 'tyrol' => 'hero-montafon'][$d->slug] ?? $winter[$loop->index % count($winter)], '-768') }}" alt="" loading="lazy"><span><b>{{ $d->name }}</b>@if($dn)<small>{{ $dn }} {{ $dn === 1 ? 'journey' : 'journeys' }}</small>@endif</span></a>
                                 @endforeach
                             </div>
                         </div>
@@ -74,16 +74,24 @@
                             </ul>
                             <a class="more" href="{{ route('packages.index') }}">View all journeys &rarr;</a>
                         </div>
-                        <aside class="mega-promo">
-                        <p class="mp-k">Personal planning</p>
-                        <h5>Not sure where to start?</h5>
-                        <p>Answer a few quick questions and a travel specialist will plan your route.</p>
-                        <a class="btn sm" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a>
-                    </aside>
+                        @if($navFeatured)
+                        @php $nf = $navFeatured; $np = $nf->p; @endphp
+                        <aside class="mega-feat" aria-label="Featured journey">
+                            <a class="mf-img" href="{{ route('packages.show', $np) }}" tabindex="-1" aria-hidden="true"><img src="{{ $nf->image }}" alt="" loading="lazy">@if($np->tourType)<span class="mf-tag">{{ $np->tourType->name }}</span>@endif</a>
+                            <div class="mf-body">
+                                <p class="mp-k">Featured journey</p>
+                                <h5><a href="{{ route('packages.show', $np) }}">{{ $np->title }}</a></h5>
+                                <p class="mf-meta">@if($np->nights)<b>{{ $np->nights + 1 }}</b> days &middot; <b>{{ $np->nights }}</b> nights @endif @if($nf->price)<span>From <b>{{ $nf->price }}</b></span>@endif</p>
+                                <a class="btn sm" href="{{ route('packages.show', $np) }}">View journey <i aria-hidden="true">&rarr;</i></a>
+                            </div>
+                        </aside>
+                        @else
+                        <aside class="mega-promo"><p class="mp-k">Personal planning</p><h5>Not sure where to start?</h5><p>Answer a few quick questions and a travel specialist will plan your route.</p><a class="btn sm" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a></aside>
+                        @endif
                     </div>
                 </div>
             </li>
-            <li><button type="button">Austria Vacations <i class="caret"></i></button>
+            <li><button type="button" @class(['on' => request()->routeIs('tours.show')])>Austria Vacations <i class="caret"></i></button>
                 <div class="mega">
                     <div class="mega-in tt">
                         <div>
@@ -91,41 +99,66 @@
                             <div class="mega-cards c3">
                                 @foreach($tourTypes as $t)
                                     @php $tn = $pkgCounts['type'][$t->id] ?? 0; @endphp
-                                    <a href="{{ route('tours.show', $t->slug) }}"><img src="{{ $w($wayImg[$t->slug] ?? $winter[($loop->index + 2) % count($winter)], '-768') }}" alt="" loading="lazy"><span><b>{{ $t->name }}</b><small>{{ $tn ? $tn.' '.($tn === 1 ? 'journey' : 'journeys') : \Illuminate\Support\Str::limit((string) $t->tagline, 34) }}</small></span></a>
+                                    <a href="{{ route('tours.show', $t->slug) }}"><img src="{{ $w($wayImg[$t->slug] ?? $winter[($loop->index + 2) % count($winter)], '-768') }}" alt="" loading="lazy"><span><b>{{ $t->name }}</b><em>{{ \Illuminate\Support\Str::limit((string) $t->tagline, 40) }}</em>@if($tn)<small>{{ $tn }} {{ $tn === 1 ? 'journey' : 'journeys' }}</small>@endif</span></a>
                                 @endforeach
                             </div>
                             <a class="more" href="{{ route('packages.index') }}">View all journeys &rarr;</a>
                         </div>
-                        <aside class="mega-promo">
-                        <p class="mp-k">Personal planning</p>
-                        <h5>Not sure where to start?</h5>
-                        <p>Answer a few quick questions and a travel specialist will plan your route.</p>
-                        <a class="btn sm" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a>
-                    </aside>
+                        <aside class="mega-help" aria-label="Personal planning">
+                            <p class="mp-k">Personal planning</p>
+                            <h5>Not sure which way to travel?</h5>
+                            <p class="mh-lead">A specialist will suggest the best fit, free and with no obligation.</p>
+                            <a class="btn sm" href="{{ route('contact') }}" data-quote>Plan my journey <i aria-hidden="true">&rarr;</i></a>
+                        </aside>
                     </div>
                 </div>
             </li>
-            <li><button type="button">Travel Style <i class="caret"></i></button>
+            <li><button type="button" @class(['on' => request()->routeIs('packages.index') && request()->filled('style')])>Travel Style <i class="caret"></i></button>
                 <div class="mega">
                     <div class="mega-in one">
                         <div>
                             <h5>Travel style</h5>
                             <div class="mega-cards c3">
                                 @foreach(config('goaustria.travel_styles', []) as $slug => $st)
-                                    <a class="txt" href="{{ route('packages.index', ['style' => $slug]) }}"><b>{{ $st['name'] }}</b><em>{{ $st['text'] }}</em><u>Discover <i aria-hidden="true">&rarr;</i></u></a>
+                                    <a class="txt" href="{{ route('packages.index', ['style' => $slug]) }}"><b>{{ $st['name'] }}</b><em>{{ $st['text'] }}</em><u>@if(($navStyles[$slug]['count'] ?? 0) > 0){{ $navStyles[$slug]['count'] }} {{ $navStyles[$slug]['count'] === 1 ? 'journey' : 'journeys' }}@else Discover @endif <i aria-hidden="true">&rarr;</i></u></a>
                                 @endforeach
                             </div>
                         </div>
                     </div>
                 </div>
             </li>
-            <li><button type="button">About Us <i class="caret"></i></button>
-                <div class="drop">
-                    <a href="{{ route('about') }}">About us</a>
-                    <a href="{{ route('journal.index') }}">Journal</a>
-                    <a href="{{ route('testimonials') }}">Testimonials</a>
-                    <a href="{{ route('terms') }}">Terms &amp; Conditions</a>
-                    <a href="{{ route('privacy') }}">Privacy Policy</a>
+            <li><button type="button" @class(['on' => request()->routeIs('about', 'journal.*', 'testimonials', 'terms', 'privacy')])>About Us <i class="caret"></i></button>
+                <div class="mega">
+                    <div class="mega-in ab">
+                        <div>
+                            <h5>About us</h5>
+                            <ul class="mega-links">
+                                <li><a href="{{ route('about') }}"><b>About {{ $brand }}</b><em>Who we are and how we plan your trip</em></a></li>
+                                <li><a href="{{ route('journal.index') }}"><b>Journal</b><em>Travel ideas and guides to Austria</em></a></li>
+                                <li><a href="{{ route('testimonials') }}"><b>Guest stories</b><em>What our travellers say</em></a></li>
+                            </ul>
+                            <p class="mega-legal"><a href="{{ route('terms') }}">Terms &amp; Conditions</a><a href="{{ route('privacy') }}">Privacy Policy</a><a href="{{ route('photo-credits') }}">Photo credits</a></p>
+                        </div>
+                        @if($navPost)
+                        <div>
+                            <h5>From the journal</h5>
+                            <article class="mega-feat mega-post">
+                                <a class="mf-img" href="{{ route('journal.show', $navPost) }}" tabindex="-1" aria-hidden="true"><img src="{{ $navPost->imageUrl() }}" alt="" loading="lazy">@if($navPost->category)<span class="mf-tag">{{ $navPost->category }}</span>@endif</a>
+                                <div class="mf-body">
+                                    <h5><a href="{{ route('journal.show', $navPost) }}">{{ $navPost->title }}</a></h5>
+                                    <a class="more" href="{{ route('journal.show', $navPost) }}">Read article &rarr;</a>
+                                </div>
+                            </article>
+                        </div>
+                        @endif
+                        <aside class="mega-help" aria-label="Get in touch">
+                            <p class="mp-k">Get in touch</p>
+                            <h5>Talk to a travel specialist</h5>
+                            <p class="mh-lead">Tell us about the trip you have in mind and we will reply with a free quote.</p>
+                            <a class="btn sm" href="{{ route('contact') }}" data-quote>Request a quote <i aria-hidden="true">&rarr;</i></a>
+                            @if($phone && ! str_contains($phone, '[CONFIRM'))<a class="mh-call" href="tel:{{ $tel }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>{{ $phone }}</a>@endif
+                        </aside>
+                    </div>
                 </div>
             </li>
             <li><a @class(['on' => request()->routeIs('contact')]) href="{{ route('contact') }}">Contact us</a></li>
@@ -138,10 +171,15 @@
     <button class="close" type="button" data-close-menu aria-label="Close menu">&times;</button>
     <p class="mt">Plan your journey</p>
     <a href="{{ route('home') }}" data-close-menu>Home</a>
-    <div class="sub"><a href="{{ route('packages.index') }}">Destinations</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach</div>
-    <div class="sub"><a href="{{ route('packages.index') }}">Austria Vacations</a>@foreach($tourTypes as $t)<a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }}</a>@endforeach</div>
-    <a href="{{ route('about') }}">About us</a>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Destinations<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('packages.index') }}">View all</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach</div></div></div>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Austria Vacations<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('packages.index') }}">View all</a>@foreach($tourTypes as $t)<a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }}</a>@endforeach</div></div></div>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Travel Style<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('packages.index') }}">View all</a>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] ?? ucfirst($slug) }}</a>@endforeach</div></div></div>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">About Us<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('about') }}">About us</a><a href="{{ route('journal.index') }}">Journal</a><a href="{{ route('testimonials') }}">Guest stories</a></div></div></div>
     <a href="{{ route('contact') }}">Contact us</a>
+    <div class="m-cta">
+        <a class="btn" href="{{ route('contact') }}" data-quote data-close-menu>Plan your journey <i aria-hidden="true">&rarr;</i></a>
+        @if($phone && ! str_contains($phone, '[CONFIRM'))<a class="m-ph" href="tel:{{ $tel }}">{{ $phone }}</a>@endif
+    </div>
 </nav>
 
 <main id="main">

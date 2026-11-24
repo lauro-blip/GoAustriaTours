@@ -90,6 +90,32 @@ $$('[data-reviews]').forEach((box) => {
 // Hero slides 2 and 3 load after the page is ready so they never compete with the first paint.
 addEventListener('load', () => $$('.hero-bg img[data-src]').forEach((im) => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; }), { once: true });
 
+// Desktop mega menus: aria-expanded on the triggers, Escape closes the open one.
+$$('.t3 .nav > li > button').forEach((btn) => {
+    const li = btn.parentElement;
+    btn.setAttribute('aria-haspopup', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    const sync = () => btn.setAttribute('aria-expanded', String(li.matches(':hover, :focus-within') && !li.classList.contains('esc')));
+    li.addEventListener('mouseenter', () => { li.classList.remove('esc'); sync(); });
+    li.addEventListener('mouseleave', () => { li.classList.remove('esc'); sync(); });
+    li.addEventListener('focusin', sync);
+    li.addEventListener('focusout', () => setTimeout(sync, 0));
+    li.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        li.classList.add('esc');
+        btn.focus();
+        sync();
+    });
+});
+
+// Mobile menu: sections are collapsed until tapped (one open at a time).
+$$('.t3 .mobile .sub-t').forEach((btn) => btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    $$('.t3 .mobile .sub-t').forEach((b) => { b.setAttribute('aria-expanded', 'false'); b.parentElement.classList.remove('open'); });
+    btn.setAttribute('aria-expanded', String(open));
+    btn.parentElement.classList.toggle('open', open);
+}));
+
 initQuiz();
 initQuoteModal();
 initInlineForms();

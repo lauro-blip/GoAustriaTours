@@ -60,12 +60,12 @@ return [
     // Only list places that really appear in package itineraries, so every link shows results.
     'nav_places' => [
         'vienna-salzburg' => [
-            ['Vienna', 'Vienna'], ['The Wachau Valley', 'Wachau'], ['Salzburg', 'Salzburg'],
-            ['Hallstatt and the Salzkammergut', 'Hallstatt'], ['Graz and Styria', 'Graz'],
+            ['Vienna', 'Vienna'], ['Wachau Valley', 'Wachau'], ['Salzburg', 'Salzburg'],
+            ['Hallstatt', 'Hallstatt'], ['Graz', 'Graz'],
         ],
         'tyrol' => [
-            ['Innsbruck', 'Innsbruck'], ['Zell am See and Kaprun', 'Zell am See'], ['The Grossglockner Road', 'Grossglockner'],
-            ['The Arlberg', 'Arlberg'], ['Bregenz and Lake Constance', 'Bregenz'],
+            ['Innsbruck', 'Innsbruck'], ['Zell am See', 'Zell am See'], ['Grossglockner', 'Grossglockner'],
+            ['Arlberg', 'Arlberg'], ['Bregenz', 'Bregenz'],
         ],
     ],
 

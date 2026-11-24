@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Destination;
 use App\Models\Package;
+use App\Models\Post;
 use App\Models\Setting;
 use App\Models\TourType;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -44,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
                 $site = array_map(fn ($v) => is_string($v) && str_contains($v, '[CONFIRM') ? '' : $v, Setting::all_());
                 $published = Package::published()->with('destination:id,slug')->get(['id', 'destination_id', 'tour_type_id']);
                 $phone = trim((string) ($site['phone'] ?? ''));
+                $all = Package::published()->with(['tourType', 'destination'])->get();
+                $feat = $all->sortByDesc('is_featured')->first();
 
                 return [
                     'brand' => $site['brand_name'] ?? 'GoAustriaTours',
@@ -54,6 +57,9 @@ class AppServiceProvider extends ServiceProvider
                     'phone' => $phone,
                     'tel' => preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $phone)),
                     'navPlaces' => config('goaustria.nav_places', []),
+                    'navPost' => Post::published()->first(),
+                    'navFeatured' => $feat ? \App\Support\Places::card($feat) : null,
+                    'navStyles' => collect(\App\Support\TravelStyles::withPackages($all))->keyBy('slug')->all(),
                     'destinations' => Destination::active()->get(),
                     'tourTypes' => TourType::active()->get(),
                     'pkgCounts' => [

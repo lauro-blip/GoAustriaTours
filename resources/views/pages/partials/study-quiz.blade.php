@@ -17,7 +17,7 @@
 
         @foreach($quizSteps as $i => $st)
             <fieldset class="q-step" data-step="{{ $i }}">
-                <legend>{{ $st['question'] }}</legend>
+                <legend @class(['long' => mb_strlen($st['question']) > 70])>{{ $st['question'] }}</legend>
                 @if($st['type'] === 'dropdown')
                     <select name="quiz_answers[{{ $st['key'] }}]" aria-label="{{ $st['question'] }}" data-q-select>
                         <option value="">Select…</option>
@@ -26,8 +26,8 @@
                 @else
                     <div class="opts">
                         @foreach($st['options'] as $o)
-                            <label class="opt"><input type="radio" name="quiz_answers[{{ $st['key'] }}]" value="{{ $o['value'] }}" @checked(($answers[$st['key']] ?? null) === $o['value'])>
-                                @if(! empty($o['icon']))<x-icon :name="$o['icon']" :stroke="1.4" class="qi" />@endif<span>{{ $o['label'] }}</span></label>
+                            <label @class(['opt', 'txt' => empty($o['icon'])])><input type="radio" name="quiz_answers[{{ $st['key'] }}]" value="{{ $o['value'] }}" @checked(($answers[$st['key']] ?? null) === $o['value'])>
+                                @if(! empty($o['icon']))<x-icon :name="$o['icon']" :stroke="0.85" class="qi" />@endif<span>{{ $o['label'] }}</span></label>
                         @endforeach
                     </div>
                 @endif
@@ -53,5 +53,6 @@
 
         <button type="button" class="q-back" data-q-back hidden>&larr; Back</button>
     </form>
-    <p class="q-note">Takes less than 30 seconds · No obligation @if($promise !== '')· {{ $promise }}@endif</p>
+    <p class="q-note">Takes about a minute · No obligation @if($promise !== '')· {{ $promise }}@endif</p>
+    <p class="q-private"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Your details stay private. We never sell or share them.</p>
 </div>

@@ -65,7 +65,25 @@
     </div>
     <div class="wrap hero-in">
         <div class="hero-copy">
-            <p class="eyebrow">{{ $activeTour ? $activeTour->name.' tours of Austria' : 'Self drive · Escorted · Coach tours' }}</p>
+            @php
+                $wayIco = [
+                    'self-drive' => '<path d="M5 17h14M6.5 17v2M17.5 17v2M4 13l1.6-4.6A2 2 0 0 1 7.5 7h9a2 2 0 0 1 1.9 1.4L20 13v4H4z"/><circle cx="7.5" cy="14" r="1"/><circle cx="16.5" cy="14" r="1"/>',
+                    'escorted' => '<circle cx="9" cy="7" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0M16 4v16M16 4l4.5 2.2L16 8.4"/>',
+                    'coach' => '<rect x="4" y="4" width="16" height="13" rx="2"/><path d="M4 11h16M8 17v2.5M16 17v2.5"/><circle cx="8" cy="14" r=".8"/><circle cx="16" cy="14" r=".8"/>',
+                ];
+            @endphp
+            @if($tourTypes->isNotEmpty())
+                <nav class="hero-ways" aria-label="{{ $activeTour ? $activeTour->name.' tours of Austria' : 'Ways to travel' }}">
+                    @foreach($tourTypes->take(3) as $t)
+                        <a href="{{ route('tours.show', $t) }}" @class(['on' => $activeTour?->is($t)]) @if($activeTour?->is($t)) aria-current="true" @endif>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $wayIco[$t->slug] ?? $wayIco['coach'] !!}</svg>
+                            <span>{{ $t->name }}<i> tours</i></span>
+                        </a>
+                    @endforeach
+                </nav>
+            @else
+                <p class="eyebrow">Self drive · Escorted · Coach tours</p>
+            @endif
             <h1>Your Austria Trip,<em>Planned for You</em></h1>
             <p class="sub">@if($activeTour && filled($activeTour->tagline)){{ $activeTour->tagline }}@else Answer a few quick questions about how you like to travel, and a personal travel specialist will design your Austria itinerary.@endif</p>
         </div>

@@ -45,14 +45,15 @@ class CroFeaturesTest extends TestCase
     // ---- Google Ads message match
     public function test_tour_parameter_rewords_the_hero_for_a_real_tour_type(): void
     {
-        $this->get('/?tour=escorted')->assertOk()->assertSee('Escorted tours of Austria')->assertSee('Escorted Tours of Austria | ', false);
-        $this->get('/')->assertOk()->assertSee('Coach tours');
+        $this->get('/?tour=escorted')->assertOk()->assertSee('aria-label="Escorted tours of Austria"', false)->assertSee('Escorted Tours of Austria | ', false)
+            ->assertSee('<a href="'.route('tours.show', 'escorted').'" class="on"', false);
+        $this->get('/')->assertOk()->assertSee('aria-label="Ways to travel"', false)->assertSee(route('tours.show', 'coach'), false)->assertDontSee('class="on" aria-current', false);
     }
 
     public function test_unknown_or_hostile_tour_values_are_ignored_and_never_echoed(): void
     {
-        $this->get('/?tour=nonsense')->assertOk()->assertSee('Coach tours');
-        $this->get('/?tour=<script>alert(1)</script>')->assertOk()->assertDontSee('<script>alert(1)', false)->assertSee('Coach tours');
+        $this->get('/?tour=nonsense')->assertOk()->assertSee('aria-label="Ways to travel"', false)->assertDontSee('class="on" aria-current', false);
+        $this->get('/?tour=<script>alert(1)</script>')->assertOk()->assertDontSee('<script>alert(1)', false)->assertSee('aria-label="Ways to travel"', false);
     }
 
     public function test_canonical_ignores_the_query_string(): void

@@ -94,6 +94,7 @@ class QuizController extends CrudController
 
     private function iconNames(): array
     {
-        return ['city', 'mountain', 'flower', 'sun', 'leaf', 'snow', 'bus', 'car', 'guide', 'question', 'check', 'cross', 'coin', 'search', 'star', 'pin', 'shield'];
+        return ['city', 'mountain', 'flower', 'sun', 'leaf', 'snow', 'bus', 'car', 'guide', 'question', 'check', 'cross', 'coin', 'search', 'star', 'pin', 'shield',
+            'check-circle', 'cross-circle', 'coins-1', 'coins-2', 'coins-3', 'suitcase', 'scale', 'book'];
     }
 }

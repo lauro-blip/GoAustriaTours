@@ -84,15 +84,8 @@
     };
     // Places & map: a stylised Austria outline (simplified border, lon/lat) with the route plotted from the verified
     // coordinates in App\Support\Places. Inline SVG, so nothing loads from or links to another site.
-    $mapW = 520; $mapH = 270;
-    $proj = fn (float $lon, float $lat) => [round(($lon - 9.45) * 0.676 * 100, 1), round((49.08 - $lat) * 100, 1)];
-    $austria = [[9.53,47.53],[9.76,47.59],[10.0,47.48],[10.23,47.38],[10.45,47.56],[10.9,47.53],[11.27,47.43],[11.62,47.59],[12.2,47.61],[12.44,47.68],
-        [12.78,47.67],[13.0,47.47],[13.05,47.7],[12.92,47.83],[12.78,48.0],[12.87,48.2],[13.03,48.26],[13.4,48.37],[13.45,48.57],[13.84,48.77],
-        [14.33,48.56],[14.7,48.6],[14.95,48.79],[15.0,49.0],[15.33,48.99],[15.7,48.86],[16.1,48.75],[16.5,48.79],[16.95,48.62],[16.88,48.47],
-        [17.05,48.2],[17.16,48.0],[17.07,47.71],[16.75,47.68],[16.65,47.45],[16.45,47.25],[16.48,47.0],[16.1,46.86],[16.0,46.68],[15.65,46.7],
-        [15.0,46.63],[14.6,46.43],[14.15,46.44],[13.7,46.52],[13.2,46.57],[12.75,46.65],[12.35,46.73],[12.15,46.94],[12.1,47.07],[11.75,46.97],
-        [11.5,47.01],[11.15,46.95],[10.75,46.79],[10.47,46.86],[10.4,47.0],[10.1,46.85],[9.88,46.92],[9.6,47.05],[9.53,47.27],[9.6,47.4]];
-    $austriaPath = 'M'.collect($austria)->map(fn ($p) => implode(' ', $proj($p[0], $p[1])))->implode('L').'Z';
+    $proj = fn (float $lon, float $lat) => \App\Support\AustriaMap::project($lon, $lat);
+    $austriaPath = \App\Support\AustriaMap::outline();
     $stops = $route->take(10)->values()->map(fn ($pl, $i) => ['n' => $i + 1, 'pl' => $pl, 'xy' => $proj($pl['lon'], $pl['lat'])]);
     $routePath = $stops->count() > 1 ? 'M'.$stops->map(fn ($s) => implode(' ', $s['xy']))->implode('L') : null;
     $svg = fn (string $k) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'.$ico[$k].'</svg>';
@@ -243,7 +236,7 @@
                     <h4 class="hlx-h">Where this journey <em>takes you</em></h4>
                     <p class="hlx-lede">{{ $stops->count() }} places, numbered in the order you reach them.</p>
                     <figure class="plx-map">
-                        <svg viewBox="-12 -12 {{ $mapW + 24 }} {{ $mapH + 24 }}" role="img" aria-label="Map of Austria showing the route: {{ $stops->pluck('pl.name')->implode(', ') }}">
+                        <svg viewBox="{{ \App\Support\AustriaMap::viewBox() }}" role="img" aria-label="Map of Austria showing the route: {{ $stops->pluck('pl.name')->implode(', ') }}">
                             <path class="plx-land" d="{{ $austriaPath }}"/>
                             @if($routePath)<path class="plx-route" d="{{ $routePath }}"/>@endif
                             @foreach($stops as $s)

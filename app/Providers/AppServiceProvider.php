@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         // Every public view gets $site (settings are cached). Settings still holding a "[CONFIRM: ...]" placeholder are treated as empty, so they never show to visitors.
-        View::composer(['layouts.*', 'partials.*', 'pages.*', 'packages.*', 'tours.*', 'journal.*', 'errors.*'], function ($view) {
+        View::composer(['layouts.*', 'partials.*', 'pages.*', 'packages.*', 'tours.*', 'destinations.*', 'styles.*','journal.*', 'errors.*'], function ($view) {
             $site = array_map(fn ($v) => is_string($v) && str_contains($v, '[CONFIRM') ? '' : $v, Setting::all_());
             $view->with([
                 'site' => $site,

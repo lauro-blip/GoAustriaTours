@@ -23,33 +23,40 @@ return [
 
     // Travel styles (header mega menu + /packages?style=slug). A package belongs to a style when its title, summary, highlights or
     // itinerary contains ANY of the 'terms' (case-insensitive). Keep the terms to words that really occur in package content.
+    // Travel styles: menu, /travel-styles and /packages?style=. 'image' = path under public/images (winter/* has -768/-1280 sizes; gallery/* is one 1600px file).
     'travel_styles' => [
         'culture' => [
+            'image' => 'winter/schonbrunn',
             'name' => 'Culture & Imperial Cities', 'icon' => 'city',
             'text' => 'Palaces, grand cafés and the imperial story of Vienna and Salzburg.',
             'terms' => ['palace', 'Schönbrunn', 'Hofburg', 'imperial'],
         ],
         'music' => [
+            'image' => 'gallery/salzburg',
             'name' => 'Music & Opera', 'icon' => 'star',
             'text' => 'Mozart sites, historic concert halls and the opera house.',
             'terms' => ['Mozart', 'opera', 'concert', 'musical'],
         ],
         'alpine' => [
+            'image' => 'gallery/grossglockner',
             'name' => 'Alpine Adventure', 'icon' => 'mountain',
             'text' => 'High mountain roads, cable cars and wide Alpine views.',
             'terms' => ['Grossglockner', 'Alpine', 'Alps', 'cable car', 'Kaprun', 'Arlberg'],
         ],
         'lakes' => [
+            'image' => 'winter/hallstatt',
             'name' => 'Lakes & Villages', 'icon' => 'leaf',
             'text' => 'Slow days in lakeside villages and the Salzkammergut.',
             'terms' => ['Hallstatt', 'Salzkammergut', 'St. Wolfgang', 'Achensee', 'Lake Constance', 'lakeside'],
         ],
         'wine' => [
+            'image' => 'gallery/wachau',
             'name' => 'Wine & Gastronomy', 'icon' => 'sun',
             'text' => 'Vineyard terraces, local tables and the Danube valley.',
             'terms' => ['wine', 'vineyard', 'Wachau'],
         ],
         'private' => [
+            'image' => 'winter/way-escorted',
             'name' => 'Private & Personal', 'icon' => 'guide',
             'text' => 'Your own guide and driver, and the freedom to go at your pace.',
             'terms' => ['private'],
@@ -58,6 +65,11 @@ return [
 
     // Destinations mega menu: places listed under each destination (by destination slug). 'q' is the /packages?q= search term.
     // Only list places that really appear in package itineraries, so every link shows results.
+    // Region photo (public/images/winter/{name}-768/-1280.webp) on /destinations.
+    // Tour type photo (public/images/winter/{name}-768/-1280.webp) on /austria-vacations.
+    'tour_type_images' => ['self-drive' => 'way-self-drive', 'escorted' => 'way-escorted', 'coach' => 'way-coach'],
+    'destination_images' => ['vienna-salzburg' => 'hero-salzburg', 'tyrol' => 'hero-montafon'],
+
     'nav_places' => [
         'vienna-salzburg' => [
             ['Vienna', 'Vienna'], ['Wachau Valley', 'Wachau'], ['Salzburg', 'Salzburg'],

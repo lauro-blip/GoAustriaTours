@@ -20,7 +20,7 @@ class InnerPagesTest extends TestCase
 
     public function test_every_public_page_uses_the_shared_header_footer_and_quote_popup(): void
     {
-        foreach (['/packages', '/packages/imperial-austria-self-drive', '/tours/self-drive', '/journal', '/contact', '/about', '/testimonials', '/photo-credits', '/terms-and-conditions'] as $url) {
+        foreach (['/packages', '/packages/imperial-austria-self-drive', '/tours/self-drive', '/destinations', '/austria-vacations', '/travel-styles', '/journal', '/contact', '/about', '/testimonials', '/photo-credits', '/terms-and-conditions'] as $url) {
             $html = $this->get($url)->assertOk()->getContent();
             $this->assertStringContainsString('class="hdr"', $html, $url);
             $this->assertStringContainsString('class="foot"', $html, $url);
@@ -118,12 +118,91 @@ class InnerPagesTest extends TestCase
         $this->get('/photo-credits')->assertOk()->assertSee('Wagrain in winter')->assertSee('AI-generated');
     }
 
+    public function test_destinations_page_lists_each_region_with_its_places_and_journeys(): void
+    {
+        $html = $this->get('/destinations')->assertOk()
+            ->assertSee('Austria at a glance')
+            ->assertSee('Vienna &amp; <em>Salzburg</em>', false)
+            ->assertSee('id="tyrol"', false)
+            ->assertSee('Places in Vienna &amp; Salzburg', false)
+            ->assertSee('/packages?destination=tyrol', false)
+            ->assertSee('data-interest="Tyrol &amp; the Alps"', false)
+            ->assertSee('Historic Centre of the City of Salzburg', false)
+            ->assertSee('class="plx-land"', false)
+            ->assertDontSee('CONFIRM')
+            ->getContent();
+
+        // Each place is listed (and numbered) once, under one region.
+        $this->assertSame(1, substr_count($html, '<h5>Salzburg</h5>'));
+        $this->assertStringNotContainsString('openstreetmap.org', $html);
+        $this->assertStringContainsString('application/ld+json', $html);
+    }
+
+    public function test_destinations_menu_item_links_to_the_destinations_page(): void
+    {
+        $this->get('/')->assertOk()->assertSee('<a href="'.route('destinations.index').'" class="mtrig">Destinations', false);
+        $this->get('/destinations')->assertOk()->assertSee('class="mtrig on">Destinations', false);
+        $this->get('/sitemap.xml')->assertOk()->assertSee(route('destinations.index'), false);
+    }
+
+    public function test_austria_vacations_page_compares_every_tour_type_from_real_data(): void
+    {
+        $html = $this->get('/austria-vacations')->assertOk()
+            ->assertSee('Compare at a glance')
+            ->assertSee('Three ways', false)
+            ->assertSee('Self Drive journeys')
+            ->assertSee('href="'.route('tours.show', 'escorted').'"', false)
+            ->assertSee('data-interest="Coach tour"', false)
+            ->assertSee('per person')
+            ->assertDontSee('CONFIRM')
+            ->getContent();
+
+        $cheapest = '$'.number_format(\App\Models\Package::published()->whereHas('tourType', fn ($q) => $q->where('slug', 'coach'))->min('price_from'));
+        $this->assertStringContainsString($cheapest, $html);
+        $this->assertStringContainsString('application/ld+json', $html);
+    }
+
+    public function test_austria_vacations_menu_item_breadcrumbs_and_redirect(): void
+    {
+        $this->get('/')->assertOk()->assertSee('<a href="'.route('tours.index').'" class="mtrig">Austria Vacations', false);
+        $this->get('/tours/self-drive')->assertOk()->assertSee('class="mtrig on">Austria Vacations', false)
+            ->assertSee('<a href="'.route('tours.index').'">Austria Vacations</a>', false);
+        $this->get('/tours')->assertRedirect('/austria-vacations');
+        $this->get('/sitemap.xml')->assertOk()->assertSee(route('tours.index'), false);
+    }
+
+    public function test_travel_styles_page_shows_every_style_with_its_matching_journeys(): void
+    {
+        $response = $this->get('/travel-styles')->assertOk()
+            ->assertSee('Find your style')
+            ->assertSee('Music &amp; <em>Opera</em>', false)
+            ->assertSee('href="#alpine"', false)
+            ->assertSee('id="wine"', false)
+            ->assertSee('/packages?style=lakes', false)
+            ->assertSee('data-interest="Private &amp; Personal"', false)
+            ->assertDontSee('CONFIRM');
+
+        // The counts on the page are the same matches the packages filter uses.
+        $musical = Package::published()->get()->filter(fn ($p) => \App\Support\TravelStyles::matches($p, 'music'))->count();
+        $response->assertSee('View '.$musical.' journeys', false);
+        foreach (array_keys(config('goaustria.travel_styles')) as $slug) {
+            $response->assertSee('id="'.$slug.'"', false);
+        }
+    }
+
+    public function test_travel_style_menu_item_links_to_the_travel_styles_page(): void
+    {
+        $this->get('/')->assertOk()->assertSee('<a href="'.route('styles.index').'" class="mtrig">Travel Style', false);
+        $this->get('/packages?style=music')->assertOk()->assertSee('class="mtrig on">Travel Style', false);
+        $this->get('/sitemap.xml')->assertOk()->assertSee(route('styles.index'), false);
+    }
+
     public function test_no_public_page_links_to_an_external_map(): void
     {
         // Visitors must stay on the site: no OpenStreetMap / Google Maps links or "View on map" buttons anywhere.
         \App\Models\Setting::put('address', "1 Example Street\nVienna");
         $slug = Package::published()->value('slug');
-        foreach (['/', '/packages', "/packages/{$slug}", '/tours/self-drive', '/contact', '/about', '/journal'] as $url) {
+        foreach (['/', '/packages', "/packages/{$slug}", '/tours/self-drive', '/destinations', '/austria-vacations', '/travel-styles', '/contact', '/about', '/journal'] as $url) {
             $html = $this->get($url)->assertOk()->getContent();
             foreach (['openstreetmap.org', 'google.com/maps', 'maps.google', 'View on map'] as $needle) {
                 $this->assertStringNotContainsString($needle, $html, "{$url} contains {$needle}");

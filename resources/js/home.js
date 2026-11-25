@@ -92,7 +92,7 @@ $$('[data-reviews]').forEach((box) => {
 addEventListener('load', () => $$('.hero-bg img[data-src]').forEach((im) => { im.srcset = im.dataset.srcset; im.src = im.dataset.src; }), { once: true });
 
 // Desktop mega menus: aria-expanded on the triggers, Escape closes the open one.
-$$('.t3 .nav > li > button').forEach((btn) => {
+$$('.t3 .nav > li > button, .t3 .nav > li > a.mtrig').forEach((btn) => {
     const li = btn.parentElement;
     btn.setAttribute('aria-haspopup', 'true');
     btn.setAttribute('aria-expanded', 'false');

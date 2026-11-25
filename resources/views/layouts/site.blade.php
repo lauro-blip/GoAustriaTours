@@ -57,7 +57,7 @@
         <a class="logo" href="{{ route('home') }}" aria-label="{{ $brand }}"><img class="on-dark" src="{{ $img('logo-white.webp') }}" alt="{{ $brand }}" width="500" height="167"><img class="on-light" loading="lazy" src="{{ $img('logo-navy.webp') }}" alt="" width="500" height="167"></a>
         <ul class="nav" aria-label="Main">
             <li><a @class(['on' => request()->routeIs('home')]) href="{{ route('home') }}">Home</a></li>
-            <li><button type="button" @class(['on' => request()->routeIs('packages.index') && (request()->filled('destination') || request()->filled('q'))])>Destinations <i class="caret"></i></button>
+            <li><a href="{{ route('destinations.index') }}" @class(['mtrig', 'on' => request()->routeIs('destinations.index') || (request()->routeIs('packages.index') && (request()->filled('destination') || request()->filled('q')))])>Destinations <i class="caret"></i></a>
                 <div class="mega">
                     <div class="mega-in">
                         <div>
@@ -74,7 +74,7 @@
                             <ul class="mega-list">
                                 @foreach($navPlaces as $slug => $list)@foreach($list as $pl)<li><a href="{{ route('packages.index', ['q' => $pl[1]]) }}">{{ $pl[0] }}</a></li>@endforeach @endforeach
                             </ul>
-                            <a class="more" href="{{ route('packages.index') }}">View all journeys &rarr;</a>
+                            <a class="more" href="{{ route('destinations.index') }}">All destinations &rarr;</a>
                         </div>
                         @if($navFeatured)
                         @php $nf = $navFeatured; $np = $nf->p; @endphp
@@ -93,7 +93,7 @@
                     </div>
                 </div>
             </li>
-            <li><button type="button" @class(['on' => request()->routeIs('tours.show')])>Austria Vacations <i class="caret"></i></button>
+            <li><a href="{{ route('tours.index') }}" @class(['mtrig', 'on' => request()->routeIs('tours.*')])>Austria Vacations <i class="caret"></i></a>
                 <div class="mega">
                     <div class="mega-in tt">
                         <div>
@@ -104,7 +104,7 @@
                                     <a href="{{ route('tours.show', $t->slug) }}"><img src="{{ $w($wayImg[$t->slug] ?? $winter[($loop->index + 2) % count($winter)], '-768') }}" alt="" loading="lazy"><span><b>{{ $t->name }}</b><em>{{ \Illuminate\Support\Str::limit((string) $t->tagline, 40) }}</em>@if($tn)<small>{{ $tn }} {{ $tn === 1 ? 'journey' : 'journeys' }}</small>@endif</span></a>
                                 @endforeach
                             </div>
-                            <a class="more" href="{{ route('packages.index') }}">View all journeys &rarr;</a>
+                            <a class="more" href="{{ route('tours.index') }}">Compare the ways to travel &rarr;</a>
                         </div>
                         <aside class="mega-help" aria-label="Personal planning">
                             <p class="mp-k">Personal planning</p>
@@ -115,7 +115,7 @@
                     </div>
                 </div>
             </li>
-            <li><button type="button" @class(['on' => request()->routeIs('packages.index') && request()->filled('style')])>Travel Style <i class="caret"></i></button>
+            <li><a href="{{ route('styles.index') }}" @class(['mtrig', 'on' => request()->routeIs('styles.index') || (request()->routeIs('packages.index') && request()->filled('style'))])>Travel Style <i class="caret"></i></a>
                 <div class="mega">
                     <div class="mega-in one">
                         <div>
@@ -125,6 +125,7 @@
                                     <a class="txt" href="{{ route('packages.index', ['style' => $slug]) }}"><b>{{ $st['name'] }}</b><em>{{ $st['text'] }}</em><u>@if(($navStyles[$slug]['count'] ?? 0) > 0){{ $navStyles[$slug]['count'] }} {{ $navStyles[$slug]['count'] === 1 ? 'journey' : 'journeys' }}@else Discover @endif <i aria-hidden="true">&rarr;</i></u></a>
                                 @endforeach
                             </div>
+                            <a class="more" href="{{ route('styles.index') }}">Explore all travel styles &rarr;</a>
                         </div>
                     </div>
                 </div>
@@ -173,9 +174,9 @@
     <button class="close" type="button" data-close-menu aria-label="Close menu">&times;</button>
     <p class="mt">Plan your journey</p>
     <a href="{{ route('home') }}" data-close-menu>Home</a>
-    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Destinations<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('packages.index') }}">View all</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach</div></div></div>
-    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Austria Vacations<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('packages.index') }}">View all</a>@foreach($tourTypes as $t)<a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }}</a>@endforeach</div></div></div>
-    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Travel Style<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('packages.index') }}">View all</a>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] ?? ucfirst($slug) }}</a>@endforeach</div></div></div>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Destinations<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('destinations.index') }}">All destinations</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach</div></div></div>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Austria Vacations<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('tours.index') }}">Compare all</a><a href="{{ route('packages.index') }}">View all journeys</a>@foreach($tourTypes as $t)<a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }}</a>@endforeach</div></div></div>
+    <div class="sub"><button type="button" class="sub-t" aria-expanded="false">Travel Style<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('styles.index') }}">All travel styles</a>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] ?? ucfirst($slug) }}</a>@endforeach</div></div></div>
     <div class="sub"><button type="button" class="sub-t" aria-expanded="false">About Us<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('about') }}">About us</a><a href="{{ route('journal.index') }}">Journal</a><a href="{{ route('testimonials') }}">Guest stories</a></div></div></div>
     <a href="{{ route('contact') }}">Contact us</a>
     <div class="m-cta">
@@ -205,8 +206,8 @@
             @if(! empty($site['address']))<div class="fci"><span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><h3>Address</h3><p>{!! nl2br(e($site['address'])) !!}</p></div></div>@endif
             @if(! $phone && empty($site['email']) && empty($site['address']))<div class="fci"><span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><h3>Get in touch</h3><a href="{{ route('contact') }}" data-quote>Send us an enquiry</a></div></div>@endif
         </div>
-        <div class="fc"><h3>Destinations</h3>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach<a href="{{ route('packages.index') }}">All packages</a></div>
-        <div class="fc"><h3>Travel Styles</h3>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] }}</a>@endforeach</div>
+        <div class="fc"><h3>Destinations</h3><a href="{{ route('destinations.index') }}">All destinations</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach<a href="{{ route('packages.index') }}">All packages</a></div>
+        <div class="fc"><h3>Travel Styles</h3><a href="{{ route('styles.index') }}">All travel styles</a>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] }}</a>@endforeach</div>
         <div class="fc fc-brand">
             <img src="{{ $img('logo-white.webp') }}" alt="{{ $brand }}" width="500" height="167" loading="lazy">
             <p>Thoughtfully crafted Austria journeys by self drive, escorted tour and coach. Discover Austria beautifully with {{ $brand }}.</p>

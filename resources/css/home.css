@@ -1323,3 +1323,7 @@ html:has(.t3) { scroll-padding-top:96px }
     .t3 .diff .stat span { font-size: 0.92rem; }
 }
 .t3 .diff-bg::after { background: linear-gradient(90deg, rgba(10, 42, 64, 0.92) 0%, rgba(10, 42, 64, 0.8) 55%, rgba(10, 42, 64, 0.72) 100%); }
+
+/* Destinations is a link (to /destinations) that also opens its mega menu: same hover colour as the button triggers. */
+.t3 .nav li:hover > a.mtrig, .t3 .nav li:focus-within > a.mtrig { color: var(--accent); }
+.t3 .hdr.solid .nav li:hover > a.mtrig, .t3 .hdr.solid .nav li:focus-within > a.mtrig { color: var(--accent-d); }

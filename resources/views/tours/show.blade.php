@@ -4,7 +4,7 @@
     $bEyebrow = $tourType->tagline;
     $bLead = $tourType->summary;
     $bImage = asset('images/winter/'.($wayImg[$tourType->slug] ?? 'hero-wagrain').'-1280.webp');
-    $bCrumbs = [['Tours', route('packages.index')], [$tourType->name, null]];
+    $bCrumbs = [['Austria Vacations', route('tours.index')], [$tourType->name, null]];
     $bActions = view('pages.partials.cta-actions', ['caInterest' => $tourType->name.' tour', 'caLabel' => 'Get a free '.$tourType->name.' quote', 'site' => $site])->render();
     $visited = collect($packages)->flatMap(fn ($p) => \App\Support\Places::forPackage($p))->unique('key')->values()->all();
     if (! count($visited)) { $visited = \App\Support\Places::inText(strip_tags((string) $tourType->body).' '.$tourType->summary); }
@@ -19,7 +19,7 @@
 ])
 
 @push('jsonld')
-<script type="application/ld+json">{!! json_encode(\App\Support\Schema::breadcrumbs([['Home', route('home')], [$tourType->name.' Tours', route('tours.show', $tourType)]]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+<script type="application/ld+json">{!! json_encode(\App\Support\Schema::breadcrumbs([['Home', route('home')], ['Austria Vacations', route('tours.index')], [$tourType->name.' Tours', route('tours.show', $tourType)]]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
 @endpush
 
 @section('content')

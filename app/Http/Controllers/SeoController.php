@@ -20,6 +20,9 @@ class SeoController extends Controller
             $urls[] = [$route, $page->updated_at];
         }
         $urls[] = [route('packages.index'), now()];
+        $urls[] = [route('destinations.index'), now()];
+        $urls[] = [route('tours.index'), now()];
+        $urls[] = [route('styles.index'), now()];
         foreach (TourType::active()->get() as $t) {
             $urls[] = [route('tours.show', $t), $t->updated_at];
         }

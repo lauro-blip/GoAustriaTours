@@ -59,5 +59,6 @@ export function initQuiz() {
             form.submit();
         });
         show(cur);
+        box.classList.add('q-ready');
     });
 }

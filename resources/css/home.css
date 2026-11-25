@@ -1288,3 +1288,38 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .survey .opt:has(input:checked) .qi { color: var(--accent); }
 .t3 .survey .opt.txt { color: var(--dark); }
 @media (max-width: 599px) { .t3 .survey .qi { width: 38px; height: 38px; } }
+
+/* Hero quiz: with JS, only the starting step is laid out from the first paint, so the hero never jumps when home.js starts (CLS). */
+.qjs .t3 [data-quiz]:not(.q-ready) .q-step:not(.q-start) { display: none; }
+
+/* The last section before the footer always renders: as a content-visibility placeholder (720px) it is shorter than its real content, which then overlaps the footer CTA (Lighthouse target-size). */
+.t3 main > :last-child { content-visibility: visible; }
+
+/* Hero H1: "Austria" carries a hand-drawn gold brushstroke that sweeps in once (transform only, no layout shift). */
+.t3 .hero h1 .hl { position: relative; display: inline-block; white-space: nowrap; }
+.t3 .hero h1 .hl svg { position: absolute; left: -3%; bottom: -0.16em; width: 106%; height: 0.32em; overflow: visible; fill: none; stroke: var(--accent); stroke-linecap: round; pointer-events: none; transform-origin: left center; filter: drop-shadow(0 2px 6px rgba(10, 42, 64, 0.45)); }
+.t3 .hero h1 .hl path { stroke-width: 7; vector-effect: non-scaling-stroke; }
+.t3 .hero h1 .hl path + path { stroke-width: 3; opacity: 0.8; }
+@media (max-width: 767px) { .t3 .hero h1 .hl path { stroke-width: 4.5; } .t3 .hero h1 .hl path + path { stroke-width: 2; } }
+@media (prefers-reduced-motion: no-preference) {
+    .t3 .hero h1 .hl svg { animation: t3-stroke 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both; }
+}
+@keyframes t3-stroke { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* Why travel with us (v3): the stats are an editorial ledger (gold italic numerals, hairline rows, no boxes), stacked rows on mobile too. */
+.t3 .diff .stats { gap: 0; padding: 6px 0 0; border-top: 1px solid rgba(219, 161, 44, 0.6); }
+.t3 .diff .stat { grid-template-columns: 7.5rem minmax(0, 1fr); align-items: center; gap: 0 36px; padding: 30px 0; background: none; border: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.16); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 0; transition: border-color 0.3s; }
+.t3 .diff .stat:last-child { border-bottom: 0; }
+.t3 .diff .stat b { font-style: italic; font-weight: 400; font-size: clamp(3.4rem, 5.2vw, 4.8rem); color: var(--accent); text-align: right; font-variant-numeric: lining-nums tabular-nums; text-shadow: 0 2px 18px rgba(10, 42, 64, 0.45); }
+.t3 .diff .stat div { gap: 8px; padding-left: 36px; border-left: 1px solid rgba(219, 161, 44, 0.45); }
+.t3 .diff .stat strong { font-family: var(--mono); font-weight: 500; font-size: 0.74rem; letter-spacing: 0.2em; text-transform: uppercase; color: #fff; }
+.t3 .diff .stat span { font-size: 1rem; line-height: 1.55; color: rgba(255, 255, 255, 0.86); max-width: 34ch; }
+@media (min-width: 1000px) { .t3 .diff .stats { padding: 6px 0 0 8px; } }
+@media (max-width: 699px) {
+    .t3 .diff .stats { margin-top: 4px; }
+    .t3 .diff .stat { grid-template-columns: 4.6rem minmax(0, 1fr); gap: 0 20px; padding: 22px 0; }
+    .t3 .diff .stat b { font-size: 3rem; }
+    .t3 .diff .stat div { padding-left: 20px; gap: 6px; }
+    .t3 .diff .stat span { font-size: 0.92rem; }
+}
+.t3 .diff-bg::after { background: linear-gradient(90deg, rgba(10, 42, 64, 0.92) 0%, rgba(10, 42, 64, 0.8) 55%, rgba(10, 42, 64, 0.72) 100%); }

@@ -16,7 +16,7 @@
 
 
         @foreach($quizSteps as $i => $st)
-            <fieldset class="q-step" data-step="{{ $i }}">
+            <fieldset @class(['q-step', 'q-start' => ! $failed && $i === 0]) data-step="{{ $i }}">
                 <legend @class(['long' => mb_strlen($st['question']) > 70])>{{ $st['question'] }}</legend>
                 @if($st['type'] === 'dropdown')
                     <select name="quiz_answers[{{ $st['key'] }}]" aria-label="{{ $st['question'] }}" data-q-select>
@@ -34,7 +34,7 @@
             </fieldset>
         @endforeach
 
-        <fieldset class="q-step q-contact" data-step="{{ $nSteps }}">
+        <fieldset @class(['q-step', 'q-contact', 'q-start' => $failed]) data-step="{{ $nSteps }}">
             <legend>Where should we send your personal quote?</legend>
             <div class="fields">
                 <label>First name<input name="first_name" value="{{ $failed ? old('first_name') : '' }}" required autocomplete="given-name">@if($qe('first_name'))<em class="err">{{ $qe('first_name') }}</em>@endif</label>

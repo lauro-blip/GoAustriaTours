@@ -10,6 +10,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{-- Lets CSS lay the hero quiz out as one step at a time from the first paint (no layout shift when home.js starts). --}}
+    <script>document.documentElement.classList.add('qjs')</script>
     <title>{{ $metaTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <link rel="canonical" href="{{ $canonical }}">

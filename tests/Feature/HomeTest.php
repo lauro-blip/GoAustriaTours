@@ -18,7 +18,7 @@ class HomeTest extends TestCase
     public function test_home_renders_the_hero_quiz_quote_popup_and_is_indexable(): void
     {
         $html = $this->get('/')->assertOk()
-            ->assertSee('Your Austria Trip')
+            ->assertSee('<span class="hl">Austria', false)->assertSee('Trip,', false)
             ->assertSee('name="form_name" value="hero-quiz"', false)
             ->assertSee('data-qm', false)
             ->assertSee('data-quote', false)

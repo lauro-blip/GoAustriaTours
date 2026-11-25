@@ -1,6 +1,6 @@
 // Mobile carousels: card grids become swipeable scroll-snap rows with arrows + dots (or a counter when there are many cards).
 // Desktop is untouched. Pages can re-count after filtering by dispatching a "car:refresh" event on the grid.
-const SELECTOR = '.gal, .ways, .dgrid, .mom, .jr, .band-grid, .stats, .plc, .tgrid';
+const SELECTOR = '.gal, .ways, .dgrid, .mom, .jr, .band-grid, .plc, .tgrid';
 const mq = matchMedia('(max-width: 699px)');
 
 function build(el) {

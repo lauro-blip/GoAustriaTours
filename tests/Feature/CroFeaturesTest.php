@@ -56,6 +56,15 @@ class CroFeaturesTest extends TestCase
         $this->get('/?tour=<script>alert(1)</script>')->assertOk()->assertDontSee('<script>alert(1)', false)->assertSee('aria-label="Ways to travel"', false);
     }
 
+    public function test_hero_quiz_is_laid_out_as_one_step_from_the_first_paint(): void
+    {
+        // Without this the full no-JS form paints first and collapses when home.js runs (desktop CLS was 0.97).
+        $html = $this->get('/')->assertOk()->getContent();
+        $this->assertStringContainsString("classList.add('qjs')", $html);
+        $this->assertSame(1, substr_count($html, 'q-start'));
+        $this->assertStringContainsString('class="q-step q-start" data-step="0"', $html);
+    }
+
     public function test_canonical_ignores_the_query_string(): void
     {
         $html = $this->get('/?tour=coach')->assertOk()->getContent();

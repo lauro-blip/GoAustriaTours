@@ -8,7 +8,7 @@
                 <p class="plc-k">{{ $pl['region'] }}</p>
                 <h3><a href="{{ $pl['searchUrl'] }}">{{ $pl['name'] }}</a></h3>
                 <p class="plc-f">{{ $pl['fact'] }}</p>
-                <p class="plc-l"><a href="{{ $pl['searchUrl'] }}">Journeys here</a><a href="{{ $pl['mapUrl'] }}" target="_blank" rel="noopener">View on map</a></p>
+                <p class="plc-l"><a href="{{ $pl['searchUrl'] }}">Journeys here</a></p>
             </div>
         </article>
     @endforeach

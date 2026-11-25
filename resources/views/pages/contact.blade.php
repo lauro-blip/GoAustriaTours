@@ -8,7 +8,6 @@
     $cTel = preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $cPhone));
     $cEmail = trim((string) ($site['email'] ?? ''));
     $cAddr = trim((string) ($site['address'] ?? ''));
-    $cMap = $cAddr !== '' ? 'https://www.openstreetmap.org/search?query='.urlencode(str_replace("\n", ', ', $cAddr)) : null;
 @endphp
 @extends('layouts.site', ['noStickyBar' => true, 'metaTitle' => $page->meta_title, 'metaDescription' => $page->meta_description, 'noindex' => $page->noindex])
 
@@ -22,7 +21,7 @@
             <ul class="ct-list">
                 @if($cPhone !== '')<li><span class="ci">PH</span><div><h3>Call us</h3><a href="tel:{{ $cTel }}">{{ $cPhone }}</a></div></li>@endif
                 @if($cEmail !== '')<li><span class="ci">EM</span><div><h3>Email</h3><a href="mailto:{{ $cEmail }}">{{ $cEmail }}</a></div></li>@endif
-                @if($cAddr !== '')<li><span class="ci">PN</span><div><h3>Address</h3><p>{!! nl2br(e($cAddr)) !!}</p>@if($cMap)<a class="ct-map" href="{{ $cMap }}" target="_blank" rel="noopener">View on map</a>@endif</div></li>@endif
+                @if($cAddr !== '')<li><span class="ci">PN</span><div><h3>Address</h3><p>{!! nl2br(e($cAddr)) !!}</p></div></li>@endif
             </ul>
             <div class="ct-steps">
                 <h3>What happens next</h3>

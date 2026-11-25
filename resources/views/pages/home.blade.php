@@ -148,9 +148,7 @@
 <section class="sec why">
     <div class="wrap why-grid">
         <div class="why-media rv">
-            <figure class="why-main"><img src="{{ $w('schonbrunn', '-1280') }}" alt="Schönbrunn Palace and its gardens under fresh snow" loading="lazy"></figure>
-            <figure class="why-inset"><img src="{{ $w('kitzbuhel', '-768') }}" alt="A snowy Tyrolean old town street with horse-drawn carriages" loading="lazy"></figure>
-            <p class="why-badge"><b>Self drive</b><b>Escorted</b><b>Coach</b><span>Tours of Austria, tailored to you</span></p>
+            <figure class="why-img"><img src="{{ $w('hallstatt', '-1280') }}" srcset="{{ $w('hallstatt', '-768') }} 768w, {{ $w('hallstatt', '-1280') }} 1280w" sizes="(min-width: 900px) 45vw, 100vw" alt="Hallstatt's lakeside houses and church below snowy mountains" loading="lazy"></figure>
         </div>
         <div class="why-copy rv">
             <p class="eyebrow dark">Why travel with {{ $brand }}</p>

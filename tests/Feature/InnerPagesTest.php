@@ -39,23 +39,27 @@ class InnerPagesTest extends TestCase
         $this->assertStringContainsString('Plan your journey', $html);
     }
 
-    public function test_package_page_converts_without_a_sidebar_form(): void
+    public function test_package_page_has_details_itinerary_tabs_and_an_enquire_form(): void
     {
         $html = $this->get('/packages/imperial-austria-self-drive')->assertOk()
+            ->assertSee('Your route')
+            ->assertDontSee('Package details')
             ->assertSee('Places on this journey')
             ->assertSee('Historic Centre of the City of Salzburg is a UNESCO World Heritage Site', false)
-            ->assertSee('Your itinerary')
-            ->assertSee('How it works')
+            ->assertSee('Itinerary details')
+            ->assertSee('Simple and personal')
             ->assertSee('You may also like')
             ->assertSee('Ready to plan Imperial Austria Self Drive?')
-            ->assertDontSee('name="form_name" value="package-quote"', false)
+            ->assertSee('name="form_name" value="package-quote"', false)
+            ->assertSee('name="group_size"', false)
             ->assertDontSee('name="form_name" value="ask-question"', false)
             ->getContent();
 
-        $this->assertStringContainsString('data-pnav', $html);
-        $this->assertStringContainsString('class="cstrip"', $html);
+        $this->assertStringContainsString('data-ptabs', $html);
+        $this->assertStringContainsString('role="tabpanel"', $html);
         $this->assertGreaterThanOrEqual(5, substr_count($html, 'data-package-id="'));
-        $this->assertStringContainsString('openstreetmap.org', $html);
+        $this->assertStringNotContainsString('openstreetmap.org', $html);
+        $this->assertStringNotContainsString('View on map', $html);
         $this->assertStringContainsString('application/ld+json', $html);
     }
 
@@ -112,5 +116,18 @@ class InnerPagesTest extends TestCase
     public function test_photo_credits_list_the_winter_photos(): void
     {
         $this->get('/photo-credits')->assertOk()->assertSee('Wagrain in winter')->assertSee('AI-generated');
+    }
+
+    public function test_no_public_page_links_to_an_external_map(): void
+    {
+        // Visitors must stay on the site: no OpenStreetMap / Google Maps links or "View on map" buttons anywhere.
+        \App\Models\Setting::put('address', "1 Example Street\nVienna");
+        $slug = Package::published()->value('slug');
+        foreach (['/', '/packages', "/packages/{$slug}", '/tours/self-drive', '/contact', '/about', '/journal'] as $url) {
+            $html = $this->get($url)->assertOk()->getContent();
+            foreach (['openstreetmap.org', 'google.com/maps', 'maps.google', 'View on map'] as $needle) {
+                $this->assertStringNotContainsString($needle, $html, "{$url} contains {$needle}");
+            }
+        }
     }
 }

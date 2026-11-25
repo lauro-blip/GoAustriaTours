@@ -117,26 +117,50 @@ $$('.t3 .mobile .sub-t').forEach((btn) => btn.addEventListener('click', () => {
     btn.parentElement.classList.toggle('open', open);
 }));
 
-// Package page: highlight the section being read in the sticky in-page navigation.
-$$('[data-pnav]').forEach((nav) => {
-    const items = $$('a', nav).map((a) => ({ a, el: document.getElementById(a.getAttribute('href').slice(1)) })).filter((x) => x.el);
-    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        const hit = items.find((x) => x.el === e.target);
-        items.forEach((x) => x.a.classList.toggle('on', x === hit));
-        if (hit && nav.scrollWidth > nav.clientWidth) hit.a.scrollIntoView({ inline: 'center', block: 'nearest' });
-    }), { rootMargin: '-35% 0px -55% 0px' });
-    items.forEach((x) => io.observe(x.el));
+// Package page, Places & map: hovering or focusing a place in the list highlights its dot on the map.
+$$('.plx').forEach((box) => {
+    const pts = $$('.plx-pt', box);
+    $$('.plx-list li', box).forEach((li) => {
+        const on = (v) => {
+            li.classList.toggle('on', v);
+            pts.forEach((p) => p.classList.toggle('on', v && p.dataset.plx === li.dataset.plx));
+        };
+        li.addEventListener('mouseenter', () => on(true));
+        li.addEventListener('mouseleave', () => on(false));
+        li.addEventListener('focusin', () => on(true));
+        li.addEventListener('focusout', () => on(false));
+    });
 });
 
-// Itinerary: expand / collapse every day at once.
-$$('[data-tl-toggle]').forEach((btn) => btn.addEventListener('click', () => {
-    const days = $$('[data-tl] details.day');
-    const collapse = btn.getAttribute('aria-pressed') !== 'true';
-    days.forEach((d) => { d.open = !collapse; });
-    btn.setAttribute('aria-pressed', String(collapse));
-    btn.textContent = collapse ? 'Expand all days' : 'Collapse all days';
-}));
+// Package page: itinerary / highlights / inclusions / places tabs. Without JS every panel shows, one after another.
+$$('[data-ptabs]').forEach((list) => {
+    const tabs = $$('[role=tab]', list);
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')));
+    const select = (i, focus) => {
+        tabs.forEach((t, j) => {
+            t.setAttribute('aria-selected', String(i === j));
+            t.tabIndex = i === j ? 0 : -1;
+            panels[j].hidden = i !== j;
+        });
+        if (focus) tabs[i].focus();
+    };
+    tabs.forEach((t, i) => {
+        t.addEventListener('click', () => select(i));
+        t.addEventListener('keydown', (e) => {
+            const k = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+            if (k === undefined) return;
+            e.preventDefault();
+            select((k + tabs.length) % tabs.length, true);
+        });
+    });
+    list.hidden = false;
+    list.closest('section').classList.add('has-tabs');
+    // Open the tab that holds a linked anchor (e.g. #pp-places).
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    const fromHash = target ? panels.findIndex((p) => p.contains(target)) : -1;
+    select(fromHash > -1 ? fromHash : 0);
+});
 
 initQuiz();
 initQuoteModal();

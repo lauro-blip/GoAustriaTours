@@ -1,5 +1,5 @@
 {{-- Inline enquiry form for inner pages (contact, package page, tour type page). Posts to the ONE enquiry endpoint (same consent, honeypot,
-     reCAPTCHA and server rules as every other form). Vars: $formName, $package (optional Package), $uid, $button. --}}
+     reCAPTCHA and server rules as every other form). Vars: $formName, $package (optional Package), $uid, $button, $qfShort, $qfTrip (adds group size + nights). --}}
 @php
     $qfName = $formName ?? 'contact';
     $qfUid = $uid ?? $qfName;
@@ -20,6 +20,11 @@
         <label class="wide">Email<input type="email" name="email" value="{{ $qfFailed ? old('email') : '' }}" required autocomplete="email">@if($qfErr('email'))<em class="err">{{ $qfErr('email') }}</em>@endif</label>
         <label>Country<select name="country" autocomplete="country">@foreach(\App\Support\Countries::options() as $iso => [$dial, $label])<option value="{{ $iso }}" @selected(($qfFailed ? old('country', 'US') : 'US') === $iso)>{{ $iso }} {{ $dial }}</option>@endforeach</select></label>
         <label>Phone<input type="tel" name="phone" value="{{ $qfFailed ? old('phone') : '' }}" required inputmode="tel" autocomplete="tel" data-phone>@if($qfErr('phone'))<em class="err">{{ $qfErr('phone') }}</em>@endif</label>
+        @if($qfTrip ?? false)
+        {{-- Optional trip details (package page): stored like the popup's group size / nights. Values stay within the 10-char server limit. --}}
+        <label>Group size<select name="group_size"><option value="">How many people?</option>@foreach(range(1, 20) as $n)<option value="{{ $n }} {{ $n === 1 ? 'person' : 'people' }}" @selected($qfFailed && old('group_size') === $n.' '.($n === 1 ? 'person' : 'people'))>{{ $n }} {{ $n === 1 ? 'person' : 'people' }}</option>@endforeach<option value="21+ people" @selected($qfFailed && old('group_size') === '21+ people')>21 or more</option></select></label>
+        <label>Number of nights<select name="nights"><option value="">How many nights?</option>@foreach(range(1, 20) as $n)<option value="{{ $n }} {{ $n === 1 ? 'night' : 'nights' }}" @selected($qfFailed && old('nights') === $n.' '.($n === 1 ? 'night' : 'nights'))>{{ $n }} {{ $n === 1 ? 'night' : 'nights' }}</option>@endforeach<option value="21+ nights" @selected($qfFailed && old('nights') === '21+ nights')>21 or more</option></select></label>
+        @endif
         @unless($qfShort)
         <label class="wide">Preferred travel date<input type="date" name="travel_date" value="{{ $qfFailed ? old('travel_date') : '' }}" min="{{ now()->format('Y-m-d') }}" max="{{ now()->addYears(3)->format('Y-m-d') }}" data-date>@if($qfErr('travel_date'))<em class="err">{{ $qfErr('travel_date') }}</em>@else<small class="hint">An approximate date is fine.</small>@endif</label>
         @endunless

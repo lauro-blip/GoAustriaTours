@@ -12,8 +12,8 @@
                 @php $gq = explode(' ', trim((string) ($g['title'] ?? '')))[0] ?? ''; @endphp
                 <a class="gi {{ $pos[$loop->index] ?? '' }} rv" href="{{ $gq !== '' ? route('packages.index', ['q' => $gq]) : route('packages.index') }}">
                     <img src="{{ $g['img']['src'] }}" alt="{{ $g['img']['alt'] ?: trim(($g['title'] ?? '').', '.($g['label'] ?? ''), ', ') }}" loading="lazy">
-                    @if(filled($g['label'] ?? null))<span class="gl">{{ $g['label'] }}</span>@endif
-                    <div class="gt"><h3>{{ $g['title'] ?? '' }}</h3><i aria-hidden="true">&rarr;</i></div>
+                    @if(filled($g['label'] ?? null))<span class="gl"{{ $ed('items.'.$loop->index.'.label') }}>{{ $g['label'] }}</span>@endif
+                    <div class="gt"><h3{{ $ed('items.'.$loop->index.'.title') }}>{{ $g['title'] ?? '' }}</h3><i aria-hidden="true">&rarr;</i></div>
                 </a>
             @endforeach
         </div>

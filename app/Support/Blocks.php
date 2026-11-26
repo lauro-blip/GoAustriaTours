@@ -16,7 +16,99 @@ use Illuminate\Support\Str;
  */
 class Blocks
 {
-    public const TONES = ['light' => 'Light (cream)', 'tint' => 'Tinted (warm)', 'dark' => 'Navy'];
+    public const TONES = ['light' => 'Light (cream)', 'tint' => 'Tinted (warm)', 'dark' => 'Navy', 'photo' => 'Photo (choose below)'];
+
+    /** Columns section layouts: key => [label, number of columns]. */
+    public const LAYOUTS = ['1' => 'One column', '2' => 'Two equal', '2l' => 'Two: wide left', '2r' => 'Two: wide right', '3' => 'Three', '4' => 'Four'];
+    public const LAYOUT_COLS = ['1' => 1, '2' => 2, '2l' => 2, '2r' => 2, '3' => 3, '4' => 4];
+
+    /** Shared style options of every normal section (fixed CSS classes in inner.css "Section style"). */
+    public static function styleFields(): array
+    {
+        return [
+            'tone' => ['kind' => 'select', 'label' => 'Background', 'options' => self::TONES, 'default' => 'light', 'group' => 'style'],
+            'bg_image' => ['kind' => 'image', 'label' => 'Background photo (when Background is Photo)', 'group' => 'style', 'decorative' => true],
+            'spacing' => ['kind' => 'select', 'label' => 'Spacing above and below', 'options' => ['s' => 'Compact', 'm' => 'Normal', 'l' => 'Spacious'], 'default' => 'm', 'group' => 'style'],
+            'width' => ['kind' => 'select', 'label' => 'Content width', 'options' => ['narrow' => 'Narrow', 'normal' => 'Normal', 'wide' => 'Wide'], 'default' => 'normal', 'group' => 'style'],
+            'head_align' => ['kind' => 'select', 'label' => 'Heading alignment', 'options' => ['center' => 'Centered', 'left' => 'Left'], 'default' => 'center', 'group' => 'style'],
+            'show_on' => ['kind' => 'select', 'label' => 'Show on', 'options' => ['all' => 'All devices', 'desktop' => 'Desktop and tablet only', 'mobile' => 'Mobile only'], 'default' => 'all', 'group' => 'style'],
+        ];
+    }
+
+    /** Section classes for a block's style choices (only non-default choices add a class). */
+    public static function styleClasses(array $d): string
+    {
+        $c = ['tint' => 'tint', 'dark' => 'blk-dark', 'photo' => 'blk-dark blk-photo'][$d['tone'] ?? 'light'] ?? '';
+        $c .= ['s' => ' blk-sp-s', 'l' => ' blk-sp-l'][$d['spacing'] ?? 'm'] ?? '';
+        $c .= ['narrow' => ' blk-w-n', 'wide' => ' blk-w-w'][$d['width'] ?? 'normal'] ?? '';
+        $c .= ($d['head_align'] ?? 'center') === 'left' ? ' blk-hl' : '';
+        $c .= ['desktop' => ' blk-hide-m', 'mobile' => ' blk-hide-d'][$d['show_on'] ?? 'all'] ?? '';
+
+        return trim($c);
+    }
+
+    /** Elements of a Columns section. */
+    public static function elements(): array
+    {
+        return [
+            'heading' => ['label' => 'Heading', 'fields' => [
+                'text' => ['kind' => 'text', 'label' => 'Heading', 'max' => 160],
+                'size' => ['kind' => 'select', 'label' => 'Size', 'options' => ['l' => 'Large', 'm' => 'Medium', 's' => 'Small'], 'default' => 'm'],
+            ]],
+            'text' => ['label' => 'Text', 'fields' => ['body' => ['kind' => 'rich', 'label' => 'Text']]],
+            'image' => ['label' => 'Image', 'fields' => [
+                'image' => ['kind' => 'image', 'label' => 'Photo'],
+                'ratio' => ['kind' => 'select', 'label' => 'Shape', 'options' => ['auto' => 'Original', 'land' => 'Landscape', 'square' => 'Square', 'port' => 'Portrait'], 'default' => 'land'],
+                'caption' => ['kind' => 'text', 'label' => 'Caption', 'max' => 140],
+                'link' => ['kind' => 'link', 'label' => 'Link (optional)'],
+            ]],
+            'button' => ['label' => 'Button', 'fields' => [
+                'label' => ['kind' => 'text', 'label' => 'Label', 'max' => 60, 'default' => 'Get a free quote'],
+                'link' => ['kind' => 'link', 'label' => 'Link', 'help' => 'Leave empty to open the quote form.'],
+                'style' => ['kind' => 'select', 'label' => 'Style', 'options' => ['gold' => 'Gold button', 'outline' => 'Outline button', 'link' => 'Text link'], 'default' => 'gold'],
+            ]],
+            'list' => ['label' => 'List', 'fields' => [
+                'items' => ['kind' => 'textarea', 'label' => 'Items (one per line)', 'max' => 1500],
+                'icon' => ['kind' => 'select', 'label' => 'Bullet', 'options' => ['check' => 'Gold check', 'dot' => 'Dot', 'number' => 'Numbers'], 'default' => 'check'],
+            ]],
+            'quote' => ['label' => 'Quote', 'fields' => [
+                'text' => ['kind' => 'textarea', 'label' => 'Quote', 'max' => 600],
+                'author' => ['kind' => 'text', 'label' => 'Who said it', 'max' => 100],
+            ]],
+            'spacer' => ['label' => 'Spacer', 'fields' => [
+                'size' => ['kind' => 'select', 'label' => 'Height', 'options' => ['s' => 'Small', 'm' => 'Medium', 'l' => 'Large'], 'default' => 'm'],
+            ]],
+            'video' => ['label' => 'Video', 'fields' => [
+                'url' => ['kind' => 'link', 'label' => 'YouTube or Vimeo link', 'help' => 'Loads only when the visitor presses play, so the page stays fast.'],
+                'poster' => ['kind' => 'image', 'label' => 'Cover photo (optional)', 'decorative' => true],
+                'title' => ['kind' => 'text', 'label' => 'Video title (for screen readers)', 'max' => 120],
+            ]],
+        ];
+    }
+
+    /** A new element with its defaults. */
+    public static function blankElement(string $type): array
+    {
+        $data = [];
+        foreach (self::elements()[$type]['fields'] ?? [] as $k => $f) {
+            $data[$k] = $f['kind'] === 'image' ? ['ref' => '', 'alt' => ''] : ($f['default'] ?? '');
+        }
+
+        return ['type' => $type, 'data' => $data];
+    }
+
+    /** YouTube / Vimeo embed URL (privacy-enhanced) for a link, or null. */
+    public static function videoEmbed(string $url): ?string
+    {
+        if (preg_match('~(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/)|youtu\.be/)([A-Za-z0-9_-]{11})~', $url, $m)) {
+            return 'https://www.youtube-nocookie.com/embed/'.$m[1].'?autoplay=1&rel=0';
+        }
+        if (preg_match('~vimeo\.com/(?:video/)?(\d{6,12})~', $url, $m)) {
+            return 'https://player.vimeo.com/video/'.$m[1].'?autoplay=1&dnt=1';
+        }
+
+        return null;
+    }
 
     /** @return array<string, array{label:string, hint:string, fields:array<string, array<string, mixed>>}> */
     public static function types(): array
@@ -25,6 +117,12 @@ class Blocks
         $heading = ['kind' => 'text', 'label' => 'Heading', 'max' => 160];
 
         return [
+            'columns' => ['label' => 'Columns', 'hint' => 'One to four columns you fill with headings, text, images, buttons, lists, quotes, spacers and videos.', 'fields' => [
+                'eyebrow' => $eyebrow, 'heading' => $heading,
+                'layout' => ['kind' => 'select', 'label' => 'Layout', 'options' => self::LAYOUTS, 'default' => '2'],
+                'valign' => ['kind' => 'select', 'label' => 'Vertical alignment', 'options' => ['top' => 'Top', 'center' => 'Middle'], 'default' => 'top'],
+                'cols' => ['kind' => 'columns', 'label' => 'Columns'],
+            ]],
             'text' => ['label' => 'Text', 'hint' => 'A heading with formatted text.', 'fields' => [
                 'eyebrow' => $eyebrow, 'heading' => $heading,
                 'body' => ['kind' => 'rich', 'label' => 'Text'],
@@ -122,7 +220,7 @@ class Blocks
     {
         $fields = self::all()[$type]['fields'] ?? [];
 
-        return str_starts_with($type, 'home_') ? $fields : $fields + ['tone' => ['kind' => 'select', 'label' => 'Background', 'options' => self::TONES, 'default' => 'light']];
+        return str_starts_with($type, 'home_') ? $fields : $fields + self::styleFields();
     }
 
     /** A new block with its default content (used by the admin editor and the home page defaults). */
@@ -132,6 +230,7 @@ class Blocks
         foreach (self::fields($type) as $key => $f) {
             $data[$key] = match ($f['kind']) {
                 'items' => $f['default'] ?? [],
+                'columns' => [],
                 'image' => $f['default'] ?? ['ref' => '', 'alt' => ''],
                 default => $f['default'] ?? '',
             };
@@ -175,6 +274,7 @@ class Blocks
                 'number' => max($f['min'] ?? 0, min($f['max'] ?? 100, (int) ($v ?: ($f['default'] ?? 0)))),
                 'link' => self::cleanLink((string) $v),
                 'items' => self::cleanItems($f, $v),
+                'columns' => self::cleanColumns($v),
                 default => null,
             };
         }
@@ -194,6 +294,24 @@ class Blocks
         }
 
         return $items;
+    }
+
+    /** Columns: up to 4 columns of up to 12 known elements each. */
+    private static function cleanColumns(mixed $v): array
+    {
+        $out = [];
+        foreach (array_slice(is_array($v) ? $v : [], 0, 4) as $col) {
+            $els = [];
+            foreach (array_slice((array) ($col['elements'] ?? []), 0, 12) as $el) {
+                $type = is_array($el) ? (string) ($el['type'] ?? '') : '';
+                if (isset(self::elements()[$type])) {
+                    $els[] = ['type' => $type, 'data' => self::cleanFields(self::elements()[$type]['fields'], (array) ($el['data'] ?? []))];
+                }
+            }
+            $out[] = ['elements' => $els];
+        }
+
+        return $out;
     }
 
     /** Images are stored as {ref, alt}. Only references to a real media item or a bundled site photo are kept. */

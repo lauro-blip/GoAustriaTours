@@ -61,6 +61,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('pages/{page}', [Admin\PageController::class, 'update'])->name('pages.update');
         Route::delete('pages/{page}', [Admin\PageController::class, 'destroy'])->name('pages.destroy');
         Route::post('pages/{page}/duplicate', [Admin\PageController::class, 'duplicate'])->name('pages.duplicate');
+        Route::post('pages/{page}/revisions/{revision}/restore', [Admin\PageController::class, 'restore'])->name('pages.restore');
+        // Live preview for the visual editor: renders unsaved changes with the real templates (nothing is saved).
+        Route::post('pages/preview', [Admin\PagePreviewController::class, 'show'])->name('pages.preview.new');
+        Route::post('pages/{page}/preview', [Admin\PagePreviewController::class, 'show'])->name('pages.preview');
         Route::get('menus', [Admin\MenuController::class, 'edit'])->name('menus.edit');
         Route::put('menus', [Admin\MenuController::class, 'update'])->name('menus.update');
         Route::post('menus/reset', [Admin\MenuController::class, 'reset'])->name('menus.reset');

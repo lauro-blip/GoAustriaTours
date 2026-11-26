@@ -1,6 +1,6 @@
 @php $stories = \App\Models\Testimonial::where('is_active', true)->orderBy('sort_order')->take((int) ($d['limit'] ?? 3))->get(); @endphp
 @if($stories->isNotEmpty())
-<section class="sec blk {{ $tone }}">
+<section class="sec blk {{ $tone }}"{{ $sx }}>
     <div class="wrap">
         @include('blocks._head')
         <div class="tgrid tcards">

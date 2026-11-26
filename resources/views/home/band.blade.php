@@ -11,7 +11,7 @@
 <section class="band" aria-label="How we plan your Austria journey">
     <div class="wrap band-grid">
         @foreach($d['items'] as $it)
-            <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $bandIco[$loop->index % 4] !!}</svg></span>@if(filled($it['title'] ?? null))<h2>{{ $tx($it['title']) }}</h2>@endif @if(filled($it['text'] ?? null))<p>{{ $tx($it['text']) }}</p>@endif</div>
+            <div class="bi rv"><span class="bic"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{!! $bandIco[$loop->index % 4] !!}</svg></span>@if(filled($it['title'] ?? null))<h2{{ $ed('items.'.$loop->index.'.title') }}>{{ $tx($it['title']) }}</h2>@endif @if(filled($it['text'] ?? null))<p{{ $ed('items.'.$loop->index.'.text') }}>{{ $tx($it['text']) }}</p>@endif</div>
         @endforeach
     </div>
 </section>

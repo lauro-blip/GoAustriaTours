@@ -13,10 +13,16 @@ class PageController extends Controller
 {
     public function home()
     {
+        return view('pages.home', $this->homeData(Page::slug('home')));
+    }
+
+    /** Everything the home page view needs; also used by the admin live preview with an unsaved page. */
+    public function homeData(?Page $page): array
+    {
         $tourTypes = TourType::active()->get();
 
-        return view('pages.home', [
-            'page' => Page::slug('home'),
+        return [
+            'page' => $page,
             'tourTypes' => $tourTypes,
             // Google Ads message match: ?tour=self-drive (a real, active tour type slug) re-words the hero. Unknown values are ignored.
             'activeTour' => request()->filled('tour') ? $tourTypes->firstWhere('slug', (string) request('tour')) : null,
@@ -25,7 +31,7 @@ class PageController extends Controller
             'testimonials' => Testimonial::where('is_active', true)->orderBy('sort_order')->take(6)->get(),
             'destinations' => \App\Models\Destination::active()->get(),
             'posts' => \App\Models\Post::published()->take(3)->get(),
-        ]);
+        ];
     }
 
     public function about()

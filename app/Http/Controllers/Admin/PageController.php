@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Page;
+use App\Models\PageRevision;
 use App\Support\Blocks;
 use App\Support\HomeSections;
 use Illuminate\Http\Request;
@@ -50,9 +51,31 @@ class PageController extends Controller
     public function update(Request $request, Page $page)
     {
         $this->fill($request, $page);
+        $page->snapshot(auth('admin')->user()?->name);
         $page->save();
 
         return redirect()->route('admin.pages.edit', $page)->with('status', 'Page saved.');
+    }
+
+    /** Puts an earlier version back (the current version is kept in the history first, so a restore can be undone). */
+    public function restore(Page $page, PageRevision $revision)
+    {
+        abort_unless($revision->page_id === $page->id, 404);
+        $c = $revision->content;
+        foreach (array_intersect_key($c, array_flip(Page::REVISION_FIELDS)) as $k => $v) {
+            $page->{$k} = $v;
+        }
+        // Never break a built-in page's address, and never take an address another page now uses.
+        if ($page->is_system || Page::where('slug', $page->slug)->whereKeyNot($page->id)->exists()) {
+            $page->slug = $page->getOriginal('slug');
+        }
+        $page->blocks = $page->slug === 'home'
+            ? HomeSections::normalize(Blocks::sanitize($page->blocks ?? [], true))
+            : Blocks::sanitize($page->blocks ?? []);
+        $page->snapshot(auth('admin')->user()?->name);
+        $page->save();
+
+        return redirect()->route('admin.pages.edit', $page)->with('status', 'Version from '.$revision->created_at->format('M j, Y g:i a').' restored. The version you replaced is in the history.');
     }
 
     public function destroy(Page $page)
@@ -84,12 +107,18 @@ class PageController extends Controller
 
         return view('admin.pages.edit', [
             'page' => $page,
-            'builder' => [
+            'revisions' => $page->exists ? $page->revisions()->get(['id', 'author', 'created_at']) : collect(),
+            'builder' => array_filter([
+                // Live preview for every page built from blocks (custom pages, home, about, terms, privacy).
+                'previewUrl' => $page->takesBlocks() ? ($page->exists ? route('admin.pages.preview', $page) : route('admin.pages.preview.new')) : null,
+            ]) + [
                 'types' => collect($types)->map(fn ($t, $k) => [
                     'label' => $t['label'], 'hint' => $t['hint'], 'fields' => Blocks::fields($k),
                     'fixed' => $t['fixed'] ?? false, 'pinned' => $t['pinned'] ?? false, 'addable' => ! ($t['home'] ?? false),
                 ])->all(),
                 'blanks' => collect(array_keys($types))->mapWithKeys(fn ($k) => [$k => Blocks::blank($k)])->all(),
+                'elements' => collect(Blocks::elements())->map(fn ($e, $k) => ['label' => $e['label'], 'fields' => $e['fields'], 'blank' => Blocks::blankElement($k)])->all(),
+                'layoutCols' => Blocks::LAYOUT_COLS,
                 'blocks' => $home ? HomeSections::normalize(Blocks::sanitize($blocks, true)) : $blocks,
                 'home' => $home,
                 'header' => (string) old('header_image', $page->header_image),

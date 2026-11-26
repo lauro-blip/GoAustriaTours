@@ -9,8 +9,8 @@
         @endif
         <div class="why-copy rv">
             @include('home._head', ['hc' => false])
-            @if(filled($d['p1'] ?? null))<p class="why-p">{{ $tx($d['p1']) }}</p>@endif
-            @if(filled($d['p2'] ?? null))<p class="why-p">{{ $tx($d['p2']) }}</p>@endif
+            @if(filled($d['p1'] ?? null))<p class="why-p"{{ $ed('p1') }}>{{ $tx($d['p1']) }}</p>@endif
+            @if(filled($d['p2'] ?? null))<p class="why-p"{{ $ed('p2') }}>{{ $tx($d['p2']) }}</p>@endif
             @if(filled($d['button_label'] ?? null))<div class="why-cta"><a class="btn" href="{{ route('contact') }}" data-quote>{{ $tx($d['button_label']) }} <i aria-hidden="true">&rarr;</i></a></div>@endif
         </div>
     </div>

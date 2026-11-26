@@ -26,6 +26,28 @@ class Page extends Model
         'build', 'images', 'fonts', 'storage', 'favicon', 'login', 'logout', 'api', 'up',
     ];
 
+    /** Fields a revision keeps and restores. */
+    public const REVISION_FIELDS = ['title', 'slug', 'eyebrow', 'intro', 'header_image', 'meta_title', 'meta_description', 'body', 'blocks', 'noindex', 'is_published', 'nav_location'];
+
+    public function revisions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PageRevision::class)->latest('id');
+    }
+
+    /**
+     * Keep a copy of the page as it was before the pending changes (its original values), only when something changed,
+     * then trim to the newest PageRevision::KEEP.
+     */
+    public function snapshot(?string $author = null): void
+    {
+        if (! $this->exists || ! $this->isDirty(self::REVISION_FIELDS)) {
+            return;
+        }
+        $this->revisions()->create(['content' => array_intersect_key($this->getOriginal(), array_flip(self::REVISION_FIELDS)), 'author' => $author]);
+        $keep = $this->revisions()->take(PageRevision::KEEP)->pluck('id');
+        $this->revisions()->whereNotIn('id', $keep)->delete();
+    }
+
     public static function slug(string $slug): ?self
     {
         return static::where('slug', $slug)->first();

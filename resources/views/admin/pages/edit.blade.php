@@ -16,12 +16,33 @@
 @endsection
 
 @section('content')
-<form method="POST" action="{{ $isNew ? route('admin.pages.store') : route('admin.pages.update', $page) }}" x-data="pageBuilder(@js($builder))" @submit="dirty = false" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+<form method="POST" action="{{ $isNew ? route('admin.pages.store') : route('admin.pages.update', $page) }}" x-data="pageBuilder(@js($builder))" @submit="dirty = false" @input.debounce.400ms="refresh()" @trix-change="refresh()" class="space-y-4">
     @csrf
     @unless($isNew) @method('PUT') @endunless
     <input type="hidden" name="blocks_json" :value="json()">
     <input type="hidden" name="header_image" :value="headerImg.ref">
 
+    {{-- ============ TOOLBAR ============ --}}
+    <div class="sticky top-0 z-30 -mx-4 flex flex-wrap items-center gap-2 border-b border-line bg-sand/95 px-4 py-2 backdrop-blur sm:-mx-8 sm:px-8 lg:top-0">
+        <div class="flex items-center gap-1">
+            <button type="button" class="rounded border border-line bg-white px-3 py-1.5 text-sm disabled:opacity-40" @click="undo()" :disabled="past.length < 2" title="Undo (Ctrl+Z)">&#8630; Undo</button>
+            <button type="button" class="rounded border border-line bg-white px-3 py-1.5 text-sm disabled:opacity-40" @click="redo()" :disabled="! future.length" title="Redo (Ctrl+Shift+Z)">Redo &#8631;</button>
+        </div>
+        @if(isset($builder['previewUrl']))
+        <label class="ml-2 flex cursor-pointer items-center gap-2 text-sm"><input type="checkbox" x-model="preview" class="size-4 accent-brand"> Live preview</label>
+        <div x-show="preview" class="flex overflow-hidden rounded-full border border-line bg-white text-sm" role="group" aria-label="Preview size">
+            <template x-for="[k, l] in [['desktop', 'Desktop'], ['tablet', 'Tablet'], ['mobile', 'Mobile']]" :key="k">
+                <button type="button" class="px-3 py-1.5" :class="device === k ? 'bg-brand text-white' : ''" @click="device = k" x-text="l"></button>
+            </template>
+        </div>
+        <span x-show="preview && loading" class="text-xs text-muted">Updating preview…</span>
+        @endif
+        <span x-show="dirty" class="ml-auto text-sm text-amber-800">Unsaved changes</span>
+        <x-button type="submit" variant="secondary" class="!px-5 !py-2" ::class="dirty ? '' : 'ml-auto'">{{ $isNew ? 'Create page' : 'Save' }}</x-button>
+    </div>
+
+    <div :class="preview ? 'grid gap-5 xl:grid-cols-[minmax(380px,460px)_minmax(0,1fr)]' : ''">
+    <div :class="preview ? 'min-w-0 space-y-6' : 'grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]'">
     <div class="min-w-0 space-y-6">
         {{-- ============ PAGE DETAILS ============ --}}
         <section class="{{ $card }} space-y-4">
@@ -58,7 +79,7 @@
             </div>
 
             <template x-for="(block, bi) in blocks" :key="block.uid">
-                <article class="overflow-hidden rounded-xl border bg-white" :class="block.hidden ? 'border-dashed border-secondary opacity-60' : 'border-line'" :id="'blk-' + block.uid">
+                <article class="scroll-mt-20 overflow-hidden rounded-xl border bg-white" :class="block.hidden ? 'border-dashed border-secondary opacity-60' : 'border-line'" :id="'blk-' + block.uid">
                     <header class="flex flex-wrap items-center gap-2 border-b border-line bg-sand/40 px-4 py-3">
                         <span class="grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold text-white" :class="isFixed(block) ? 'bg-brand-dark' : 'bg-accent-text'" x-text="bi + 1"></span>
                         <button type="button" class="min-w-0 flex-1 text-left" @click="toggle(block)" :aria-expanded="!! open[block.uid]">
@@ -81,9 +102,41 @@
                     </header>
                     <div x-show="open[block.uid]" class="space-y-5 p-5">
                         <p class="text-sm text-muted" x-text="types[block.type].hint"></p>
-                        <template x-for="[key, f] in Object.entries(types[block.type].fields)" :key="key">
+                        <template x-for="[key, f] in Object.entries(types[block.type].fields).filter(([k, x]) => x.group !== 'style')" :key="key">
                             <div>
-                                <template x-if="f.kind !== 'items'">
+                                <template x-if="f.kind === 'columns'">
+                                    <div class="space-y-3" x-effect="syncCols(block)">
+                                        <template x-for="(col, ci) in block.data.cols.slice(0, colCount(block))" :key="ci">
+                                            <fieldset class="space-y-2 rounded-lg border border-line p-3">
+                                                <legend class="px-1 text-sm font-semibold" x-text="'Column ' + (ci + 1)"></legend>
+                                                <template x-for="(el, ei) in col.elements" :key="el._uid">
+                                                    <div class="rounded-lg border border-line bg-sand/30">
+                                                        <div class="flex items-center gap-2 px-3 py-2">
+                                                            <button type="button" class="min-w-0 flex-1 text-left" @click="el._open = ! el._open">
+                                                                <span class="text-xs font-semibold uppercase tracking-wider text-accent-text" x-text="elements[el.type].label"></span>
+                                                                <span class="block truncate text-xs text-muted" x-text="elSummary(el)"></span>
+                                                            </button>
+                                                            <button type="button" class="rounded border border-line bg-white px-1.5 py-0.5 text-xs" @click="moveItem(col.elements, ei, -1)" aria-label="Move up">&uarr;</button>
+                                                            <button type="button" class="rounded border border-line bg-white px-1.5 py-0.5 text-xs" @click="moveItem(col.elements, ei, 1)" aria-label="Move down">&darr;</button>
+                                                            <button type="button" class="rounded border border-red-300 bg-white px-1.5 py-0.5 text-xs text-red-800" @click="removeItem(col.elements, ei)" aria-label="Remove">&times;</button>
+                                                        </div>
+                                                        <div x-show="el._open" class="space-y-3 border-t border-line bg-white p-3">
+                                                            <template x-for="[ek, ef] in Object.entries(elements[el.type].fields)" :key="ek">
+                                                                @include('admin.pages._field', ['obj' => 'el.data', 'k' => 'ek', 'f' => 'ef'])
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <div class="flex flex-wrap gap-1 pt-1">
+                                                    <template x-for="[et, edef] in Object.entries(elements)" :key="et">
+                                                        <button type="button" class="rounded-full border border-line bg-white px-2.5 py-1 text-xs hover:border-brand" @click="addElement(col, et)" x-text="'+ ' + edef.label"></button>
+                                                    </template>
+                                                </div>
+                                            </fieldset>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template x-if="f.kind !== 'items' && f.kind !== 'columns'">
                                     @include('admin.pages._field', ['obj' => 'block.data', 'k' => 'key', 'f' => 'f'])
                                 </template>
                                 <template x-if="f.kind === 'items'">
@@ -109,6 +162,17 @@
                                 </template>
                             </div>
                         </template>
+                        {{-- Style options (normal sections only): background, spacing, width, heading alignment, devices --}}
+                        <details class="rounded-lg border border-line" x-show="Object.values(types[block.type].fields).some((x) => x.group === 'style')">
+                            <summary class="cursor-pointer px-4 py-2.5 text-sm font-semibold">Style <span class="font-normal text-muted">· background, spacing, width, devices</span></summary>
+                            <div class="grid gap-4 border-t border-line p-4 sm:grid-cols-2">
+                                <template x-for="[key, f] in Object.entries(types[block.type].fields).filter(([k, x]) => x.group === 'style')" :key="key">
+                                    <div x-show="key !== 'bg_image' || block.data.tone === 'photo'" :class="f.kind === 'image' ? 'sm:col-span-2' : ''">
+                                        @include('admin.pages._field', ['obj' => 'block.data', 'k' => 'key', 'f' => 'f'])
+                                    </div>
+                                </template>
+                            </div>
+                        </details>
                     </div>
                 </article>
             </template>
@@ -132,7 +196,7 @@
     </div>
 
     {{-- ============ SIDEBAR ============ --}}
-    <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
+    <aside class="space-y-6" :class="preview ? '' : 'xl:sticky xl:top-16 xl:self-start'">
         <section class="{{ $card }} space-y-4">
             <h2 class="text-xl">Publish</h2>
             @if($custom)
@@ -160,7 +224,42 @@
             <button type="submit" form="del-form" class="w-full rounded border border-red-300 px-3 py-2 text-sm text-red-800">Delete this page</button>
         </section>
         @endif
+
+        @if($page->exists)
+        <section class="{{ $card }} space-y-3">
+            <h2 class="text-xl">History</h2>
+            @forelse($revisions as $rev)
+                @if($loop->first)<ul class="divide-y divide-line text-sm">@endif
+                <li class="flex items-center justify-between gap-3 py-2">
+                    <span><b class="font-semibold" title="{{ $rev->created_at->format('M j, Y g:i a') }}">{{ $rev->created_at->diffForHumans() }}</b>@if($rev->author)<span class="text-muted"> · {{ $rev->author }}</span>@endif</span>
+                    <button type="submit" form="rev-{{ $rev->id }}" class="shrink-0 rounded border border-line px-2 py-1 text-xs">Restore</button>
+                </li>
+                @if($loop->last)</ul>@endif
+            @empty
+                <p class="text-sm text-muted">Each time you save, the previous version is kept here (last {{ \App\Models\PageRevision::KEEP }}).</p>
+            @endforelse
+        </section>
+        @endif
     </aside>
+    </div>{{-- /panel --}}
+
+    {{-- ============ LIVE PREVIEW (admin only; renders unsaved changes) ============ --}}
+    @if(isset($builder['previewUrl']))
+    <div x-show="preview" x-cloak class="min-w-0">
+        <div class="sticky top-16 overflow-hidden rounded-xl border border-line bg-white shadow-sm">
+            <div class="flex items-center justify-between border-b border-line px-4 py-2 text-xs text-muted">
+                <span>Click a section to edit it. Click a heading or text to type on the page.</span>
+                <span x-text="devices[device] + 'px'"></span>
+            </div>
+            <div x-ref="stage" class="relative h-[calc(100vh-9.5rem)] overflow-hidden bg-[repeating-linear-gradient(45deg,#f4f1ec_0_10px,#efebe4_10px_20px)]">
+                <iframe x-ref="frame" title="Live preview" class="origin-top-left border-0 bg-white" :class="device !== 'desktop' ? 'shadow-lg' : ''"
+                        :style="`width:${devices[device]}px;height:${frameH}px;transform:scale(${scale});margin-left:${device === 'desktop' ? 0 : Math.max(0, ($refs.stage?.clientWidth || 0) - devices[device] * scale) / 2}px`"></iframe>
+                <div x-show="loading" class="pointer-events-none absolute right-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs shadow">Updating…</div>
+            </div>
+        </div>
+    </div>
+    @endif
+    </div>{{-- /grid --}}
 
     {{-- ============ PHOTO PICKER ============ --}}
     <div x-show="picker.open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-brand-dark/60 p-4" @keydown.escape.window="picker.open = false" @click.self="picker.open = false">
@@ -205,4 +304,7 @@
 <form id="dup-form" method="POST" action="{{ route('admin.pages.duplicate', $page) }}">@csrf</form>
 <form id="del-form" method="POST" action="{{ route('admin.pages.destroy', $page) }}" onsubmit="return confirm('Delete this page? This cannot be undone.')">@csrf @method('DELETE')</form>
 @endif
+@foreach($revisions as $rev)
+<form id="rev-{{ $rev->id }}" method="POST" action="{{ route('admin.pages.restore', [$page, $rev]) }}" onsubmit="return confirm('Restore the version from {{ $rev->created_at->format('M j, g:i a') }}? Unsaved changes on this screen are lost; the current saved version is kept in the history.')">@csrf</form>
+@endforeach
 @endsection

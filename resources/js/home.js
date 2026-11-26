@@ -162,6 +162,17 @@ $$('[data-ptabs]').forEach((list) => {
     select(fromHash > -1 ? fromHash : 0);
 });
 
+// Columns section videos: only a cover + play button until pressed, then the YouTube (privacy mode) / Vimeo player loads.
+$$('[data-video]').forEach((v) => v.addEventListener('click', () => {
+    if (v.querySelector('iframe')) return;
+    const f = document.createElement('iframe');
+    f.src = v.dataset.video;
+    f.title = v.dataset.title || 'Video';
+    f.allow = 'autoplay; fullscreen; picture-in-picture';
+    f.allowFullscreen = true;
+    v.replaceChildren(f);
+}));
+
 initQuiz();
 initQuoteModal();
 initInlineForms();

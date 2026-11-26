@@ -19,6 +19,13 @@
 @if(\App\Support\Design::usesPlayfair())<link rel="preload" as="font" type="font/woff2" href="{{ asset('fonts/playfair-display-latin-wght-italic.woff2') }}" crossorigin>@endif
 @endpush
 
+{{-- Sections inserted from the page builder use inner.css; load it on the home page only when there are some (keeps the default home lean). --}}
+@if(collect($homeBlocks)->contains(fn ($b) => ! str_starts_with($b['type'], 'home_') && empty($b['hidden'])))
+@push('head')
+@vite(['resources/css/inner.css'])
+@endpush
+@endif
+
 @push('jsonld')
 @if($faqSchema = \App\Support\Schema::faq($faqs))<script type="application/ld+json">{!! json_encode($faqSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>@endif
 @endpush

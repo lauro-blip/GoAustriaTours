@@ -26,12 +26,12 @@
                     @endforeach
                 </nav>
             @endif
-            <h1>{{ $tx($d['h1_before'] ?? '') }} @if($hl !== '')<span class="hl">{{ $tx($hl) }}<svg viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 15c48-7 108-10 168-9 44 .7 84 3.4 124 7.6"/><path d="M30 19.5c56-4.6 118-6 176-4.4 26 .7 50 2 72 3.6"/></svg></span>@endif {{ $tx($d['h1_after'] ?? '') }} @if(filled($d['h1_italic'] ?? null))<em>{{ $tx($d['h1_italic']) }}</em>@endif</h1>
+            <h1>{{ $tx($d['h1_before'] ?? '') }} @if($hl !== '')<span class="hl">{{ $tx($hl) }}<svg viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 15c48-7 108-10 168-9 44 .7 84 3.4 124 7.6"/><path d="M30 19.5c56-4.6 118-6 176-4.4 26 .7 50 2 72 3.6"/></svg></span>@endif {{ $tx($d['h1_after'] ?? '') }} @if(filled($d['h1_italic'] ?? null))<em{{ $ed('h1_italic') }}>{{ $tx($d['h1_italic']) }}</em>@endif</h1>
             <p class="sub">@if($activeTour && filled($activeTour->tagline)){{ $activeTour->tagline }}@else{{ $tx($d['sub'] ?? '') }}@endif</p>
         </div>
         <div class="hero-quiz" id="hero-quiz">
-            @if(filled($d['quiz_tag'] ?? null))<span class="qtag">{{ $tx($d['quiz_tag']) }}</span>@endif
-            @if(filled($d['quiz_title'] ?? null))<p class="qtitle">{{ $tx($d['quiz_title']) }}</p>@endif
+            @if(filled($d['quiz_tag'] ?? null))<span class="qtag"{{ $ed('quiz_tag') }}>{{ $tx($d['quiz_tag']) }}</span>@endif
+            @if(filled($d['quiz_title'] ?? null))<p class="qtitle"{{ $ed('quiz_title') }}>{{ $tx($d['quiz_title']) }}</p>@endif
             @include('pages.partials.study-quiz')
         </div>
     </div>

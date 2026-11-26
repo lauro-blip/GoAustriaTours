@@ -74,6 +74,9 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 - **Optional tracking IDs** (Admin > Trust & tracking): Microsoft Clarity, Google Ads tag (+ conversion label, fired on the thank-you page) and Meta Pixel load only when filled in. Leave Google Ads/Meta blank if GTM handles them.
 - **Images:** hero slides ship as `{name}.webp` (1920), `{name}-1600.webp`, `{name}-1280.webp`, `{name}-768.webp` with `srcset` and an LCP preload; the logos are WebP (`logo-white.webp`, `logo-navy.webp`). Add the 768/1280/1600 variants for any new hero image.
 
+## Admin roles
+- `admin_users.role`: **admin** (everything), **editor** (website content: pages/home, packages, tour types, destinations, quiz, journal, testimonials, FAQs, media, menus, design), **sales** (dashboard + enquiries; no delete/export). Defined in `AppSupportRoles` (labels, descriptions, AREAS = route-name prefix => roles, most specific prefix wins) and enforced by middleware `AppHttpMiddlewareAdminRole` on every signed-in admin route; the sidebar only lists allowed screens; login lands on `Roles::home()`. **Any admin route not listed in AREAS is Admin-only**: when adding an admin screen, add its prefix there. There is always at least one Admin (cannot demote or delete the last one).
+
 ## Admin dashboard
 - `Admin\DashboardController` (7/30/90 day range): needs-attention banner (new enquiries older than 24h, failed GHL / sheet syncs; the inbox has `?stale=1` and `?sync=failed` filters), KPIs with change vs the previous period (Google Ads = gclid or utm_medium cpc), SVG bar chart per day, pipeline by status, breakdowns (source / medium of the latest touch via `DashboardController::sourceLabel`, campaign, form, package), recent enquiries, and a site-health checklist (reCAPTCHA keys, GHL, Sheet, phone, GTM, notification email, `[CONFIRM]` placeholders). Add a new check by adding an entry to `$checks`.
 

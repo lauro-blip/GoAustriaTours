@@ -7,7 +7,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('login', [Admin\AuthController::class, 'showLogin'])->name('login');
     Route::post('login', [Admin\AuthController::class, 'login'])->middleware('throttle:20,1')->name('login.submit');
 
-    Route::middleware('auth:admin')->group(function () {
+    // Signed in + allowed for the user's role (App\Support\Roles; unlisted routes are Admin only).
+    Route::middleware(['auth:admin', \App\Http\Middleware\AdminRole::class])->group(function () {
         Route::post('logout', [Admin\AuthController::class, 'logout'])->name('logout');
         Route::get('/', Admin\DashboardController::class)->name('dashboard');
 

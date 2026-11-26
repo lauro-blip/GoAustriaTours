@@ -27,7 +27,7 @@
             <textarea name="notes" rows="5" aria-label="Internal notes" placeholder="Internal notes" class="w-full rounded-lg border border-line px-3 py-2">{{ old('notes', $enquiry->notes) }}</textarea>
             <x-button type="submit" variant="secondary">Save</x-button>
         </form>
-        <form method="POST" action="{{ route('admin.enquiries.destroy', $enquiry) }}" class="mt-4" onsubmit="return confirm('Delete this enquiry permanently?')">@csrf @method('DELETE')<button class="text-sm text-red-800 underline">Delete enquiry</button></form>
+        @if(\App\Support\Roles::can(auth('admin')->user(), 'admin.enquiries.destroy'))<form method="POST" action="{{ route('admin.enquiries.destroy', $enquiry) }}" class="mt-4" onsubmit="return confirm('Delete this enquiry permanently?')">@csrf @method('DELETE')<button class="text-sm text-red-800 underline">Delete enquiry</button></form>@endif
     </section>
 
     <section class="rounded-xl border border-line bg-white p-5">

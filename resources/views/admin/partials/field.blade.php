@@ -63,6 +63,7 @@
             @default
                 <input id="{{ $id }}" type="text" name="{{ $name }}" value="{{ $raw }}" class="{{ $cls }}">
         @endswitch
+        @if(! empty($f['help']))<div class="mt-1 text-xs text-muted">{!! $f['help'] !!}</div>@endif
         @if($err)<p class="mt-1 text-sm text-red-700" role="alert">{{ $err }}</p>@endif
     @endif
 </div>

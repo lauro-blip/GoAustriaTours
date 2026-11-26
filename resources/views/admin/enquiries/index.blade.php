@@ -1,7 +1,7 @@
 @extends('admin.layout')
 @section('title', 'Enquiries')
 @section('heading', 'Enquiries')
-@section('actions')<x-button :href="route('admin.enquiries.export', request()->query())" variant="outline">Export CSV</x-button>@endsection
+@section('actions')@if(\App\Support\Roles::can(auth('admin')->user(), 'admin.enquiries.export'))<x-button :href="route('admin.enquiries.export', request()->query())" variant="outline">Export CSV</x-button>@endif @endsection
 
 @section('content')
 <form method="GET" class="mb-5 grid gap-3 rounded-xl border border-line bg-white p-4 sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]">

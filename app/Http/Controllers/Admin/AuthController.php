@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
-        return Auth::guard('admin')->check() ? redirect()->route('admin.dashboard') : view('admin.login');
+        return Auth::guard('admin')->check() ? redirect(\App\Support\Roles::home(Auth::guard('admin')->user())) : view('admin.login');
     }
 
     public function login(Request $request)
@@ -34,7 +34,7 @@ class AuthController extends Controller
         RateLimiter::clear($key);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('admin.dashboard'));
+        return redirect()->intended(\App\Support\Roles::home(Auth::guard('admin')->user()));
     }
 
     public function logout(Request $request)

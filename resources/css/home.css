@@ -1013,6 +1013,28 @@ html:has(.t3) { scroll-padding-top:96px }
 .t3 .mega-list a { font-size: 0.9rem; line-height: 1.35; }
 .t3 .mega-cards.c3 a.txt { aspect-ratio: auto; }
 .t3 .mega-in.one .mega-cards.c3 { gap: 18px; }
+/* Travel Style mega menu (layouts/nav/styles): photo rows in two columns + promo panel */
+.t3 .mega-in.sty { grid-template-columns: 1fr 300px; gap: 44px; }
+.t3 .sty-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 36px; border-top: 1px solid var(--line); }
+.t3 .sty-list li { border-bottom: 1px solid var(--line); }
+.t3 .sty-list a { display: grid; grid-template-columns: 96px 1fr; gap: 18px; align-items: center; padding: 16px 0; color: var(--ink); }
+.t3 .sty-img { display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--tint); }
+.t3 .sty-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.t3 .sty-txt { display: grid; gap: 3px; min-width: 0; }
+.t3 .sty-txt b { font-family: var(--head); font-weight: 500; font-size: 1.12rem; line-height: 1.25; color: var(--navy); transition: color 0.2s; }
+.t3 .sty-txt em { font-style: normal; font-size: 0.84rem; line-height: 1.5; color: var(--muted); }
+.t3 .sty-txt small { margin-top: 4px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-d); font-weight: 600; }
+.t3 .sty-txt small i { font-style: normal; transition: transform 0.25s; }
+.t3 .sty-list a:hover .sty-img img, .t3 .sty-list a:focus-visible .sty-img img { transform: scale(1.08); }
+.t3 .sty-list a:hover b, .t3 .sty-list a:focus-visible b { color: var(--accent-d); }
+.t3 .sty-list a:hover small i, .t3 .sty-list a:focus-visible small i { transform: translateX(4px); }
+.t3 .sty-promo { position: relative; background: var(--dark); color: #fff; padding: 30px 28px; border-top: 3px solid var(--accent); display: flex; flex-direction: column; align-items: flex-start; align-self: stretch; }
+.t3 .sty-promo .mp-k { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.t3 .mega .sty-promo h5 { font-family: var(--head); font-size: 1.45rem; letter-spacing: 0; text-transform: none; font-weight: 500; color: #fff; line-height: 1.25; margin-bottom: 12px; }
+.t3 .sty-promo p:not(.mp-k) { font-size: 0.9rem; line-height: 1.65; color: rgba(255, 255, 255, 0.85); margin-bottom: 22px; }
+.t3 .sty-all { margin-top: auto; padding-top: 22px; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.t3 .sty-all i { font-style: normal; transition: transform 0.25s; }
+.t3 .sty-all:hover i { transform: translateX(4px); }
 
 /* ---- Mobile carousels (js/carousel.js adds .is-car and the .car-ui controls under 700px) ---- */
 @media (max-width: 699px) {

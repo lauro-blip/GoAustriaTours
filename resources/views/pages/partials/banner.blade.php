@@ -1,6 +1,6 @@
-{{-- Inner-page banner. Vars: $bTitle, $bEyebrow (opt), $bLead (opt), $bImage (opt URL), $bAlt (opt), $bCrumbs (opt: [[label, url|null], ...]), $bActions (opt HTML), $bAside (opt HTML, desktop side card), $bClass (opt) --}}
+{{-- Inner-page banner. Vars: $bTitle, $bEyebrow (opt), $bLead (opt), $bImage (opt URL), $bSrcset (opt srcset for $bImage), $bAlt (opt), $bCrumbs (opt: [[label, url|null], ...]), $bActions (opt HTML), $bAside (opt HTML, desktop side card), $bClass (opt) --}}
 <section class="pbanner {{ $bClass ?? '' }}">
-    @if(! empty($bImage))@push('preload')<link rel="preload" as="image" href="{{ $bImage }}" fetchpriority="high">@endpush<div class="pbanner-bg" aria-hidden="true"><img src="{{ $bImage }}" alt="" fetchpriority="high"></div>@endif
+    @if(! empty($bImage))@push('preload')<link rel="preload" as="image" href="{{ $bImage }}" @if(! empty($bSrcset)) imagesrcset="{{ $bSrcset }}" imagesizes="100vw" @endif fetchpriority="high">@endpush<div class="pbanner-bg" aria-hidden="true"><img src="{{ $bImage }}" @if(! empty($bSrcset)) srcset="{{ $bSrcset }}" sizes="100vw" @endif alt="" fetchpriority="high"></div>@endif
     <div class="wrap pbanner-in @if(! empty($bAside)) has-aside @endif">
         <div class="pbanner-main">
         @if(! empty($bCrumbs))

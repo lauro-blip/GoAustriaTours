@@ -1,9 +1,11 @@
 @php
-    $wayImg = ['self-drive' => 'way-self-drive', 'escorted' => 'way-escorted', 'coach' => 'way-coach'];
+    // Landscape 1920x1280 heroes (tour-{slug}{,-1600,-1280,-768}.webp); the portrait way-* photos stay for cards and menus.
+    $heroImg = in_array($tourType->slug, ['self-drive', 'escorted', 'coach'], true) ? 'tour-'.$tourType->slug : 'hero-wagrain';
     $bTitle = $tourType->name.' tours of Austria';
     $bEyebrow = $tourType->tagline;
     $bLead = $tourType->summary;
-    $bImage = asset('images/winter/'.($wayImg[$tourType->slug] ?? 'hero-wagrain').'-1280.webp');
+    $bImage = asset('images/winter/'.$heroImg.'-1280.webp');
+    $bSrcset = collect(['-768' => 768, '-1280' => 1280, '-1600' => 1600, '' => 1920])->map(fn ($w, $suf) => asset('images/winter/'.$heroImg.$suf.'.webp').' '.$w.'w')->implode(', ');
     $bCrumbs = [['Austria Vacations', route('tours.index')], [$tourType->name, null]];
     $bActions = view('pages.partials.cta-actions', ['caInterest' => $tourType->name.' tour', 'caLabel' => 'Get a free '.$tourType->name.' quote', 'site' => $site])->render();
     $visited = collect($packages)->flatMap(fn ($p) => \App\Support\Places::forPackage($p))->unique('key')->values()->all();

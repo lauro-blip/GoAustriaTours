@@ -40,7 +40,7 @@
 @include('pages.partials.banner', ['bClass' => 'slim'])
 <section class="sec">
     <div class="wrap narrow">
-        <p class="prose-lead">Many of the photographs on this site are shared on Wikimedia Commons by their photographers. We have resized, cropped and compressed them for the web. Thank you to everyone listed below. The three images in the "Your Journey. Your Way." boxes on the home page are AI-generated illustrations, not photographs.</p>
+        <p class="prose-lead">Many of the photographs on this site are shared on Wikimedia Commons by their photographers. We have resized, cropped and compressed them for the web. Thank you to everyone listed below. The three images in the "Your Journey. Your Way." boxes on the home page, and the banners of the Self Drive, Escorted and Coach tour pages, are AI-generated illustrations, not photographs.</p>
         <div class="tablewrap">
             <table class="credits">
                 <caption class="sr-only">Photographs, photographers and licences</caption>

@@ -53,7 +53,7 @@
     </div>
 </section>
 
-@include('pages.partials.cta-strip', ['csTitle' => 'Cannot see the right journey?', 'csText' => 'Every itinerary can be changed, and we can build one from scratch. Tell us what you have in mind.', 'csButton' => 'Plan my own journey'])
+@include('pages.partials.cta-strip', ['csTitle' => 'Can’t see the right journey?', 'csText' => 'Every itinerary can be changed, and we can build one from scratch. Tell us what you have in mind.', 'csButton' => 'Plan my own journey'])
 
 @if(count($shown))
 <section class="sec tint">

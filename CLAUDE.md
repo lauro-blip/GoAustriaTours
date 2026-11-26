@@ -80,6 +80,7 @@ Full detail: `docs/reference/LOCAL_XAMPP.md`. Tests: `php artisan test` (in-memo
 ## Admin dashboard
 - `Admin\DashboardController` (7/30/90 day range): needs-attention banner (new enquiries older than 24h, failed GHL / sheet syncs; the inbox has `?stale=1` and `?sync=failed` filters), KPIs with change vs the previous period (Google Ads = gclid or utm_medium cpc), SVG bar chart per day, pipeline by status, breakdowns (source / medium of the latest touch via `DashboardController::sourceLabel`, campaign, form, package), recent enquiries, and a site-health checklist (reCAPTCHA keys, GHL, Sheet, phone, GTM, notification email, `[CONFIRM]` placeholders). Add a new check by adding an entry to `$checks`.
 
+- Admin sidebar (`admin/layout.blade.php` $groups): collapsible sections Overview / Website / Tours / Stories / Settings; the section holding the current screen is always open, others remember open/closed per browser (localStorage `adm-nav-*`), items are filtered by role and empty sections are hidden; each item has a thin-line icon (`$navIco`, 24px grid, 1.25 stroke; gold when current). Add a new admin screen to the right section there, with an icon.
 - Admin on mobile: sticky top bar with a closed-by-default menu (`admin/layout.blade.php`); lists render as cards under 768px (`admin/crud/index.blade.php` + `partials/row-actions.blade.php`, `admin/enquiries/index.blade.php`) and as tables above. Grid children that hold tables need `min-w-0` or the page scrolls sideways.
 
 ## Conventions

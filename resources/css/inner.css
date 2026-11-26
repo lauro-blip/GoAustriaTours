@@ -277,18 +277,7 @@
 .t3 .pcard-call:hover { color: var(--accent-d); }
 .t3 .pcard-note { margin: 12px 0 0; text-align: center; font-size: 0.8rem; color: var(--muted); }
 
-/* route strip */
-.t3 .routesec { background: #fff; border-bottom: 1px solid var(--line); padding: 22px 0 24px; }
-.t3 .routesec-k { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-d); font-weight: 600; margin-bottom: 14px; }
-.t3 .route { list-style: none; margin: 0; padding: 0 0 4px; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
-.t3 .route::-webkit-scrollbar { display: none; }
-.t3 .route li { position: relative; flex: 1 0 auto; min-width: 150px; padding-right: 24px; }
-.t3 .route li:not(:last-child)::after { content: ''; position: absolute; left: 44px; right: 8px; top: 15px; border-top: 2px dotted color-mix(in srgb, var(--accent-d) 45%, transparent); }
-.t3 .route .rn { position: relative; z-index: 1; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--navy); font-family: var(--mono); font-size: 0.8rem; font-weight: 700; }
-.t3 .route a { display: grid; gap: 2px; margin-top: 10px; }
-.t3 .route b { font-family: var(--head); font-weight: 500; font-size: 1.15rem; color: var(--navy); }
-.t3 .route small { font-size: 0.78rem; color: var(--muted); }
-.t3 .route a:hover b { color: var(--accent-d); }
+/* (old package-page route strip removed: its .route rules also hit the package card route line on inner pages) */
 
 /* overview + numbered highlights */
 .t3 .ov-prose { max-width: 860px; margin: 0 auto; }

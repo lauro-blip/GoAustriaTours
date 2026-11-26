@@ -18,8 +18,16 @@ requestAnimationFrame(onScroll); // reading scrollY forces layout, so not during
 addEventListener('scroll', onScroll, { passive: true });
 
 const mobile = $('.t3 .mobile');
-$$('[data-open-menu]').forEach((b) => b.addEventListener('click', () => mobile.classList.add('open')));
-$$('[data-close-menu]').forEach((b) => b.addEventListener('click', () => mobile.classList.remove('open')));
+// Mobile menu: the page behind does not scroll while it is open; Escape or the close button closes it.
+const setMenu = (open) => {
+    mobile.classList.toggle('open', open);
+    document.documentElement.classList.toggle('m-lock', open);
+    $$('[data-open-menu]').forEach((b) => b.setAttribute('aria-expanded', String(open)));
+    if (open) mobile.querySelector('.close')?.focus({ preventScroll: true });
+};
+$$('[data-open-menu]').forEach((b) => { b.setAttribute('aria-controls', 'mobile-menu'); b.setAttribute('aria-expanded', 'false'); b.addEventListener('click', () => setMenu(true)); });
+$$('[data-close-menu]').forEach((b) => b.addEventListener('click', () => setMenu(false)));
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && mobile.classList.contains('open')) setMenu(false); });
 
 // tours: filter by destination, 6 per page, numbered pager
 $$('[data-tours]').forEach((sec) => {

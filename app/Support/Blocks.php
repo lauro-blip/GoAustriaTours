@@ -369,7 +369,7 @@ class Blocks
         foreach (['winter', 'gallery', 'packages', 'journal'] as $dir) {
             foreach (glob(public_path("images/{$dir}/*.webp")) ?: [] as $file) {
                 $name = basename($file, '.webp');
-                if (preg_match('/-(768|1280|1600|thumb)$/', $name)) {
+                if (preg_match('/-(240|768|1280|1600|thumb)$/', $name)) {
                     continue;
                 }
                 $thumb = collect(["{$name}-768", "{$name}-thumb", $name])->first(fn ($n) => is_file(public_path("images/{$dir}/{$n}.webp")));

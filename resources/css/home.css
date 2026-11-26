@@ -1327,3 +1327,41 @@ html:has(.t3) { scroll-padding-top:96px }
 /* Destinations is a link (to /destinations) that also opens its mega menu: same hover colour as the button triggers. */
 .t3 .nav li:hover > a.mtrig, .t3 .nav li:focus-within > a.mtrig { color: var(--accent); }
 .t3 .hdr.solid .nav li:hover > a.mtrig, .t3 .hdr.solid .nav li:focus-within > a.mtrig { color: var(--accent-d); }
+
+/* ============ Mobile menu v2 (layouts/nav/mobile): logo bar, rich Destinations / Vacations cards, clear rows ============ */
+html.m-lock { overflow: hidden; }
+.t3 #mobile-menu { padding: 0 0 34px; display: flex; flex-direction: column; overscroll-behavior: contain; }
+.t3 #mobile-menu .m-top { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--dark); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.t3 #mobile-menu .m-logo img { display: block; width: auto; height: 46px; }
+.t3 #mobile-menu .close { position: static; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid rgba(255, 255, 255, 0.28); border-radius: 50%; color: #fff; font-size: 0; }
+.t3 #mobile-menu .close svg { width: 20px; height: 20px; }
+.t3 #mobile-menu .m-list { padding: 6px 22px 0; }
+.t3 #mobile-menu .m-link, .t3 #mobile-menu .sub-t { padding: 17px 0; font-size: 0.86rem; letter-spacing: 0.1em; }
+.t3 #mobile-menu .m-link { display: block; font-weight: 700; text-transform: uppercase; color: #fff; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+.t3 #mobile-menu .sub.open .sub-l > div { padding: 4px 0 14px; }
+.t3 #mobile-menu .m-k { margin: 14px 0 10px; font-family: var(--mono); font-size: 0.64rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+.t3 #mobile-menu .m-cards { display: grid; gap: 8px; }
+.t3 #mobile-menu .m-card { display: grid; grid-template-columns: 76px minmax(0, 1fr) 18px; align-items: center; gap: 14px; padding: 8px 12px 8px 8px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; background: rgba(255, 255, 255, 0.05); color: #fff; transition: background 0.2s, border-color 0.2s; }
+.t3 #mobile-menu .m-card:active, .t3 #mobile-menu .m-card:hover { background: rgba(255, 255, 255, 0.1); border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
+.t3 #mobile-menu .m-card img { width: 76px; height: 56px; object-fit: cover; border-radius: 4px; background: rgba(255, 255, 255, 0.08); }
+.t3 #mobile-menu .m-card b { display: block; font-family: var(--head); font-weight: 500; font-size: 1.08rem; line-height: 1.2; }
+.t3 #mobile-menu .m-card em { display: block; margin-top: 2px; font-style: normal; font-size: 0.8rem; line-height: 1.35; color: rgba(255, 255, 255, 0.65); }
+.t3 #mobile-menu .m-card small { display: block; margin-top: 5px; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.t3 #mobile-menu .m-card svg, .t3 #mobile-menu .m-all svg { width: 18px; height: 18px; color: var(--accent); }
+.t3 #mobile-menu .m-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.t3 #mobile-menu .m-chips a { padding: 8px 14px; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 999px; font-size: 0.86rem; color: rgba(255, 255, 255, 0.9); }
+.t3 #mobile-menu .m-chips a:active { border-color: var(--accent); color: var(--accent); }
+.t3 #mobile-menu .m-all { display: inline-flex; align-items: center; gap: 8px; margin: 16px 0 2px; padding: 0; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+.t3 #mobile-menu .m-pair { display: flex; flex-wrap: wrap; gap: 0 26px; }
+.t3 #mobile-menu .m-rows { margin: 0; padding: 0; list-style: none; }
+.t3 #mobile-menu .m-rows li { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.t3 #mobile-menu .m-rows a { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; color: #fff; }
+.t3 #mobile-menu .m-rows b { display: block; font-size: 0.98rem; font-weight: 500; }
+.t3 #mobile-menu .m-rows em { display: block; margin-top: 2px; font-style: normal; font-size: 0.8rem; line-height: 1.4; color: rgba(255, 255, 255, 0.6); }
+.t3 #mobile-menu .m-rows small { flex: none; min-width: 30px; padding: 3px 9px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); font-size: 0.74rem; font-weight: 600; text-align: center; }
+.t3 #mobile-menu .m-legal { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 14px 0 2px; }
+.t3 #mobile-menu .m-legal a { padding: 0; font-size: 0.78rem; color: rgba(255, 255, 255, 0.55); text-decoration: underline; text-underline-offset: 3px; }
+.t3 #mobile-menu .m-cta { margin: 0; padding: 26px 22px 0; display: grid; gap: 12px; }
+.t3 #mobile-menu .m-ph { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 0 0; font-size: 1.1rem; font-weight: 600; color: #fff; }
+.t3 #mobile-menu .m-ph svg { width: 18px; height: 18px; color: var(--accent); }
+.t3 #mobile-menu .m-note { margin: 0; text-align: center; font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }

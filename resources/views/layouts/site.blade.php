@@ -105,41 +105,7 @@
         <button class="burger" type="button" data-open-menu aria-label="Open menu"><i></i><i></i><i></i></button>
     </div>
 </header>
-<nav class="mobile" aria-label="Mobile">
-    <button class="close" type="button" data-close-menu aria-label="Close menu">&times;</button>
-    <p class="mt">{{ $mh['cta_label'] !== '' ? $mh['cta_label'] : $brand }}</p>
-    @foreach($mh['items'] as $mi)
-        @continue($mi['hidden'])
-        @switch($mi['key'])
-            @case('home')
-                <a href="{{ route('home') }}" data-close-menu>{{ $mi['label'] }}</a>
-                @break
-            @case('destinations')
-                <div class="sub"><button type="button" class="sub-t" aria-expanded="false">{{ $mi['label'] }}<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('destinations.index') }}">All destinations</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach</div></div></div>
-                @break
-            @case('vacations')
-                <div class="sub"><button type="button" class="sub-t" aria-expanded="false">{{ $mi['label'] }}<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('tours.index') }}">Compare all</a><a href="{{ route('packages.index') }}">View all journeys</a>@foreach($tourTypes as $t)<a href="{{ route('tours.show', $t->slug) }}">{{ $t->name }}</a>@endforeach</div></div></div>
-                @break
-            @case('styles')
-                <div class="sub"><button type="button" class="sub-t" aria-expanded="false">{{ $mi['label'] }}<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('styles.index') }}">All travel styles</a>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] ?? ucfirst($slug) }}</a>@endforeach</div></div></div>
-                @break
-            @case('about')
-                <div class="sub"><button type="button" class="sub-t" aria-expanded="false">{{ $mi['label'] }}<i class="caret"></i></button><div class="sub-l"><div><a href="{{ route('about') }}">About us</a><a href="{{ route('journal.index') }}">Journal</a><a href="{{ route('testimonials') }}">Guest stories</a>@foreach($navPages['about'] ?? [] as $np)<a href="{{ route('pages.show', $np->slug) }}">{{ $np->title }}</a>@endforeach</div></div></div>
-                @break
-            @case('contact')
-                <a href="{{ route('contact') }}">{{ $mi['label'] }}</a>
-                @break
-            @default
-                <a href="{{ \App\Support\Menus::href($mi['url']) }}" data-close-menu>{{ $mi['label'] }}</a>
-        @endswitch
-    @endforeach
-    <div class="m-cta">
-        @if($mh['cta_label'] !== '')
-            @if($mh['cta_url'] !== '')<a class="btn" href="{{ \App\Support\Menus::href($mh['cta_url']) }}" data-close-menu>{{ $mh['cta_label'] }} <i aria-hidden="true">&rarr;</i></a>@else<a class="btn" href="{{ route('contact') }}" data-quote data-close-menu>{{ $mh['cta_label'] }} <i aria-hidden="true">&rarr;</i></a>@endif
-        @endif
-        @if($phoneOk)<a class="m-ph" href="tel:{{ $tel }}">{{ $phone }}</a>@endif
-    </div>
-</nav>
+@include('layouts.nav.mobile')
 
 <main id="main">
 @yield('content')

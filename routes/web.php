@@ -35,3 +35,6 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 
 require __DIR__.'/admin.php';
+
+// Pages built in Admin > Pages (section blocks). Registered last so every fixed route above (and /admin) wins.
+Route::get('/{page:slug}', [PageController::class, 'show'])->where('page', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('pages.show');

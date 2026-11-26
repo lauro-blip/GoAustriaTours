@@ -138,7 +138,7 @@ class ContentSeeder extends Seeder
         foreach ($pages as $slug => [$metaTitle, $title, $desc, $body, $sections]) {
             Page::firstOrCreate(['slug' => $slug], [
                 'title' => $title, 'meta_title' => $metaTitle, 'meta_description' => $desc,
-                'body' => $body, 'sections' => $sections, 'noindex' => $slug === 'thank-you',
+                'body' => $body, 'sections' => $sections, 'noindex' => $slug === 'thank-you', 'is_system' => true,
             ]);
         }
     }

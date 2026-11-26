@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
         ]);
 
         // Every public view gets $site (settings are cached). Settings still holding a "[CONFIRM: ...]" placeholder are treated as empty, so they never show to visitors.
-        View::composer(['layouts.*', 'partials.*', 'pages.*', 'packages.*', 'tours.*', 'destinations.*', 'styles.*','journal.*', 'errors.*'], function ($view) {
+        View::composer(['layouts.*', 'partials.*', 'pages.*', 'packages.*', 'tours.*', 'destinations.*', 'styles.*', 'blocks.*', 'journal.*', 'errors.*'], function ($view) {
             $site = array_map(fn ($v) => is_string($v) && str_contains($v, '[CONFIRM') ? '' : $v, Setting::all_());
             $view->with([
                 'site' => $site,
@@ -58,6 +58,11 @@ class AppServiceProvider extends ServiceProvider
                     'tel' => preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $phone)),
                     'navPlaces' => config('goaustria.nav_places', []),
                     'navPost' => Post::published()->first(),
+                    // Admin > Menus (header items, header button, footer columns and texts).
+                    'menuHeader' => \App\Support\Menus::header(),
+                    'menuFooter' => \App\Support\Menus::footer(),
+                    // Pages from Admin > Pages placed in the About Us menu or the footer.
+                    'navPages' => \App\Models\Page::live()->whereNotNull('nav_location')->orderBy('sort_order')->orderBy('title')->get(['slug', 'title', 'nav_location', 'intro'])->groupBy('nav_location'),
                     'navFeatured' => $feat ? \App\Support\Places::card($feat) : null,
                     'navStyles' => collect(\App\Support\TravelStyles::withPackages($all))->keyBy('slug')->all(),
                     'destinations' => Destination::active()->get(),

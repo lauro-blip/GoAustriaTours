@@ -55,8 +55,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Pages, settings, media
         Route::get('pages', [Admin\PageController::class, 'index'])->name('pages.index');
+        Route::get('pages/create', [Admin\PageController::class, 'create'])->name('pages.create');
+        Route::post('pages', [Admin\PageController::class, 'store'])->name('pages.store');
         Route::get('pages/{page}/edit', [Admin\PageController::class, 'edit'])->name('pages.edit');
         Route::put('pages/{page}', [Admin\PageController::class, 'update'])->name('pages.update');
+        Route::delete('pages/{page}', [Admin\PageController::class, 'destroy'])->name('pages.destroy');
+        Route::post('pages/{page}/duplicate', [Admin\PageController::class, 'duplicate'])->name('pages.duplicate');
+        Route::get('menus', [Admin\MenuController::class, 'edit'])->name('menus.edit');
+        Route::put('menus', [Admin\MenuController::class, 'update'])->name('menus.update');
+        Route::post('menus/reset', [Admin\MenuController::class, 'reset'])->name('menus.reset');
+        Route::get('design', [Admin\DesignController::class, 'edit'])->name('design.edit');
+        Route::put('design', [Admin\DesignController::class, 'update'])->name('design.update');
+        Route::match(['post', 'put'], 'design/preview', [Admin\DesignController::class, 'preview'])->name('design.preview');
+        Route::post('design/reset', [Admin\DesignController::class, 'reset'])->name('design.reset');
         Route::get('settings', [Admin\SettingController::class, 'edit'])->name('settings.edit');
         Route::put('settings', [Admin\SettingController::class, 'update'])->name('settings.update');
         Route::get('trust', [Admin\TrustController::class, 'edit'])->name('trust.edit');

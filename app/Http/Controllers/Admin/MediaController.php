@@ -19,9 +19,17 @@ class MediaController extends Controller
     {
         $request->validate(['image' => ['required', 'image', 'max:8192'], 'alt' => ['required', 'string', 'max:190']], ['alt.required' => 'Alt text is required.']);
         try {
-            $images->storeMedia($request->file('image'), $request->alt);
+            $media = $images->storeMedia($request->file('image'), $request->alt);
         } catch (InvalidArgumentException $e) {
-            return back()->withErrors(['image' => $e->getMessage()]);
+            return $request->wantsJson() ? response()->json(['message' => $e->getMessage()], 422) : back()->withErrors(['image' => $e->getMessage()]);
+        }
+
+        // The page builder's photo picker uploads in the background and selects the new photo straight away.
+        if ($request->wantsJson()) {
+            return response()->json([
+                'ref' => 'media:'.$media->id, 'label' => $media->alt, 'alt' => $media->alt,
+                'thumb' => asset('storage/'.(collect((array) $media->variants)->sortKeys()->first() ?? $media->path)),
+            ]);
         }
 
         return back()->with('status', 'Uploaded and converted to WebP.');

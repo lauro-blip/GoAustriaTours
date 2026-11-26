@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin') | {{ \App\Models\Setting::get('brand_name', 'Admin') }}</title>
     @vite(['resources/css/app.css', 'resources/js/admin.js'])
 </head>
@@ -13,7 +14,7 @@
         ['admin.dashboard', 'Dashboard'], ['admin.enquiries.index', 'Enquiries'], ['admin.packages.index', 'Packages'],
         ['admin.tour-types.index', 'Tour types'], ['admin.destinations.index', 'Destinations'], ['admin.quiz.index', 'Quiz'],
         ['admin.pages.index', 'Pages'], ['admin.testimonials.index', 'Testimonials'], ['admin.faqs.index', 'FAQs'], ['admin.posts.index', 'Journal'],
-        ['admin.media.index', 'Media'], ['admin.settings.edit', 'Settings'], ['admin.trust.edit', 'Trust & tracking'], ['admin.ghl.edit', 'GoHighLevel'], ['admin.sheets.edit', 'Google Sheet'], ['admin.users.index', 'Admin users'],
+        ['admin.media.index', 'Media'], ['admin.menus.edit', 'Menus'], ['admin.design.edit', 'Design'], ['admin.settings.edit', 'Settings'], ['admin.trust.edit', 'Trust & tracking'], ['admin.ghl.edit', 'GoHighLevel'], ['admin.sheets.edit', 'Google Sheet'], ['admin.users.index', 'Admin users'],
     ];
 @endphp
 <div class="lg:flex min-h-screen">
@@ -24,7 +25,7 @@
         </div>
         <nav id="admin-nav" class="hidden px-2 pb-4 max-lg:absolute max-lg:inset-x-0 max-lg:top-full max-lg:max-h-[calc(100vh-4rem)] max-lg:overflow-y-auto max-lg:bg-brand-dark max-lg:shadow-2xl lg:block" :class="{ '!block': nav }" aria-label="Admin">
             @foreach($links as [$r, $label])
-                <a href="{{ route($r) }}" class="block rounded-lg px-3 py-3 text-sm hover:bg-white/10 lg:py-2 {{ request()->routeIs(Str::beforeLast($r, '.').'*') ? 'bg-white/15 font-semibold' : '' }}">{{ $label }}</a>
+                <a href="{{ route($r) }}" class="block rounded-lg px-3 py-3 text-sm hover:bg-white/10 lg:py-2 {{ request()->routeIs($r === 'admin.dashboard' ? $r : Str::beforeLast($r, '.').'*') ? 'bg-white/15 font-semibold' : '' }}">{{ $label }}</a>
             @endforeach
             <a href="{{ route('home') }}" target="_blank" rel="noopener" class="mt-3 block rounded-lg px-3 py-3 text-sm text-white/85 hover:bg-white/10 lg:py-2">View site &nearr;</a>
             <form method="POST" action="{{ route('admin.logout') }}">@csrf<button class="mt-1 w-full rounded-lg px-3 py-3 text-left text-sm text-white/85 hover:bg-white/10 lg:py-2">Log out</button></form>

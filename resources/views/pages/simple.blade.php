@@ -16,6 +16,9 @@
     </div>
 </section>
 
+{{-- Extra sections added in Admin > Pages (about and legal pages accept blocks below their text). --}}
+@include('blocks._all', ['blocks' => $page->blocks ?? []])
+
 @if($isAbout)
 <section class="sec tint">
     <div class="wrap">

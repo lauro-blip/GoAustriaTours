@@ -7,7 +7,11 @@ import '@fontsource/cormorant-garamond/700.css';
 import '@fontsource/cormorant-garamond/700-italic.css';
 import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
+import pageBuilder from './page-builder';
+import menuEditor from './menu-editor';
 
 window.Alpine = Alpine;
 Alpine.plugin(focus);
+Alpine.data('pageBuilder', pageBuilder);
+Alpine.data('menuEditor', menuEditor);
 Alpine.start();

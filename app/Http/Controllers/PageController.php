@@ -49,6 +49,15 @@ class PageController extends Controller
         return view('pages.simple', ['page' => Page::slug($slug) ?? abort(404)]);
     }
 
+    /** A page built in Admin > Pages from section blocks. Drafts are visible only to a signed-in admin (as a preview). */
+    public function show(Page $page)
+    {
+        abort_if($page->is_system, 404);
+        abort_unless($page->is_published || auth('admin')->check(), 404);
+
+        return view('pages.custom', ['page' => $page]);
+    }
+
     /** Attribution for the Wikimedia Commons photos (CC BY / CC BY-SA require it). Keep in step with docs/reference/IMAGE_CREDITS.md. */
     public function photoCredits()
     {

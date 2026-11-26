@@ -12,12 +12,9 @@ class SeoController extends Controller
     {
         $urls = [[route('home'), now()]];
 
-        foreach (Page::where('noindex', false)->whereNotIn('slug', ['home'])->get() as $page) {
-            $route = match ($page->slug) {
-                'terms' => route('terms'), 'privacy' => route('privacy'),
-                default => url('/'.$page->slug),
-            };
-            $urls[] = [$route, $page->updated_at];
+        // Built-in pages + published pages from Admin > Pages (drafts and noindex pages are left out).
+        foreach (Page::where('noindex', false)->whereNotIn('slug', ['home'])->where(fn ($q) => $q->where('is_system', true)->orWhere('is_published', true))->get() as $page) {
+            $urls[] = [$page->url(), $page->updated_at];
         }
         $urls[] = [route('packages.index'), now()];
         $urls[] = [route('destinations.index'), now()];

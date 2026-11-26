@@ -94,3 +94,6 @@
     .hero-slide:nth-child(1) { opacity: 1; }
     .hero-slide:nth-child(n+2) { display: none; }
 }
+
+/* Page builder: images are managed through the photo picker, not Trix attachments. */
+trix-toolbar [data-trix-button-group="file-tools"] { display: none; }

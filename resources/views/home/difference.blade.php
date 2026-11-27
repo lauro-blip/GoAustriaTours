@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="stats rv">
-            @foreach([[$packages->count(), 1], [$destinations->count(), 2], [$tourTypes->count(), 3]] as [$num, $si])
+            @foreach([[$packages->count(), 1], [count($navPlaces), 2], [$tourTypes->count(), 3]] as [$num, $si])
                 <div class="stat"><b data-n="{{ $num }}">0</b><div><strong{{ $ed("stat{$si}_label") }}>{{ $tx($d["stat{$si}_label"] ?? '') }}</strong>@if(filled($d["stat{$si}_text"] ?? null))<span{{ $ed("stat{$si}_text") }}>{{ $tx($d["stat{$si}_text"]) }}</span>@endif</div></div>
             @endforeach
         </div>

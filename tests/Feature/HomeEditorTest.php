@@ -40,7 +40,7 @@ class HomeEditorTest extends TestCase
             ->assertSee('Custom Itineraries')
             ->assertSee('Why travel with GoAustriaTours')
             ->assertSee('Our Top-Rated')
-            ->assertSee('Moments Worth');
+            ->assertDontSee('Moments Worth'); // hidden by default (HomeSections::HIDDEN)
         $this->assertCount(count(HomeSections::ORDER), HomeSections::defaults());
     }
 

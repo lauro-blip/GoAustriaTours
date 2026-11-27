@@ -1,5 +1,5 @@
-{{-- Home: tours grid (destination chips + 6-per-page pager in home.js). --}}
-<section class="sec tint" id="tours" data-tours>
+{{-- Home: tours grid (place chips: the 5 most-visited places, the select lists all; each card's data-dest = the places it visits; 6-per-page pager in home.js). --}}
+<section class="sec{{ ! empty($bg) ? ' '.$bg : '' }}" id="tours" data-tours>
     <div class="wrap">
         <div class="tours-head rv">
             @include('home._head', ['hc' => ''])
@@ -7,19 +7,19 @@
                 <label class="tsel"><span class="sr-only">Filter by destination</span>
                     <select data-dest-select>
                         <option value="">All packages</option>
-                        @foreach($destinations as $dst)<option value="{{ $dst->slug }}">{{ $dst->name }}</option>@endforeach
+                        @foreach($navPlaces as $key => $pl)<option value="{{ $key }}">{{ $pl['name'] }}</option>@endforeach
                     </select>
                 </label>
                 <div class="chips" role="group" aria-label="Filter by destination">
                     <button type="button" class="chip on" data-dest="">All packages</button>
-                    @foreach($destinations as $dst)<button type="button" class="chip" data-dest="{{ $dst->slug }}">{{ $dst->name }}</button>@endforeach
+                    @foreach(collect($navPlaces)->sortByDesc('count')->take(5) as $key => $pl)<button type="button" class="chip" data-dest="{{ $key }}">{{ $pl['name'] }}</button>@endforeach
                 </div>
                 <p class="count" data-count aria-live="polite">Showing 1&ndash;{{ min(6, $featured->count()) }} of {{ $featured->count() }} tours</p>
             </div>
         </div>
         <div class="grid" data-grid>
             @foreach($featured as $f)
-                <div class="cell" data-dest="{{ $f->dest }}">@include('pages.partials.package-card', ['f' => $f])</div>
+                <div class="cell" data-dest="{{ implode(' ', $f->placeKeys) }}">@include('pages.partials.package-card', ['f' => $f])</div>
             @endforeach
         </div>
         <nav class="pager" data-pager aria-label="Pagination"></nav>

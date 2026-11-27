@@ -118,7 +118,8 @@
     <div class="wrap"><dl>
         <div><dt>Duration</dt><dd>{{ $days }} days &middot; {{ $package->nights }} nights</dd></div>
         @if($package->tourType)<div><dt>Style</dt><dd>{{ $package->tourType->name }}</dd></div>@endif
-        @if($package->destination)<div><dt>Region</dt><dd>{{ $package->destination->name }}</dd></div>@endif
+        @php $pkPlaces = collect(\App\Support\Places::forPackage($package))->pluck('name'); @endphp
+        @if($pkPlaces->isNotEmpty())<div><dt>Places</dt><dd>{{ $pkPlaces->take(3)->implode(' · ') }}@if($pkPlaces->count() > 3) +{{ $pkPlaces->count() - 3 }}@endif</dd></div>@endif
         <div class="fprice"><dt>{{ $price ? 'From' : 'Price' }}</dt><dd>{{ $price ?: 'On request' }}@if($price)<small> per person</small>@endif</dd></div>
     </dl></div>
 </section>

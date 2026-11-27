@@ -63,23 +63,9 @@ return [
         ],
     ],
 
-    // Destinations mega menu: places listed under each destination (by destination slug). 'q' is the /packages?q= search term.
-    // Only list places that really appear in package itineraries, so every link shows results.
-    // Region photo (public/images/winter/{name}-768/-1280.webp) on /destinations.
     // Tour type photo (public/images/winter/{name}-768/-1280.webp) on /austria-vacations.
+    // (Destinations are the places in App\Support\Places, grouped by what each journey visits: there are no regions.)
     'tour_type_images' => ['self-drive' => 'way-self-drive', 'escorted' => 'way-escorted', 'coach' => 'way-coach'],
-    'destination_images' => ['vienna-salzburg' => 'hero-salzburg', 'tyrol' => 'hero-montafon'],
-
-    'nav_places' => [
-        'vienna-salzburg' => [
-            ['Vienna', 'Vienna'], ['Wachau Valley', 'Wachau'], ['Salzburg', 'Salzburg'],
-            ['Hallstatt', 'Hallstatt'], ['Graz', 'Graz'],
-        ],
-        'tyrol' => [
-            ['Innsbruck', 'Innsbruck'], ['Zell am See', 'Zell am See'], ['Grossglockner', 'Grossglockner'],
-            ['Arlberg', 'Arlberg'], ['Bregenz', 'Bregenz'],
-        ],
-    ],
 
     // Bump when the consent wording or the legal pages change materially. Stored with every enquiry.
     'terms_version' => '2026-01',

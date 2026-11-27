@@ -10,7 +10,7 @@
     $reviewUrl = trim((string) ($site['review_url'] ?? ''));
 @endphp
 @if($marks->isNotEmpty() || $established !== '' || $reviewText !== '')
-<section class="trust" aria-label="Why you can trust us">
+<section class="trust{{ ! empty($bg) ? ' '.$bg : '' }}" aria-label="Why you can trust us">
     <div class="wrap trust-in">
         @if($established !== '')<p class="trust-est">{{ $established }}</p>@endif
         @if($marks->isNotEmpty())

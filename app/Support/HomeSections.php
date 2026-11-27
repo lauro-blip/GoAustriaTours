@@ -10,8 +10,11 @@ namespace App\Support;
  */
 class HomeSections
 {
+    /** Built-in sections that start hidden (switch them on in Admin > Pages > Home). */
+    public const HIDDEN = ['moments'];
+
     /** Built-in order. */
-    public const ORDER = ['hero', 'trust', 'band', 'why', 'tours', 'difference', 'destinations', 'popular', 'cta', 'ways', 'gallery', 'stories', 'moments', 'journal'];
+    public const ORDER = ['hero', 'trust', 'band', 'why', 'ways', 'tours', 'difference', 'destinations', 'popular', 'cta', 'gallery', 'stories', 'moments', 'journal'];
 
     public static function types(): array
     {
@@ -63,7 +66,7 @@ class HomeSections
                 'button_label' => $t('Button label', 60) + ['default' => 'Get a free quote'],
                 'link_label' => $t('Link label (to all packages)', 60) + ['default' => 'View all packages'],
             ]),
-            'home_difference' => $section('The difference + stats', 'A dark photo section with points and real counts (journeys, regions, ways to travel).', [
+            'home_difference' => $section('The difference + stats', 'A dark photo section with points and real counts (journeys, places, ways to travel).', [
                 'image' => $img('Background photo', $sp('steinernes-meer'), '', true),
             ] + $head('The {brand} difference', 'Why travel', 'with us?', 'We plan Austria for travellers who would rather be looked after than left to work it out alone.') + [
                 'points' => ['kind' => 'items', 'label' => 'Points', 'max_items' => 5, 'add' => 'Add point', 'fields' => ['text' => $t('Point', 140)], 'default' => [
@@ -76,12 +79,12 @@ class HomeSections
                 'link' => ['kind' => 'link', 'label' => 'Second link', 'default' => '/about'],
                 'stat1_label' => $t('Stat 1 label (number of journeys)', 60) + ['default' => 'Journeys'],
                 'stat1_text' => $t('Stat 1 text', 140) + ['default' => 'Itineraries to choose from, each open to change before you book.'],
-                'stat2_label' => $t('Stat 2 label (number of regions)', 60) + ['default' => 'Regions of Austria'],
+                'stat2_label' => $t('Stat 2 label (number of places our journeys visit)', 60) + ['default' => 'Places to discover'],
                 'stat2_text' => $t('Stat 2 text', 140) + ['default' => 'From imperial Vienna to the high peaks of Tyrol.'],
                 'stat3_label' => $t('Stat 3 label (number of ways to travel)', 60) + ['default' => 'Ways to travel'],
                 'stat3_text' => $t('Stat 3 text', 140) + ['default' => 'Self drive, escorted or by coach.'],
             ]),
-            'home_destinations' => $section('Destinations', 'Region tiles with places and journey counts (from Admin > Destinations).', $head('Where to go', 'Explore Top', 'Destinations', 'The imperial cities, the high Alps, or a route entirely your own.') + [
+            'home_destinations' => $section('Destinations', 'Tiles for the 6 most-visited places, with journey counts.', $head('Where to go', 'Explore Top', 'Destinations', 'The imperial cities, the high Alps, or a route entirely your own.') + [
                 'link_label' => $t('Link under the tiles', 60) + ['default' => 'View all destinations'],
             ]),
             'home_popular' => $section('More itineraries', 'Six more journey cards (shown when there are more than six journeys).', $head('Handpicked itineraries', 'Austria,', 'Perfectly Planned', 'More of our most-loved itineraries, each one open to change before you book.')),
@@ -105,7 +108,7 @@ class HomeSections
                 'button_label' => $t('Button label', 60) + ['default' => 'Plan my journey'],
             ]),
             'home_stories' => $section('Guest stories', 'Active stories from Admin > Testimonials (up to 6).', $head('Guest reviews', 'Guest', 'Stories', 'Words from travellers who let us shape their trip to Austria.')),
-            'home_moments' => $section('Featured journeys', 'Six journey cards with photo, region, nights and price.', $head('Featured journeys', 'Moments Worth', 'Travelling For', 'Journeys built around the places you will remember longest.')),
+            'home_moments' => $section('Featured journeys', 'Six journey cards with photo, nights and price.', $head('Featured journeys', 'Moments Worth', 'Travelling For', 'Journeys built around the places you will remember longest.')),
             'home_journal' => $section('Journal', 'The three latest Journal posts.', $head('Stories and tips', 'Austria Travel', 'Journal', 'Ideas, advice and winter inspiration for planning your trip.') + [
                 'button_label' => $t('Button label', 60) + ['default' => 'Read the journal'],
             ]),
@@ -115,7 +118,13 @@ class HomeSections
     /** Every built-in section in the original order, with default content. */
     public static function defaults(): array
     {
-        return array_map(fn ($k) => Blocks::blank('home_'.$k), self::ORDER);
+        return array_map(fn ($k) => self::blank($k), self::ORDER);
+    }
+
+    /** A built-in section with its default content (hidden when listed in HIDDEN). */
+    private static function blank(string $key): array
+    {
+        return array_merge(Blocks::blank('home_'.$key), in_array($key, self::HIDDEN, true) ? ['hidden' => true] : []);
     }
 
     /**
@@ -140,7 +149,7 @@ class HomeSections
         }
         foreach (self::ORDER as $k) {
             if (! isset($seen['home_'.$k])) {
-                $out[] = Blocks::blank('home_'.$k);
+                $out[] = self::blank($k);
             }
         }
         $hero = collect($out)->firstWhere('type', 'home_hero');

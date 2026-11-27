@@ -26,10 +26,9 @@ class PageController extends Controller
             'tourTypes' => $tourTypes,
             // Google Ads message match: ?tour=self-drive (a real, active tour type slug) re-words the hero. Unknown values are ignored.
             'activeTour' => request()->filled('tour') ? $tourTypes->firstWhere('slug', (string) request('tour')) : null,
-            'packages' => Package::published()->with(['tourType', 'destination'])->get(),
+            'packages' => Package::published()->with(['tourType'])->get(),
             'quizSteps' => QuizStep::forQuiz(),
             'testimonials' => Testimonial::where('is_active', true)->orderBy('sort_order')->take(6)->get(),
-            'destinations' => \App\Models\Destination::active()->get(),
             'posts' => \App\Models\Post::published()->take(3)->get(),
         ];
     }

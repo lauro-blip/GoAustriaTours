@@ -10,7 +10,8 @@
     <ul class="pcard-facts">
         <li><span>Duration</span><b>{{ $package->nights + 1 }} days &middot; {{ $package->nights }} nights</b></li>
         @if($package->tourType)<li><span>Style</span><b>{{ $package->tourType->name }}</b></li>@endif
-        @if($package->destination)<li><span>Region</span><b>{{ $package->destination->name }}</b></li>@endif
+        @php $pkPlaces = collect(\App\Support\Places::forPackage($package))->pluck('name'); @endphp
+        @if($pkPlaces->isNotEmpty())<li><span>Places</span><b>{{ $pkPlaces->take(3)->implode(' · ') }}@if($pkPlaces->count() > 3) +{{ $pkPlaces->count() - 3 }}@endif</b></li>@endif
     </ul>
     <a class="btn" href="{{ route('contact') }}" data-quote data-package-id="{{ $package->id }}" data-package="{{ $package->title }}">Get a free quote <i aria-hidden="true">&rarr;</i></a>
     @if($hcPhone !== '')<a class="pcard-call" href="tel:{{ $hcTel }}">or call {{ $hcPhone }}</a>@endif

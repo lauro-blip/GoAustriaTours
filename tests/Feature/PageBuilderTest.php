@@ -27,7 +27,7 @@ class PageBuilderTest extends TestCase
             ['type' => 'text', 'data' => ['eyebrow' => 'Plan ahead', 'heading' => 'Winter in Austria', 'body' => '<p>Snowy <strong>villages</strong><script>alert(1)</script> <a href="javascript:alert(1)">bad</a> <a href="/destinations">good</a></p>', 'align' => 'center', 'tone' => 'light']],
             ['type' => 'image_text', 'data' => ['image' => ['ref' => 'site:winter/hallstatt', 'alt' => 'Hallstatt in winter'], 'side' => 'right', 'heading' => 'Lakeside calm', 'button_label' => 'Ask us', 'button_link' => 'javascript:alert(1)', 'tone' => 'tint']],
             ['type' => 'faq', 'data' => ['heading' => 'Questions', 'items' => [['question' => 'Is it cold?', 'answer' => 'Yes, bring a coat.'], ['question' => '', 'answer' => '']]]],
-            ['type' => 'journeys', 'data' => ['heading' => 'Tyrol journeys', 'filter' => 'destination:tyrol', 'limit' => 3]],
+            ['type' => 'journeys', 'data' => ['heading' => 'Tyrol journeys', 'filter' => 'place:innsbruck', 'limit' => 3]],
             ['type' => 'quote_form', 'data' => ['heading' => 'Ask for a quote']],
             ['type' => 'evil', 'data' => ['x' => 1]],
         ]);

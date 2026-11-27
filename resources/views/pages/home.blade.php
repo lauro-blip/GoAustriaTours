@@ -38,14 +38,14 @@
     $tel = preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $phone));
     $brand = $site['brand_name'] ?? 'GoAustriaTours';
     $tx = fn ($s) => str_replace('{brand}', $brand, (string) $s);
-    $navPlaces = config('goaustria.nav_places', []);
+    $navPlaces = \App\Support\Places::withJourneys($packages);   // destinations = places, with journey counts
     $pkgs = $packages->values()->map(function ($p, $i) use ($winter, $w) {
         $card = \App\Support\Places::card($p);
         $card->image = $w($winter[$i % count($winter)], '-768');
 
         return $card;
     });
-    $featured = $pkgs->take(12)->values();
+    $featured = $pkgs->values();   // all journeys, so every place chip has matches (the pager shows 6 at a time)
     $popular = $pkgs->slice(6, 6)->values();
 @endphp
 @include('blocks._all', ['blocks' => $homeBlocks])

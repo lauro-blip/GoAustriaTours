@@ -10,7 +10,8 @@
 @section('content')
 @include('pages.partials.banner', ['bClass' => 'slim'])
 
-<section class="sec">
+{{-- Backgrounds alternate down to the footer CTA (tint): on About the text is tint and "Three ways" cream; legal pages are cream. --}}
+<section @class(['sec', 'tint' => $isAbout])>
     <div class="wrap narrow">
         <div class="prose">{!! $page->body !!}</div>
     </div>
@@ -20,7 +21,7 @@
 @include('blocks._all', ['blocks' => $page->blocks ?? []])
 
 @if($isAbout)
-<section class="sec tint">
+<section class="sec">
     <div class="wrap">
         <div class="head"><p class="eyebrow dark">How we plan your trip</p><h2 class="h">Three ways to see Austria</h2></div>
         <div class="ways">

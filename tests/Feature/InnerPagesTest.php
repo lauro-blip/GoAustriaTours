@@ -33,7 +33,7 @@ class InnerPagesTest extends TestCase
     public function test_header_menus_list_destinations_tour_types_and_travel_styles(): void
     {
         $html = $this->get('/journal')->assertOk()->getContent();
-        $this->assertStringContainsString('/packages?destination=tyrol', $html);
+        $this->assertStringContainsString('/packages?place=hallstatt', $html);   // destinations are places (no regions)
         $this->assertStringContainsString('/tours/escorted', $html);
         $this->assertStringContainsString('/packages?style=', $html);
         $this->assertStringContainsString('Plan your journey', $html);
@@ -74,7 +74,9 @@ class InnerPagesTest extends TestCase
 
     public function test_package_filters_and_search_still_work_on_the_new_pages(): void
     {
-        $this->get('/packages?destination=tyrol')->assertOk()->assertSee('journeys', false);
+        $this->get('/packages?destination=tyrol')->assertOk()->assertSee('journeys', false);   // old region links still load (all journeys)
+        $this->get('/packages?place=innsbruck')->assertOk()->assertSee('Journeys to Innsbruck')
+            ->assertSee('Tyrol Private Escorted')->assertDontSee('Vienna &amp; Salzburg Private Escorted', false);
         $this->get('/packages?q=Hallstatt')->assertOk()->assertSee('that include', false);
         $this->get('/packages?tour_type=coach')->assertOk()->assertSee('Coach tours');
     }
@@ -118,21 +120,20 @@ class InnerPagesTest extends TestCase
         $this->get('/photo-credits')->assertOk()->assertSee('Wagrain in winter')->assertSee('AI-generated');
     }
 
-    public function test_destinations_page_lists_each_region_with_its_places_and_journeys(): void
+    public function test_destinations_page_lists_each_place_with_its_journeys_and_no_regions(): void
     {
         $html = $this->get('/destinations')->assertOk()
             ->assertSee('Austria at a glance')
-            ->assertSee('Vienna &amp; <em>Salzburg</em>', false)
-            ->assertSee('id="tyrol"', false)
-            ->assertSee('Places in Vienna &amp; Salzburg', false)
-            ->assertSee('/packages?destination=tyrol', false)
-            ->assertSee('data-interest="Tyrol &amp; the Alps"', false)
+            ->assertSee('id="salzburg"', false)
+            ->assertSee('/packages?place=innsbruck', false)
             ->assertSee('Historic Centre of the City of Salzburg', false)
             ->assertSee('class="plx-land"', false)
+            ->assertDontSee('Tyrol &amp; the Alps', false)
+            ->assertDontSee('Explore the region')
             ->assertDontSee('CONFIRM')
             ->getContent();
 
-        // Each place is listed (and numbered) once, under one region.
+        // Each place is listed (and numbered) once.
         $this->assertSame(1, substr_count($html, '<h5>Salzburg</h5>'));
         $this->assertStringNotContainsString('openstreetmap.org', $html);
         $this->assertStringContainsString('application/ld+json', $html);

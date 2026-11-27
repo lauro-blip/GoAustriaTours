@@ -1,6 +1,6 @@
 {{-- Home: featured journeys ("moments"). --}}
 @if($pkgs->isNotEmpty())
-<section class="sec tint" id="moments">
+<section class="sec{{ ! empty($bg) ? ' '.$bg : '' }}" id="moments">
     <div class="wrap">
         @include('home._head', ['oneline' => true])
         <div class="mom">
@@ -9,7 +9,7 @@
                     <img src="{{ $w($winter[($loop->index + 4) % count($winter)], '-768') }}" alt="" loading="lazy">
                     @if($f->p->tourType)<span class="mt">{{ $f->p->tourType->name }}</span>@endif
                     <div class="mb">
-                        @if($f->p->destination)<p class="mk">{{ $f->p->destination->name }}</p>@endif
+                        @if($f->places->isNotEmpty())<p class="mk">{{ $f->places->take(2)->implode(' · ') }}</p>@endif
                         <h3><a href="{{ route('packages.show', $f->p) }}">{{ $f->p->title }}</a></h3>
                         <p class="mm">@if($f->p->nights){{ $f->p->nights }} nights<span aria-hidden="true"> &middot; </span>@endif{{ $f->price ? 'From '.$f->price : 'Price on request' }}</p>
                         <div class="mact">

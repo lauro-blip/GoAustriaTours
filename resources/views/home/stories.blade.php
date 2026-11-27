@@ -1,6 +1,6 @@
 {{-- Home: guest stories (Admin > Testimonials). --}}
 @if($testimonials->isNotEmpty())
-<section class="sec" id="stories">
+<section class="sec{{ ! empty($bg) ? ' '.$bg : '' }}" id="stories">
     <div class="wrap">
         @include('home._head', ['oneline' => true])
         <div class="reviews tcards" data-reviews>

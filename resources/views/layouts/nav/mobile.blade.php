@@ -3,7 +3,6 @@
      lazy-loaded, so they only download when a submenu is opened. --}}
 @php
     $thumb = fn (string $name) => asset('images/winter/'.$name.'-240.webp');
-    $destThumb = fn ($d, $i) => (config('goaustria.destination_images')[$d->slug] ?? $winter[($i * 2) % count($winter)]);
     $count = fn (int $n) => $n.' '.($n === 1 ? 'journey' : 'journeys');
     $arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 @endphp
@@ -24,21 +23,20 @@
             @case('destinations')
                 <div class="sub"><button type="button" class="sub-t" aria-expanded="false">{{ $mi['label'] }}<i class="caret"></i></button>
                     <div class="sub-l"><div>
-                        <p class="m-k">Explore by region</p>
+                        <p class="m-k">Top destinations</p>
                         <div class="m-cards">
-                            @foreach($destinations as $d)
-                                @php $dn = $pkgCounts['dest'][$d->slug] ?? 0; @endphp
-                                <a class="m-card" href="{{ route('packages.index', ['destination' => $d->slug]) }}">
-                                    <img src="{{ $thumb($destThumb($d, $loop->index)) }}" alt="" loading="lazy" width="240" height="160">
-                                    <span><b>{{ $d->name }}</b>@if($dn)<small>{{ $count($dn) }}</small>@endif</span>{!! $arrow !!}
+                            @foreach(collect($navPlaces)->filter(fn ($pl) => $pl['imageUrl'])->sortByDesc('count')->take(4) as $key => $pl)
+                                <a class="m-card" href="{{ route('packages.index', ['place' => $key]) }}">
+                                    <img src="{{ \App\Support\Places::photo($key, 'sm') }}" alt="" loading="lazy" width="240" height="160">
+                                    <span><b>{{ $pl['name'] }}</b><small>{{ $count($pl['count']) }}</small></span>{!! $arrow !!}
                                 </a>
                             @endforeach
                         </div>
                         @if(! empty($navPlaces))
-                            <p class="m-k">Popular places</p>
-                            <div class="m-chips">@foreach($navPlaces as $list)@foreach($list as $pl)<a href="{{ route('packages.index', ['q' => $pl[1]]) }}">{{ $pl[0] }}</a>@endforeach @endforeach</div>
+                            <p class="m-k">All destinations</p>
+                            <div class="m-chips">@foreach($navPlaces as $key => $pl)<a href="{{ route('packages.index', ['place' => $key]) }}">{{ $pl['name'] }}</a>@endforeach</div>
                         @endif
-                        <a class="m-all" href="{{ route('destinations.index') }}">All destinations {!! $arrow !!}</a>
+                        <a class="m-all" href="{{ route('destinations.index') }}">Map of all destinations {!! $arrow !!}</a>
                     </div></div>
                 </div>
                 @break

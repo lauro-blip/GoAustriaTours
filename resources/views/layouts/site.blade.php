@@ -135,7 +135,7 @@
                     </div>
                     @break
                 @case('destinations')
-                    <div class="fc">@if($col['title'] !== '')<h3>{{ $col['title'] }}</h3>@endif<a href="{{ route('destinations.index') }}">All destinations</a>@foreach($destinations as $d)<a href="{{ route('packages.index', ['destination' => $d->slug]) }}">{{ $d->name }}</a>@endforeach<a href="{{ route('packages.index') }}">All packages</a></div>
+                    <div class="fc">@if($col['title'] !== '')<h3>{{ $col['title'] }}</h3>@endif<a href="{{ route('destinations.index') }}">All destinations</a>@foreach(collect($navPlaces)->sortByDesc('count')->take(5) as $key => $pl)<a href="{{ route('packages.index', ['place' => $key]) }}">{{ $pl['name'] }}</a>@endforeach<a href="{{ route('packages.index') }}">All packages</a></div>
                     @break
                 @case('styles')
                     <div class="fc">@if($col['title'] !== '')<h3>{{ $col['title'] }}</h3>@endif<a href="{{ route('styles.index') }}">All travel styles</a>@foreach(config('goaustria.travel_styles', []) as $slug => $st)<a href="{{ route('packages.index', ['style' => $slug]) }}">{{ $st['name'] }}</a>@endforeach</div>

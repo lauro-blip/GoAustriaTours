@@ -53,7 +53,7 @@
                         <div><dt>Journeys</dt><dd class="vac-big">{{ $pc }}</dd></div>
                         <div><dt>Length</dt><dd>@if($x->nights)<b>{{ $x->nights }}</b> nights @else – @endif</dd></div>
                         <div><dt>From</dt><dd>@if($x->price)<b>{{ $x->price }}</b> <small>per person</small>@else Price on request @endif</dd></div>
-                        <div><dt>Regions</dt><dd>{{ $x->regions->isNotEmpty() ? $x->regions->implode(' · ') : '–' }}</dd></div>
+                        <div><dt>Top places</dt><dd>{{ $x->topPlaces->isNotEmpty() ? $x->topPlaces->implode(' · ') : '–' }}</dd></div>
                     </dl>
                     <div class="vac-go">
                         <a class="btn" href="{{ route('tours.show', $x->t) }}">Explore {{ $x->t->name }} <i aria-hidden="true">&rarr;</i></a>
@@ -99,7 +99,7 @@
                     <li>
                         <a href="{{ route('packages.show', $p) }}">
                             <span class="dst-jr-t">{{ $p->title }}</span>
-                            <span class="dst-jr-m">@if($p->nights){{ $p->nights + 1 }} days · {{ $p->nights }} nights @endif @if($p->destination)<i>{{ $p->destination->name }}</i>@endif</span>
+                            <span class="dst-jr-m">@if($p->nights){{ $p->nights + 1 }} days · {{ $p->nights }} nights @endif @if($c->places->isNotEmpty())<i>{{ $c->places->take(2)->implode(' · ') }}</i>@endif</span>
                             <span class="dst-jr-p">@if($c->price)From <b>{{ $c->price }}</b>@else Price on request @endif</span>
                         </a>
                     </li>

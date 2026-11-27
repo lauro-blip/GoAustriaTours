@@ -11,7 +11,7 @@ class TourTypeController extends Controller
     /** /austria-vacations: every active way to travel, compared side by side from real package data. */
     public function index()
     {
-        $packages = Package::published()->with(['tourType', 'destination'])->get();
+        $packages = Package::published()->with(['tourType'])->get();
 
         $types = TourType::active()->get()->map(function (TourType $t) use ($packages) {
             $own = $packages->where('tour_type_id', $t->id)->values();
@@ -23,7 +23,8 @@ class TourTypeController extends Controller
                 'packages' => $own,
                 'nights' => $nights->isEmpty() ? null : ($nights->min() === $nights->max() ? (string) $nights->min() : $nights->min().'–'.$nights->max()),
                 'price' => $prices->isEmpty() ? null : '$'.number_format($prices->min()),
-                'regions' => $own->pluck('destination.name')->filter()->unique()->values(),
+                // The places these journeys visit most often (no regions).
+                'topPlaces' => collect(Places::withJourneys($own))->sortByDesc('count')->pluck('name')->take(4)->values(),
                 'places' => $own->flatMap(fn ($p) => Places::forPackage($p))->unique('key')->values(),
                 'image' => config('goaustria.tour_type_images.'.$t->slug, 'hero-wagrain'),
             ];
@@ -38,7 +39,7 @@ class TourTypeController extends Controller
 
         return view('tours.show', [
             'tourType' => $tourType,
-            'packages' => Package::published()->where('tour_type_id', $tourType->id)->with('destination')->get(),
+            'packages' => Package::published()->where('tour_type_id', $tourType->id)->get(),
         ]);
     }
 }

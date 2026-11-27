@@ -504,9 +504,6 @@
 @media (max-width: 599px) { .t3 .plx-more { font-size: 0.72rem; } }
 
 /* ============ Destinations page (/destinations): reuses the .hlx / .plx editorial list + inline SVG map from the package page ============ */
-.t3 .dst-names { margin: 10px 0 0; font-size: 0.82rem; line-height: 1.7; color: var(--navy); }
-.t3 .plx-pt.r2 circle { fill: var(--accent-d); }
-.t3 .dst-regions .hlx-th { width: 150px; }
 .t3 .dst-top { display: grid; gap: 34px; align-items: center; }
 @media (min-width: 1000px) {
   .t3 .dst-top { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 80px; }
@@ -542,7 +539,6 @@
 .t3 .dst-jr-p b { display: block; font-family: var(--head); font-weight: 500; font-size: 1.3rem; color: var(--navy); }
 .t3 .dst-jr a:hover .dst-jr-t { color: var(--accent-d); }
 @media (max-width: 599px) {
-  .t3 .dst-regions .hlx-th { width: 76px; }
   .t3 .dst-no { font-size: 2.3rem; padding: 10px 18px 8px 14px; }
   .t3 .dst-ph::after { inset: 10px; }
   .t3 .dst-facts div { padding: 14px 18px 14px 0; }

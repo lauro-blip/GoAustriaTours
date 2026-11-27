@@ -40,7 +40,7 @@
         <b>{{ $tx($d['strip_label']) }}</b>
         <div class="mq"><div class="mq-track">
             @foreach([1, 2] as $copy)
-                <div class="mq-set" @if($copy === 2) aria-hidden="true" @endif>@foreach($navPlaces as $list)@foreach($list as $pl)<a href="{{ route('packages.index', ['q' => $pl[1]]) }}" @if($copy === 2) tabindex="-1" @endif>{{ $pl[1] }}</a>@endforeach @endforeach</div>
+                <div class="mq-set" @if($copy === 2) aria-hidden="true" @endif>@foreach($navPlaces as $key => $pl)<a href="{{ route('packages.index', ['place' => $key]) }}" @if($copy === 2) tabindex="-1" @endif>{{ $pl['name'] }}</a>@endforeach</div>
             @endforeach
         </div></div>
     </div>

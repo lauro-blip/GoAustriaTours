@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Destination;
 use App\Models\Media;
 use App\Models\Package;
 use App\Models\TourType;
@@ -190,12 +189,12 @@ class Blocks
         ];
     }
 
-    /** "all", "featured", "destination:tyrol", "tour_type:coach", "style:music" => label. */
+    /** "all", "featured", "place:hallstatt", "tour_type:coach", "style:music" => label. */
     public static function journeyFilters(): array
     {
         $out = ['all' => 'All journeys', 'featured' => 'Featured journeys'];
-        foreach (Destination::active()->get() as $d) {
-            $out['destination:'.$d->slug] = 'Region: '.$d->name;
+        foreach (Places::withJourneys(Package::published()->get()) as $key => $pl) {
+            $out['place:'.$key] = 'Destination: '.$pl['name'];
         }
         foreach (TourType::active()->get() as $t) {
             $out['tour_type:'.$t->slug] = 'Way to travel: '.$t->name;
@@ -426,15 +425,17 @@ class Blocks
     /** Journeys for a "journeys" block. */
     public static function journeys(string $filter, int $limit): Collection
     {
-        $q = Package::published()->with(['tourType', 'destination']);
+        $q = Package::published()->with(['tourType']);
         [$kind, $value] = array_pad(explode(':', $filter, 2), 2, null);
         match ($kind) {
             'featured' => $q->where('is_featured', true),
-            'destination' => $q->whereHas('destination', fn ($d) => $d->where('slug', $value)),
             'tour_type' => $q->whereHas('tourType', fn ($t) => $t->where('slug', $value)),
             default => null,
         };
         $list = $q->get();
+        if ($kind === 'place') {
+            $list = $list->filter(fn ($p) => in_array((string) $value, Places::keysFor($p), true))->values();
+        }
         if ($kind === 'style') {
             $list = $list->filter(fn ($p) => TravelStyles::matches($p, (string) $value))->values();
         }

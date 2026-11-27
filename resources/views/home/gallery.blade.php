@@ -4,7 +4,7 @@
     $pos = ['g-a', 'g-b', 'g-c', 'g-d', 'g-e', 'g-f', 'g-g'];
 @endphp
 @if($tiles->isNotEmpty())
-<section class="sec tint" id="gallery">
+<section class="sec{{ ! empty($bg) ? ' '.$bg : '' }}" id="gallery">
     <div class="wrap">
         @include('home._head')
         <div class="gal">

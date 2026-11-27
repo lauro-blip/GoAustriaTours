@@ -1,6 +1,6 @@
 {{-- Home: why travel with us (photo + story). --}}
 @php $whyImg = \App\Support\Blocks::image($d['image'] ?? null); @endphp
-<section class="sec why">
+<section class="sec why{{ ! empty($bg) ? ' '.$bg : '' }}">
     <div class="wrap why-grid">
         @if($whyImg)
         <div class="why-media rv">

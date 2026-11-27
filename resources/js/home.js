@@ -29,7 +29,7 @@ $$('[data-open-menu]').forEach((b) => { b.setAttribute('aria-controls', 'mobile-
 $$('[data-close-menu]').forEach((b) => b.addEventListener('click', () => setMenu(false)));
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && mobile.classList.contains('open')) setMenu(false); });
 
-// tours: filter by destination, 6 per page, numbered pager
+// tours: filter by place (each card's data-dest lists the places it visits), 6 per page, numbered pager
 $$('[data-tours]').forEach((sec) => {
     const cells = $$('[data-grid] .cell', sec);
     const pager = $('[data-pager]', sec);
@@ -40,7 +40,7 @@ $$('[data-tours]').forEach((sec) => {
     let dest = '';
     let page = 1;
     const render = () => {
-        const list = cells.filter((c) => !dest || c.dataset.dest === dest);
+        const list = cells.filter((c) => !dest || (c.dataset.dest || '').split(' ').includes(dest));
         const per = perPage();
         const pages = Math.max(1, Math.ceil(list.length / per));
         page = Math.min(page, pages);

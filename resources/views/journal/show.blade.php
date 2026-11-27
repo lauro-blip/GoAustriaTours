@@ -21,7 +21,8 @@
 @section('content')
 @include('pages.partials.banner')
 
-<article class="sec">
+{{-- Backgrounds alternate down to the footer CTA (tint): the article is tint when "More from the journal" (cream) follows. --}}
+<article @class(['sec', 'tint' => $more->isNotEmpty()])>
     <div class="wrap narrow">
         <p class="jmeta art-meta"><time datetime="{{ $post->published_at?->toDateString() }}">{{ $post->published_at?->format('F j, Y') }}</time><i aria-hidden="true">&middot;</i><span>{{ $post->readingMinutes() }} min read</span></p>
         <div class="prose">{!! $post->body !!}</div>
@@ -40,7 +41,7 @@
 </article>
 
 @if($more->isNotEmpty())
-<section class="sec tint">
+<section class="sec">
     <div class="wrap">
         <div class="head"><p class="eyebrow dark">Keep reading</p><h2 class="h">More from the journal</h2></div>
         <div class="jr">@foreach($more as $p)@include('pages.partials.journal-card', ['post' => $p])@endforeach</div>

@@ -1,5 +1,5 @@
 {{-- Home: ways to travel (tour types). --}}
-<section class="sec" id="ways">
+<section class="sec{{ ! empty($bg) ? ' '.$bg : '' }}" id="ways">
     <div class="wrap">
         @include('home._head', ['oneline' => true])
         <div class="ways">

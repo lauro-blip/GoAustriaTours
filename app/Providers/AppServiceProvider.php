@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Destination;
 use App\Models\Package;
 use App\Models\Post;
 use App\Models\Setting;
@@ -43,9 +42,8 @@ class AppServiceProvider extends ServiceProvider
             static $nav = null;
             $nav ??= (function () {
                 $site = array_map(fn ($v) => is_string($v) && str_contains($v, '[CONFIRM') ? '' : $v, Setting::all_());
-                $published = Package::published()->with('destination:id,slug')->get(['id', 'destination_id', 'tour_type_id']);
                 $phone = trim((string) ($site['phone'] ?? ''));
-                $all = Package::published()->with(['tourType', 'destination'])->get();
+                $all = Package::published()->with(['tourType'])->get();
                 $feat = $all->sortByDesc('is_featured')->first();
 
                 return [
@@ -56,7 +54,8 @@ class AppServiceProvider extends ServiceProvider
                     'winter' => ['hallstatt', 'zellamsee', 'kitzbuhel', 'steinernes-meer', 'tauplitz', 'untersberg', 'salzburg', 'schonbrunn', 'xmas-salzburg'],
                     'phone' => $phone,
                     'tel' => preg_replace('/[^\d+]/', '', (string) (($site['phone_tel'] ?? '') ?: $phone)),
-                    'navPlaces' => config('goaustria.nav_places', []),
+                    // Destinations = the places our published journeys visit (App\Support\Places), each with a journey count. No regions.
+                    'navPlaces' => \App\Support\Places::withJourneys($all),
                     'navPost' => Post::published()->first(),
                     // Admin > Menus (header items, header button, footer columns and texts).
                     'menuHeader' => \App\Support\Menus::header(),
@@ -65,11 +64,9 @@ class AppServiceProvider extends ServiceProvider
                     'navPages' => \App\Models\Page::live()->whereNotNull('nav_location')->orderBy('sort_order')->orderBy('title')->get(['slug', 'title', 'nav_location', 'intro'])->groupBy('nav_location'),
                     'navFeatured' => $feat ? \App\Support\Places::card($feat) : null,
                     'navStyles' => collect(\App\Support\TravelStyles::withPackages($all))->keyBy('slug')->all(),
-                    'destinations' => Destination::active()->get(),
                     'tourTypes' => TourType::active()->get(),
                     'pkgCounts' => [
-                        'dest' => $published->groupBy(fn ($p) => $p->destination?->slug)->map->count()->all(),
-                        'type' => $published->groupBy('tour_type_id')->map->count()->all(),
+                        'type' => $all->groupBy('tour_type_id')->map->count()->all(),
                     ],
                 ];
             })();

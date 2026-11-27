@@ -44,7 +44,8 @@
 
 @include('pages.partials.cta-strip', ['csTitle' => 'Not sure which '.$tourType->name.' journey is right?', 'csText' => 'Tell us your dates and how you like to travel. We will suggest the best fit and send a free quote.', 'csInterest' => $tourType->name.' tour'])
 
-<section class="sec">
+{{-- Backgrounds alternate down to the footer CTA (tint): How it works is tint when Places follows, Places is cream. --}}
+<section @class(['sec', 'tint' => count($visited)])>
     <div class="wrap">
         <div class="head"><p class="eyebrow dark">Simple and personal</p><h2 class="h">How it works</h2></div>
         <div class="steps">
@@ -56,7 +57,7 @@
 </section>
 
 @if(count($visited))
-<section class="sec tint">
+<section class="sec">
     <div class="wrap">
         <div class="head"><p class="eyebrow dark">Where {{ $tourType->name }} tours go</p><h2 class="h">Places on these journeys</h2></div>
         @include('pages.partials.place-cards', ['places' => $visited])

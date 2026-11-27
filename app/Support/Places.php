@@ -14,7 +14,7 @@ class Places
 {
     public const ALL = [
         'vienna' => [
-            'name' => 'Vienna', 'region' => 'Vienna', 'lat' => 48.2082, 'lon' => 16.3738, 'image' => 'gallery/vienna',
+            'name' => 'Vienna', 'region' => 'Vienna', 'lat' => 48.2082, 'lon' => 16.3738, 'image' => 'winter/schonbrunn',
             'fact' => 'Austria’s capital. The Historic Centre of Vienna (2001) and Schönbrunn Palace and Gardens (1996) are both UNESCO World Heritage Sites.',
             'terms' => ['vienna', 'schönbrunn', 'schonbrunn', 'hofburg'],
         ],
@@ -122,11 +122,63 @@ class Places
     private static function decorate(string $key): array
     {
         $pl = self::ALL[$key] + ['key' => $key];
-        $thumb = $pl['image'] && is_file(public_path('images/'.$pl['image'].'-thumb.webp')) ? $pl['image'].'-thumb' : $pl['image'];
-        $pl['imageUrl'] = ($pl['image'] && is_file(public_path('images/'.$thumb.'.webp'))) ? asset('images/'.$thumb.'.webp') : null;
-        $pl['searchUrl'] = route('packages.index', ['q' => $pl['terms'][0]]);
+        $pl['imageUrl'] = self::photo($key, 'md');
+        $pl['searchUrl'] = route('packages.index', ['place' => $key]);
 
         return $pl;
+    }
+
+    /**
+     * Photo URL of a place in a size: sm = 240px menu thumbnail, md = ~800px card, lg = 1280px+ (null when we hold no photo).
+     * Bundled photos come as {image}.webp plus some of -240 / -thumb (800) / -768 / -1280; the closest one that exists is used.
+     */
+    public static function photo(string $key, string $size = 'md'): ?string
+    {
+        $img = self::ALL[$key]['image'] ?? null;
+        if (! $img) {
+            return null;
+        }
+        $try = ['sm' => ['-240', '-thumb', '-768', ''], 'md' => ['-thumb', '-768', '-1280', ''], 'lg' => ['-1280', '', '-thumb']][$size] ?? [''];
+        foreach ($try as $suf) {
+            if (is_file(public_path('images/'.$img.$suf.'.webp'))) {
+                return asset('images/'.$img.$suf.'.webp');
+            }
+        }
+
+        return null;
+    }
+
+    /** Keys of the places a package visits (cached per request). */
+    public static function keysFor(Package $p): array
+    {
+        static $cache = [];
+
+        return $cache[$p->id.'-'.optional($p->updated_at)->timestamp] ??= array_column(self::forPackage($p), 'key');
+    }
+
+    /**
+     * The places the given (published) packages visit, in the order of ALL, each with 'count' (journeys going there)
+     * and 'packages' (those journeys). Places no journey visits are left out. This is how the site groups journeys:
+     * by the places they really visit, no regions.
+     */
+    public static function withJourneys(iterable $packages): array
+    {
+        $packages = collect($packages);
+        $out = [];
+        foreach (array_keys(self::ALL) as $key) {
+            $own = $packages->filter(fn ($p) => in_array($key, self::keysFor($p), true))->values();
+            if ($own->isNotEmpty()) {
+                $out[$key] = self::decorate($key) + ['count' => $own->count(), 'packages' => $own];
+            }
+        }
+
+        return $out;
+    }
+
+    /** One place by key (decorated), or null. */
+    public static function find(?string $key): ?array
+    {
+        return $key && isset(self::ALL[$key]) ? self::decorate($key) : null;
     }
 
     /** Card data for the shared package card partial: the package photo (uploaded, else the bundled one), the places visited and the price. */
@@ -143,7 +195,7 @@ class Places
             'image' => $p->hero_image ? asset('storage/'.$p->hero_image) : asset('images/packages/'.$p->slug.'.webp'),
             'places' => $names,
             'price' => $p->price_from ? '$'.number_format($p->price_from) : null,
-            'dest' => $p->destination?->slug,
+            'placeKeys' => self::keysFor($p),
         ];
     }
 }

@@ -11,7 +11,7 @@ class TravelStyleController extends Controller
 {
     public function index()
     {
-        $packages = Package::published()->with(['tourType', 'destination'])->get();
+        $packages = Package::published()->with(['tourType'])->get();
 
         $styles = collect(TravelStyles::all())->map(function (array $st, string $slug) use ($packages) {
             $own = $packages->filter(fn (Package $p) => TravelStyles::matches($p, $slug))->values();
@@ -24,7 +24,6 @@ class TravelStyleController extends Controller
                 'packages' => $own,
                 'places' => $own->flatMap(fn ($p) => Places::forPackage($p))->unique('key')->values(),
                 'ways' => $own->pluck('tourType.name')->filter()->unique()->values(),
-                'regions' => $own->pluck('destination.name')->filter()->unique()->values(),
                 'img' => self::image($st['image'] ?? 'winter/hero-wagrain'),
             ];
         })->values();

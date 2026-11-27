@@ -1,21 +1,23 @@
-{{-- Destinations mega menu (dropdown panel of a built-in header item; data from the layouts.site composer). --}}
+{{-- Destinations mega menu (dropdown panel of a built-in header item; data from the layouts.site composer).
+     Destinations are PLACES (App\Support\Places::withJourneys), no regions: a row of 4 photo cards (most-visited places we hold a photo of),
+     every place below in 3 columns sorted by journey count, and the featured journey on the right. Styles: "Destinations mega menu" in home.css. --}}
+@php
+    $byCount = collect($navPlaces)->sortByDesc('count');
+    $topPlaces = $byCount->filter(fn ($pl) => $pl['imageUrl'])->take(4);
+@endphp
 <div class="mega">
-    <div class="mega-in">
-        <div>
-            <h5>Explore by region</h5>
-            <div class="mega-cards">
-                @foreach($destinations as $d)
-                    @php $dn = $pkgCounts['dest'][$d->slug] ?? 0; @endphp
-                    <a href="{{ route('packages.index', ['destination' => $d->slug]) }}"><img src="{{ $w(['vienna-salzburg' => 'hero-salzburg', 'tyrol' => 'hero-montafon'][$d->slug] ?? $winter[$loop->index % count($winter)], '-768') }}" alt="" loading="lazy"><span><b>{{ $d->name }}</b>@if($dn)<small>{{ $dn }} {{ $dn === 1 ? 'journey' : 'journeys' }}</small>@endif</span></a>
+    <div class="mega-in dmm">
+        <div class="dmm-main">
+            <div class="dmm-head"><h5>Top destinations</h5><a class="more" href="{{ route('destinations.index') }}">Map of all destinations &rarr;</a></div>
+            <div class="dmm-cards">
+                @foreach($topPlaces as $key => $pl)
+                    <a href="{{ route('packages.index', ['place' => $key]) }}"><img src="{{ $pl['imageUrl'] }}" alt="" loading="lazy" width="400" height="300"><span><b>{{ $pl['name'] }}</b><small>{{ $pl['count'] }} {{ $pl['count'] === 1 ? 'journey' : 'journeys' }}</small></span></a>
                 @endforeach
             </div>
-        </div>
-        <div>
-            <h5>Popular places</h5>
-            <ul class="mega-list">
-                @foreach($navPlaces as $slug => $list)@foreach($list as $pl)<li><a href="{{ route('packages.index', ['q' => $pl[1]]) }}">{{ $pl[0] }}</a></li>@endforeach @endforeach
+            <h5 class="dmm-sub">All destinations</h5>
+            <ul class="dmm-list">
+                @foreach($byCount as $key => $pl)<li><a href="{{ route('packages.index', ['place' => $key]) }}"><span>{{ $pl['name'] }}</span><small>{{ $pl['count'] }}</small></a></li>@endforeach
             </ul>
-            <a class="more" href="{{ route('destinations.index') }}">All destinations &rarr;</a>
         </div>
         @if($navFeatured)
         @php $nf = $navFeatured; $np = $nf->p; @endphp

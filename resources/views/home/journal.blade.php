@@ -1,6 +1,6 @@
 {{-- Home: the three latest Journal posts. --}}
 @if($posts->isNotEmpty())
-<section class="sec" id="journal">
+<section class="sec{{ ! empty($bg) ? ' '.$bg : '' }}" id="journal">
     <div class="wrap">
         @include('home._head', ['oneline' => true])
         <div class="jr">
